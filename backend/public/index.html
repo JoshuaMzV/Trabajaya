@@ -1,0 +1,2868 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrabajaYa | Inteligencia Artificial para la Empleabilidad</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #060913;
+            --surface: #0d1322;
+            --card-bg: rgba(16, 24, 40, 0.85);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-highlight: rgba(147, 51, 234, 0.35);
+            --primary: #8b5cf6;
+            --secondary: #a855f7;
+            --accent: #38bdf8;
+            --gradient-brand: linear-gradient(135deg, #a855f7 0%, #6366f1 50%, #38bdf8 100%);
+            --gradient-gold: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-sub: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        #canvas3d {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.65;
+        }
+
+        .ambient-orb {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            filter: blur(140px);
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.25;
+        }
+        .orb-1 { top: -100px; left: -100px; background: #6d28d9; }
+        .orb-2 { bottom: -150px; right: -100px; background: #0284c7; }
+
+        header {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            background: rgba(6, 9, 19, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .navbar {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .brand-logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--gradient-brand);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: #fff;
+        }
+
+        .brand-text {
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-text .gradient {
+            background: var(--gradient-brand);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-nav-toggle-left {
+            display: none;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #cbd5e1;
+            padding: 0.35rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .btn-nav-toggle-left:hover {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: var(--secondary);
+            color: #fff;
+        }
+
+        .nav-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .nav-menu-public {
+            display: flex;
+            gap: 0.35rem;
+            list-style: none;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+
+        .nav-item {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            font-weight: 600;
+            padding: 0.45rem 0.85rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            white-space: nowrap;
+        }
+        .nav-item:hover { color: #fff; background: rgba(255, 255, 255, 0.05); }
+        .nav-item.active {
+            color: #fff;
+            background: rgba(139, 92, 246, 0.15);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .app-tool-selector {
+            display: none;
+            align-items: center;
+            gap: 0.35rem;
+            background: rgba(13, 19, 34, 0.7);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.25rem 0.35rem;
+        }
+
+        .tool-tab-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            padding: 0.35rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            white-space: nowrap;
+            user-select: none;
+        }
+        .tool-tab-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.06);
+        }
+        .tool-tab-btn.active {
+            color: #fff;
+            background: rgba(139, 92, 246, 0.22);
+            border-color: rgba(139, 92, 246, 0.45);
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.25);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        #unauthNav {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        #authNav {
+            display: none;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .btn-auth-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.45rem 1rem;
+            border-radius: 8px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        .btn-auth-outline:hover {
+            border-color: var(--secondary);
+            background: rgba(168, 85, 247, 0.1);
+        }
+
+        .btn-auth-solid {
+            background: var(--gradient-brand);
+            border: none;
+            color: #fff;
+            padding: 0.45rem 1.15rem;
+            border-radius: 8px;
+            font-size: 0.84rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.35);
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        .btn-auth-solid:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+        }
+
+        .coin-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(251, 191, 36, 0.12);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            color: #fbbf24;
+            padding: 0.35rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+            white-space: nowrap;
+        }
+        .coin-badge:hover {
+            background: rgba(251, 191, 36, 0.22);
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
+        }
+
+        .pro-badge {
+            background: var(--gradient-gold);
+            color: #000;
+            padding: 0.35rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+            white-space: nowrap;
+        }
+
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            padding: 0.3rem 0.65rem 0.3rem 0.35rem;
+            border-radius: 9999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .user-pill:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(139, 92, 246, 0.4);
+        }
+
+        .avatar-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--gradient-brand);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        /* DROPDOWN MENU AL DAR CLIC EN EL NOMBRE */
+        .user-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            width: 260px;
+            background: #0d1322;
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            border-radius: 14px;
+            padding: 0.75rem;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.85);
+            z-index: 1050;
+            animation: flyoutSlideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .user-dd-header {
+            padding: 0.4rem 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        .user-dd-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.08);
+            margin: 0.5rem 0;
+        }
+        .user-dd-item {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #cbd5e1;
+            padding: 0.55rem 0.7rem;
+            text-align: left;
+            font-size: 0.82rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .user-dd-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+        .user-dd-item.danger {
+            color: #f87171;
+        }
+        .user-dd-item.danger:hover {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+        }
+
+        /* VIEWPORT & PANES */
+        .app-viewport {
+            flex: 1;
+            position: relative;
+            z-index: 10;
+            padding: 1.5rem 1.25rem 3.5rem;
+            max-width: 1280px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .view-pane {
+            display: none;
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+        .view-pane.active-pane {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* HERO INICIO */
+        .hero-banner {
+            text-align: center;
+            max-width: 900px;
+            margin: 1.5rem auto 3.5rem;
+        }
+
+        .tag-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 0.9rem;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            border-radius: 9999px;
+            color: #c084fc;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+        }
+        .green-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        .hero-title {
+            font-size: 3.2rem;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -1.5px;
+            margin-bottom: 1.25rem;
+        }
+        .hero-title .highlight {
+            background: var(--gradient-brand);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-desc {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+            margin: 2.5rem 0 3.5rem;
+        }
+        @media (max-width: 900px) { .metrics-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 520px) { .metrics-grid { grid-template-columns: 1fr; } }
+
+        .metric-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            backdrop-filter: blur(12px);
+        }
+        .metric-val {
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: var(--gradient-brand);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.35rem;
+        }
+        .metric-title { font-size: 0.9rem; font-weight: 700; color: #fff; margin-bottom: 0.25rem; }
+        .metric-desc { font-size: 0.78rem; color: var(--text-muted); }
+
+        /* PRECIOS EN INICIO */
+        .pricing-section-home {
+            margin-top: 4.5rem;
+            padding-top: 2.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .pricing-home-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 2.5rem;
+        }
+        @media (max-width: 960px) { .pricing-home-grid { grid-template-columns: 1fr; } }
+
+        .price-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 2.2rem 1.8rem;
+            backdrop-filter: blur(16px);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .price-card:hover { transform: translateY(-5px); border-color: rgba(168, 85, 247, 0.4); }
+        .price-card.featured {
+            border-color: var(--secondary);
+            background: linear-gradient(180deg, rgba(22, 32, 54, 0.95) 0%, rgba(13, 20, 36, 0.95) 100%);
+            box-shadow: 0 0 35px rgba(139, 92, 246, 0.25);
+        }
+        .price-badge-top {
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            background: var(--gradient-brand); color: #fff; padding: 0.2rem 0.85rem;
+            border-radius: 9999px; font-size: 0.72rem; font-weight: 800; text-transform: uppercase;
+        }
+        .p-name { font-size: 1.25rem; font-weight: 800; margin-bottom: 0.35rem; color: #fff; }
+        .p-amount {
+            font-family: "Space Grotesk", sans-serif; font-size: 2.3rem; font-weight: 700;
+            margin-bottom: 0.25rem; display: flex; align-items: baseline; gap: 0.35rem; color: #fff;
+        }
+        .p-amount span { font-size: 0.88rem; color: var(--text-muted); font-weight: 500; }
+        .p-list {
+            list-style: none; margin: 1.25rem 0 1.75rem; display: flex; flex-direction: column; gap: 0.65rem; flex-grow: 1;
+        }
+        .p-list li { font-size: 0.85rem; color: #cbd5e1; display: flex; align-items: center; gap: 0.5rem; }
+
+        /* VISTA ACERCA DE */
+        .about-section { max-width: 1000px; margin: 1rem auto; }
+        .about-card {
+            background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px;
+            padding: 2.5rem; backdrop-filter: blur(16px); margin-bottom: 2rem;
+        }
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 1.25rem;
+            margin-top: 1.75rem;
+        }
+        .team-member {
+            grid-column: span 2;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 1.15rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            min-height: 84px;
+            transition: all 0.2s ease;
+        }
+        .team-grid .team-member:nth-child(4) {
+            grid-column: 2 / span 2;
+        }
+        .team-grid .team-member:nth-child(5) {
+            grid-column: 4 / span 2;
+        }
+        .team-member:hover {
+            border-color: var(--secondary);
+            background: rgba(139, 92, 246, 0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        .member-initials {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(109, 40, 217, 0.4), rgba(59, 130, 246, 0.4));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+        .member-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .member-name {
+            font-size: 0.98rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.2rem;
+            letter-spacing: -0.01em;
+        }
+        .member-role {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--accent);
+            line-height: 1.35;
+        }
+
+        @media (max-width: 860px) {
+            .team-grid {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .team-grid .team-member {
+                flex: 1 1 270px;
+                max-width: 340px;
+                grid-column: auto !important;
+            }
+        }
+
+        /* FAQ */
+        .faq-section { max-width: 880px; margin: 1rem auto; }
+        .faq-accordion { display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem; }
+        .faq-item {
+            background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; transition: border-color 0.2s;
+        }
+        .faq-item:hover { border-color: rgba(168, 85, 247, 0.35); }
+        .faq-question {
+            padding: 1.25rem 1.5rem; font-size: 1.05rem; font-weight: 700; color: #fff;
+            display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none;
+        }
+        .faq-icon { font-size: 1.3rem; color: var(--secondary); transition: transform 0.25s; }
+        .faq-answer {
+            max-height: 0; overflow: hidden; padding: 0 1.5rem; color: var(--text-muted); font-size: 0.92rem;
+            line-height: 1.6; transition: max-height 0.3s ease, padding 0.3s;
+        }
+        .faq-item.open .faq-answer { max-height: 300px; padding: 0 1.5rem 1.25rem; }
+        .faq-item.open .faq-icon { transform: rotate(45deg); }
+
+        /* CONTACTO */
+        .contact-section {
+            max-width: 580px; margin: 2rem auto;
+        }
+        .contact-form-box {
+            background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 2.25rem; backdrop-filter: blur(16px);
+        }
+        .input-field {
+            width: 100%; background: rgba(6, 9, 19, 0.8); border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px; padding: 0.85rem 1rem; color: #fff; font-size: 0.9rem; margin-bottom: 1.2rem;
+        }
+        .input-field:focus { outline: none; border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2); }
+
+        /* WORKSPACE HERRAMIENTAS */
+        .app-container {
+            max-width: 1240px;
+            margin: 0 auto;
+        }
+
+        .module-pane {
+            display: none;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.22s ease, transform 0.22s ease;
+        }
+        .module-pane.active-module {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .module-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2.2rem;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            margin-bottom: 2rem;
+        }
+
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.25rem;
+            margin-bottom: 1.75rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .module-header h2 { font-size: 1.35rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 0.5rem; }
+
+        .dropzone {
+            border: 2px dashed rgba(168, 85, 247, 0.4);
+            border-radius: 14px; padding: 2.5rem 1.5rem; text-align: center;
+            background: rgba(139, 92, 246, 0.04); cursor: pointer; transition: all 0.2s; margin-bottom: 1.25rem;
+        }
+        .dropzone:hover { border-color: var(--secondary); background: rgba(139, 92, 246, 0.08); }
+        .dropzone input { display: none; }
+
+        .tag-pill-ok {
+            background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35);
+            color: #6ee7b7; padding: 0.25rem 0.65rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600;
+        }
+        .tag-pill-miss {
+            background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.35);
+            color: #fca5a5; padding: 0.25rem 0.65rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600;
+        }
+
+        /* ------------------------------------------- */
+        /* REDISEÑO 2-COLUMNAS PARA ADAPTAR CV 🚀      */
+        /* ------------------------------------------- */
+        .adaptar-two-col {
+            display: grid;
+            grid-template-columns: 1fr 1.15fr;
+            gap: 2rem;
+            align-items: start;
+        }
+        @media (max-width: 960px) {
+            .adaptar-two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* SELECTOR DE ESTILOS DE CV (ATS VS FORMAL) */
+        .style-selector-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.85rem;
+            margin-bottom: 1.25rem;
+        }
+        .style-card-option {
+            background: rgba(13, 19, 34, 0.85);
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+            position: relative;
+        }
+        .style-card-option:hover {
+            border-color: rgba(139, 92, 246, 0.4);
+            background: rgba(139, 92, 246, 0.06);
+        }
+        .style-card-option.selected {
+            border-color: var(--secondary);
+            background: rgba(139, 92, 246, 0.15);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.25);
+        }
+        .style-card-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--secondary);
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 0.15rem 0.45rem;
+            border-radius: 9999px;
+            display: none;
+        }
+        .style-card-option.selected .style-card-badge {
+            display: block;
+        }
+
+        /* HOJA A4 PREVIEW EN VIVO */
+        .a4-preview-sheet {
+            background: #ffffff;
+            color: #0f172a;
+            border-radius: 8px;
+            padding: 2.2rem 2.4rem;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            margin-top: 1.25rem;
+            font-family: 'Inter', -apple-system, sans-serif;
+            min-height: 480px;
+            line-height: 1.55;
+            overflow-x: auto;
+        }
+        .a4-preview-sheet .cv-style-ats h1 {
+            font-size: 1.55rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #000;
+            margin-bottom: 0.2rem;
+            border-bottom: 2px solid #000;
+            padding-bottom: 0.25rem;
+            letter-spacing: -0.5px;
+        }
+        .a4-preview-sheet .cv-style-ats h2 {
+            font-size: 0.92rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #111;
+            margin: 1.2rem 0 0.4rem;
+            border-bottom: 1px solid #444;
+            padding-bottom: 0.15rem;
+            letter-spacing: 0.5px;
+        }
+        .a4-preview-sheet .cv-style-ats p, 
+        .a4-preview-sheet .cv-style-ats li {
+            font-size: 0.86rem;
+            color: #1f2937;
+        }
+        .a4-preview-sheet .cv-style-ats ul {
+            margin: 0.4rem 0 0.8rem 1.4rem;
+            padding: 0;
+        }
+
+        /* FORMAL STYLE */
+        .a4-preview-sheet .cv-style-formal {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .a4-preview-sheet .cv-style-formal h1 {
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 0.15rem;
+        }
+        .a4-preview-sheet .cv-style-formal h2 {
+            font-size: 0.95rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #312e81;
+            margin: 1.2rem 0 0.45rem;
+            border-bottom: 2px solid #6366f1;
+            padding-bottom: 0.2rem;
+        }
+        .a4-preview-sheet .cv-style-formal p,
+        .a4-preview-sheet .cv-style-formal li {
+            font-size: 0.86rem;
+            color: #334155;
+        }
+        .cv-skills-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+            margin-top: 0.35rem;
+        }
+        .cv-skill-item {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #1e293b;
+            background: #f1f5f9;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        /* TARJETAS DE BRECHAS DETECTADAS */
+        .brecha-item-card {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            border-radius: 10px;
+            padding: 0.85rem 1rem;
+            margin-bottom: 0.65rem;
+        }
+
+        /* WIDGET FLOTANTE DE TICKET EN LA ESQUINA 👑 */
+        .support-fab {
+            position: fixed;
+            bottom: 95px;
+            right: 28px;
+            z-index: 9999;
+            background: var(--gradient-brand);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 9999px;
+            padding: 0.65rem 1.15rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-size: 0.86rem;
+            font-weight: 700;
+            box-shadow: 0 8px 30px rgba(139, 92, 246, 0.45);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            user-select: none;
+        }
+        .support-fab:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 35px rgba(139, 92, 246, 0.65);
+        }
+        .support-fab.pro-glow {
+            background: var(--gradient-gold);
+            color: #000;
+            box-shadow: 0 8px 30px rgba(245, 158, 11, 0.45);
+        }
+        .support-fab-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            box-shadow: 0 0 8px #10b981;
+        }
+
+        /* FLYOUT / MENUSITO DEL TICKET */
+        .support-flyout {
+            position: fixed;
+            bottom: 155px;
+            right: 28px;
+            width: 360px;
+            max-width: calc(100vw - 32px);
+            background: #0d1322;
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            border-radius: 18px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            animation: flyoutSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes flyoutSlideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .support-flyout-header {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(6, 9, 19, 0.9));
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .support-flyout-body {
+            padding: 1.25rem;
+            background: #090d1a;
+        }
+
+        /* MODAL DIALOGS */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.78); backdrop-filter: blur(10px); z-index: 1000;
+            display: none; align-items: center; justify-content: center; padding: 1.5rem;
+        }
+        .modal-card {
+            background: #0d1322; border: 1px solid var(--border-highlight); border-radius: 20px;
+            padding: 2.5rem; width: 100%; max-width: 480px; position: relative;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+        }
+        .close-btn {
+            position: absolute; top: 1.25rem; right: 1.25rem; background: transparent;
+            border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;
+        }
+        .close-btn:hover { color: #fff; }
+
+        .modal-tab-group {
+            display: flex; gap: 0.5rem; background: rgba(255, 255, 255, 0.04);
+            padding: 0.3rem; border-radius: 10px; margin-bottom: 1.5rem;
+        }
+        .modal-tab {
+            flex: 1; padding: 0.6rem; text-align: center; border-radius: 8px; font-size: 0.85rem;
+            font-weight: 700; color: var(--text-muted); cursor: pointer; background: transparent; border: none;
+        }
+        .modal-tab.active { background: var(--secondary); color: #fff; }
+
+        .legal-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .legal-link:hover { color: var(--accent); }
+
+        /* FOOTER */
+        footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.08); background: #03060d; padding: 2rem 0;
+            position: relative; z-index: 20; margin-top: auto;
+        }
+        .footer-inner {
+            max-width: 1240px; margin: 0 auto; padding: 0 1.5rem; display: flex;
+            justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; font-size: 0.85rem; color: var(--text-sub);
+        }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 820px) {
+            .navbar { flex-wrap: wrap; gap: 0.75rem; }
+            .nav-center { order: 3; width: 100%; justify-content: center; margin-top: 0.25rem; }
+            .app-tool-selector { flex-wrap: wrap; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas3d"></canvas>
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="navbar">
+            
+            <!-- 1. LADO IZQUIERDO: LOGO + BOTÓN VER SITIO A LA IZQUIERDA -->
+            <div class="nav-left">
+                <div class="brand-container" onclick="clickLogoBrand()">
+                    <div class="brand-logo">⚡</div>
+                    <div class="brand-text">Trabaja<span class="gradient">Ya</span></div>
+                </div>
+
+                <!-- Botón situado a la izquierda para no estorbar a la derecha -->
+                <button class="btn-nav-toggle-left" id="btnToggleVistaLeft" onclick="toggleVistaLandingApp()">
+                    <span id="txtBtnToggleVista">🌐 Ver Sitio</span>
+                </button>
+            </div>
+
+            <!-- 2. CENTRO: MENÚ PÚBLICO O SELECTOR DE MÓDULOS CON ICONOS -->
+            <div class="nav-center">
+                <!-- En Modo Landing: enlaces estándar de navegación -->
+                <ul class="nav-menu-public" id="publicNavMenu">
+                    <li><span class="nav-item active" id="nav-inicio" onclick="mostrarVista('inicio')">Inicio</span></li>
+                    <li><span class="nav-item" id="nav-acerca" onclick="mostrarVista('acerca')">Acerca de</span></li>
+                    <li><span class="nav-item" id="nav-faq" onclick="mostrarVista('faq')">Preguntas Frecuentes</span></li>
+                    <li><span class="nav-item" id="nav-contacto" onclick="mostrarVista('contacto')">Contáctenos</span></li>
+                </ul>
+
+                <!-- En Modo Herramienta: Selector de herramientas sin pasos secuenciales -->
+                <div class="app-tool-selector" id="appToolSelector">
+                    <button class="tool-tab-btn" id="btnTool-expediente" onclick="seleccionarHerramienta('expediente')" title="Expediente Maestro Permanente">
+                        <span>📄</span>
+                        <span>Expediente</span>
+                    </button>
+                    <button class="tool-tab-btn active" id="btnTool-adaptar" onclick="seleccionarHerramienta('adaptar')" title="Adaptar CV con IA">
+                        <span>🎯</span>
+                        <span>Adaptar CV</span>
+                    </button>
+                    <button class="tool-tab-btn" id="btnTool-entrevistas" onclick="seleccionarHerramienta('entrevistas')" title="Simulador de Entrevistas">
+                        <span>🎙️</span>
+                        <span>Entrevistas</span>
+                    </button>
+                    <button class="tool-tab-btn" id="btnTool-historial" onclick="seleccionarHerramienta('historial')" title="Historial de Postulaciones">
+                        <span>📂</span>
+                        <span>Historial</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3. LADO DERECHO: LIMPIO (MONEDAS + PERFIL + MENÚ DESPLEGABLE) -->
+            <div class="nav-right">
+                <!-- No autenticado -->
+                <div id="unauthNav">
+                    <button class="btn-auth-outline" onclick="abrirModal('login')">Iniciar Sesión</button>
+                    <button class="btn-auth-solid" onclick="abrirModal('register')">Registrar</button>
+                </div>
+
+                <!-- Autenticado -->
+                <div id="authNav">
+                    <div id="coinBadge" class="coin-badge" onclick="abrirModalPacks()" title="Monedas disponibles">
+                        ⚡ 2 TC
+                    </div>
+                    
+                    <!-- Píldora de usuario con menú desplegable -->
+                    <div style="position: relative;">
+                        <div class="user-pill" onclick="toggleUserDropdown(event)" title="Opciones de cuenta">
+                            <div class="avatar-dot" id="userInitial">U</div>
+                            <span id="userNameHeader">Usuario</span>
+                            <span style="font-size: 0.65rem; color: var(--text-muted); margin-left: 2px;">▼</span>
+                        </div>
+
+                        <!-- Dropdown flotante con opción de borrar expediente -->
+                        <div id="userDropdownMenu" class="user-dropdown-menu" style="display: none;">
+                            <div class="user-dd-header">
+                                <strong id="ddUserName" style="font-size: 0.95rem; color: #fff;">Usuario</strong>
+                                <span id="ddUserEmail" style="font-size: 0.75rem; color: var(--text-muted);">correo@ejemplo.com</span>
+                                <span id="ddUserPlan" style="font-size: 0.72rem; color: #fde047; font-weight: 700; margin-top: 0.2rem;">Plan PRO</span>
+                            </div>
+                            <div class="user-dd-divider"></div>
+                            
+                            <div style="padding: 0.35rem 0.5rem; font-size: 0.78rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
+                                <span>Expediente:</span>
+                                <span id="ddExpedienteBadge" style="font-weight: 700; color: #10b981;">Sincronizado</span>
+                            </div>
+
+                            <button class="user-dd-item danger" id="btnDdBorrarExpediente" onclick="confirmarBorrarExpediente()">
+                                <span>🗑️</span>
+                                <span>Borrar Expediente Maestro</span>
+                            </button>
+                            
+                            <div class="user-dd-divider"></div>
+
+                            <button class="user-dd-item" onclick="cerrarSesion()">
+                                <span>🚪</span>
+                                <span>Cerrar Sesión</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Main Viewport -->
+    <main class="app-viewport">
+        
+        <!-- ============================================== -->
+        <!-- VISTA 1: INICIO (PITCH + MÉTRICAS + PRECIOS)   -->
+        <!-- ============================================== -->
+        <section id="vista-inicio" class="view-pane active-pane">
+            <div class="hero-banner">
+                <div class="tag-pill">
+                    <span class="green-dot"></span>
+                    <span>Seminario de Tecnologías UMG 2026 • Innovación & Empleabilidad</span>
+                </div>
+                <h1 class="hero-title">
+                    Supera los Filtros ATS con tu <span class="highlight">Expediente Maestro</span>
+                </h1>
+                <p class="hero-desc">
+                    El 75% de los currículums son descartados automáticamente por sistemas ATS antes de llegar a un humano. 
+                    Nuestra IA analiza tu Expediente Maestro permanente, detecta brechas con la vacante y genera tu CV en formato estándar optimizado.
+                </p>
+                
+                <div style="display: flex; gap: 1rem; justify-content: center; align-items: center; flex-wrap: wrap;">
+                    <button class="btn-auth-solid" style="padding: 0.9rem 2rem; font-size: 1rem;" onclick="irALaHerramienta()">
+                        🚀 Acceder al Workspace
+                    </button>
+                    <button class="btn-auth-outline" style="padding: 0.9rem 1.8rem; font-size: 1rem;" onclick="mostrarVista('acerca')">
+                        Conocer el Proyecto
+                    </button>
+                </div>
+            </div>
+
+            <!-- Métricas Clave -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-val">87%</div>
+                    <div class="metric-title">Más Entrevistas</div>
+                    <div class="metric-desc">Alineando palabras clave exactas de la oferta.</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-val">&lt; 3s</div>
+                    <div class="metric-title">Inferencia Ultrarrápida</div>
+                    <div class="metric-desc">Potenciado por Gemini 3.6 Flash con OCR visual.</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-val">100%</div>
+                    <div class="metric-title">Anti-Alucinaciones</div>
+                    <div class="metric-desc">Nunca inventa títulos ni experiencia inexistente.</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-val">0 Días</div>
+                    <div class="metric-title">Vencimiento Monedas</div>
+                    <div class="metric-desc">Tus TrabajaCoins son tuyas para siempre.</div>
+                </div>
+            </div>
+
+            <!-- Sección de Precios y Packs -->
+            <div class="pricing-section-home">
+                <div style="text-align: center; max-width: 600px; margin: 0 auto;">
+                    <h2 style="font-size: 2.2rem; font-weight: 800; letter-spacing: -1px;">Planes y TrabajaCoins</h2>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.5rem;">
+                        Paga solo por lo que usas sin suscripciones forzosas, o desbloquea el plan ilimitado con soporte prioritario.
+                    </p>
+                </div>
+
+                <div class="pricing-home-grid">
+                    <!-- Pack Básico -->
+                    <div class="price-card">
+                        <div class="p-name">Pack Esencial</div>
+                        <div class="p-amount">Q20 <span>/ 5 adaptaciones</span></div>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">Q4.00 por adaptación de CV</p>
+                        <ul class="p-list">
+                            <li>⚡ <strong>5 TrabajaCoins</strong> directas</li>
+                            <li>✓ Sin fecha de caducidad</li>
+                            <li>✓ Optimización ATS con Gemini 3.6 Flash</li>
+                            <li>✓ Simulador de entrevistas estándar</li>
+                        </ul>
+                        <button class="btn-auth-outline" style="width: 100%; padding: 0.75rem;" onclick="gestionarCompraInicio('pack_5', 'Q20')">Comprar Pack</button>
+                    </div>
+
+                    <!-- Pack Recomendado -->
+                    <div class="price-card featured">
+                        <div class="price-badge-top">Más Popular</div>
+                        <div class="p-name">Pack Profesional</div>
+                        <div class="p-amount">Q50 <span>/ 15 adaptaciones</span></div>
+                        <p style="font-size: 0.8rem; color: var(--accent);">Q3.33 por adaptación (Ahorras 17%)</p>
+                        <ul class="p-list">
+                            <li>⚡ <strong>15 TrabajaCoins</strong> sin vencimiento</li>
+                            <li>✓ Formato ATS y Formal Ejecutivo</li>
+                            <li>✓ Auditoría de brechas curriculares</li>
+                            <li>✓ Descarga en PDF de alta fidelidad</li>
+                        </ul>
+                        <button class="btn-auth-solid" style="width: 100%; padding: 0.75rem;" onclick="gestionarCompraInicio('pack_15', 'Q50')">Comprar Pack Profesional</button>
+                    </div>
+
+                    <!-- Plan PRO Ilimitado -->
+                    <div class="price-card">
+                        <div class="p-name" style="color: #fde047;">👑 Plan PRO Ilimitado</div>
+                        <div class="p-amount">Q69 <span>/ mes</span></div>
+                        <p style="font-size: 0.8rem; color: #fde047;">Uso Ilimitado + Cero Anuncios</p>
+                        <ul class="p-list">
+                            <li>👑 <strong>Adaptaciones Ilimitadas</strong> con IA</li>
+                            <li>⚡ Prioridad máxima en servidores de inferencia</li>
+                            <li>🎧 Soporte VIP 24/7 (respuesta &lt; 2h)</li>
+                            <li>🎙️ Simulador de entrevistas STAR ilimitado</li>
+                        </ul>
+                        <button class="btn-auth-solid" style="width: 100%; padding: 0.75rem; background: var(--gradient-gold); color: #000; font-weight: 800;" onclick="gestionarProInicio()">Suscribirme a PRO</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VISTA 2: ACERCA DE (AUTORES UMG Y PROYECTO)    -->
+        <!-- ============================================== -->
+        <section id="vista-acerca" class="view-pane">
+            <div class="about-section">
+                <div class="about-card">
+                    <span class="tag-pill">Proyecto Académico • UMG 2026</span>
+                    <h2 style="font-size: 2.2rem; font-weight: 800; margin: 0.5rem 0 1rem;">Seminario de Tecnologías de Información</h2>
+                    <p style="color: #cbd5e1; font-size: 1rem; line-height: 1.7; margin-bottom: 1.5rem;">
+                        <strong>TrabajaYa</strong> fue desarrollado como parte del Seminario de Graduación de la 
+                        <strong>Universidad Mariano Gálvez de Guatemala</strong> (Campus El Naranjo). Su propósito es 
+                        democratizar el acceso a herramientas de alta ingeniería que eleven la tasa de inserción 
+                        laboral de profesionales en Guatemala y Centroamérica ante los modernos filtros de reclutamiento algorítmico (ATS).
+                    </p>
+
+                    <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin-top: 2rem;">Equipo de Autores & Desarrolladores:</h3>
+                    <div class="team-grid">
+                        <div class="team-member">
+                            <div class="member-initials">📋</div>
+                            <div class="member-info">
+                                <div class="member-name">Nery</div>
+                                <div class="member-role">Scrum Master / Project Manager</div>
+                            </div>
+                        </div>
+                        <div class="team-member">
+                            <div class="member-initials">👨‍💻</div>
+                            <div class="member-info">
+                                <div class="member-name">Joshua</div>
+                                <div class="member-role">Desarrollador Backend</div>
+                            </div>
+                        </div>
+                        <div class="team-member">
+                            <div class="member-initials">📱</div>
+                            <div class="member-info">
+                                <div class="member-name">Mario</div>
+                                <div class="member-role">Desarrollador Frontend (Expo)</div>
+                            </div>
+                        </div>
+                        <div class="team-member">
+                            <div class="member-initials">🤖</div>
+                            <div class="member-info">
+                                <div class="member-name">Walter</div>
+                                <div class="member-role">Integración de IA</div>
+                            </div>
+                        </div>
+                        <div class="team-member">
+                            <div class="member-initials">🔍</div>
+                            <div class="member-info">
+                                <div class="member-name">Keily</div>
+                                <div class="member-role">Documentación + QA</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VISTA 3: PREGUNTAS FRECUENTES (FAQ)            -->
+        <!-- ============================================== -->
+        <section id="vista-faq" class="view-pane">
+            <div class="faq-section">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <h2 style="font-size: 2rem; font-weight: 800;">Preguntas Frecuentes</h2>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">Todo lo que necesitas saber sobre TrabajaYa, TrabajaCoins y nuestro motor de IA.</p>
+                </div>
+
+                <div class="faq-accordion">
+                    <div class="faq-item" onclick="toggleFaq(this)">
+                        <div class="faq-question">
+                            <span>¿Qué son las TrabajaCoins y tienen fecha de vencimiento?</span>
+                            <span class="faq-icon">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            Las <strong>TrabajaCoins (⚡ TC)</strong> son la moneda digital interna de TrabajaYa. <strong>No tienen fecha de caducidad</strong>. Al comprar un paquete de monedas, permanecen en tu cuenta sin límite de tiempo y se descuentan únicamente cuando generas una adaptación con la IA.
+                        </div>
+                    </div>
+
+                    <div class="faq-item" onclick="toggleFaq(this)">
+                        <div class="faq-question">
+                            <span>¿Qué es el Expediente Maestro y por qué es permanente?</span>
+                            <span class="faq-icon">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            El <strong>Expediente Maestro</strong> es el documento base definitivo de tu carrera. Lo subes una sola vez y nuestro motor OCR con Gemini 3.6 Flash extrae ordenadamente toda tu trayectoria (incluso de PDFs complejos de dos o tres columnas). A partir de ahí, solo tienes que pegar la vacante deseada para que la IA la contraste y optimice tu currículum.
+                        </div>
+                    </div>
+
+                    <div class="faq-item" onclick="toggleFaq(this)">
+                        <div class="faq-question">
+                            <span>¿Cuál es la diferencia entre el formato ATS y el Formal Ejecutivo?</span>
+                            <span class="faq-icon">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            El <strong>Estilo ATS</strong> utiliza una jerarquía lineal de 1 sola columna con encabezados estandarizados para obtener el 100% de legibilidad en plataformas automáticas como Workday o Taleo. El <strong>Estilo Formal</strong> cuenta con un diseño sobrio y elegante pensado para el impacto visual en reclutadores humanos, gerencias y directores.
+                        </div>
+                    </div>
+
+                    <div class="faq-item" onclick="toggleFaq(this)">
+                        <div class="faq-question">
+                            <span>¿Cómo funciona el Simulador de Entrevistas con IA?</span>
+                            <span class="faq-icon">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            Nuestro modelo <strong>Gemini 3.6 Flash</strong> genera preguntas técnicas y situacionales (Método STAR) ajustadas al puesto que buscas, dándote consejos sobre qué espera escuchar el reclutador y evaluando tu respuesta en tiempo real.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VISTA 4: CONTÁCTENOS                           -->
+        <!-- ============================================== -->
+        <section id="vista-contacto" class="view-pane">
+            <div class="contact-section">
+                <div class="contact-form-box">
+                    <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 0.5rem;">Envíanos un Mensaje</h3>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Contacto institucional para el Seminario UMG y alianzas con reclutadores.</p>
+
+                    <form onsubmit="enviarMensajeContacto(event)">
+                        <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #cbd5e1; display: block; margin-bottom: 0.4rem;">Nombre Completo:</label>
+                        <input type="text" id="cNombre" class="input-field" placeholder="Tu nombre" required>
+
+                        <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #cbd5e1; display: block; margin-bottom: 0.4rem;">Correo Electrónico:</label>
+                        <input type="email" id="cEmail" class="input-field" placeholder="correo@ejemplo.com" required>
+
+                        <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #cbd5e1; display: block; margin-bottom: 0.4rem;">Mensaje o Consulta:</label>
+                        <textarea id="cMensaje" class="input-field" style="height: 120px; resize: vertical;" placeholder="¿En qué podemos apoyarte?" required></textarea>
+
+                        <button type="submit" class="btn-auth-solid" style="width: 100%; padding: 0.85rem; border-radius: 10px; font-size: 0.95rem;">
+                            <span>Enviar Mensaje</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VISTA 5: APP WORKSPACE (HERRAMIENTAS LIBRES)   -->
+        <!-- ============================================== -->
+        <section id="vista-app" class="view-pane">
+            <div class="app-container">
+
+                <!-- ------------------------------------------ -->
+                <!-- MÓDULO 1: EXPEDIENTE MAESTRO PERMANENTE    -->
+                <!-- ------------------------------------------ -->
+                <div id="mod-expediente" class="module-pane">
+                    <div class="module-card">
+                        <div class="module-header">
+                            <div>
+                                <h2>📄 Expediente Maestro (Base Curricular Permanente)</h2>
+                                <p style="font-size: 0.85rem; color: var(--text-muted);">
+                                    Tu currículum de referencia central. Reconocimiento OCR inteligente para PDFs de 2 o 3 columnas, escaneados o baja resolución.
+                                </p>
+                            </div>
+                            <div id="masterSyncStatus" style="font-size: 0.82rem; font-weight: 700; color: #6ee7b7; background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); padding: 0.35rem 0.85rem; border-radius: 9999px;">
+                                Sincronizado en PostgreSQL
+                            </div>
+                        </div>
+
+                        <!-- ESTADO 1: CUANDO YA TIENE EXPEDIENTE CARGADO -->
+                        <div id="masterLoadedCard" style="display: none;">
+                            <div style="background: rgba(13, 19, 34, 0.7); border: 1px solid var(--border-highlight); border-radius: 16px; padding: 1.75rem; margin-bottom: 1.5rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+                                    <div>
+                                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+                                            <span style="font-size: 1.4rem;">📑</span>
+                                            <h3 id="masterDocTitle" style="font-size: 1.2rem; color: #fff; font-weight: 800;">Expediente_Maestro.pdf</h3>
+                                            <span style="font-size: 0.72rem; color: #10b981; background: rgba(16,185,129,0.15); padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700;">Activo</span>
+                                        </div>
+                                        <div id="masterDocMeta" style="font-size: 0.8rem; color: var(--text-muted);">Sincronizado recientemente • Almacenado en PostgreSQL</div>
+                                    </div>
+                                    <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+                                        <button class="btn-auth-outline" style="font-size: 0.82rem; padding: 0.45rem 0.85rem;" onclick="document.getElementById('masterFileInput').click()">
+                                            🔄 Reemplazar PDF
+                                        </button>
+                                        <button class="btn-auth-outline" style="font-size: 0.82rem; padding: 0.45rem 0.85rem; border-color: rgba(239,68,68,0.4); color: #fca5a5;" onclick="confirmarBorrarExpediente()">
+                                            🗑️ Eliminar Expediente
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1.25rem;">
+                                    <div style="margin-bottom: 1rem;">
+                                        <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 800; color: var(--accent); letter-spacing: 0.5px;">Candidato Reconocido por OCR:</span>
+                                        <h4 id="masterCandidateInfo" style="font-size: 1.05rem; color: #fff; font-weight: 700; margin-top: 0.2rem;">Nombre del Candidato</h4>
+                                    </div>
+
+                                    <div style="margin-bottom: 1rem;">
+                                        <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 800; color: var(--accent); letter-spacing: 0.5px;">Extracto y Perfil Base:</span>
+                                        <p id="masterSummaryPreview" style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.6; margin-top: 0.25rem;">Cargando resumen...</p>
+                                    </div>
+
+                                    <div>
+                                        <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 800; color: var(--accent); letter-spacing: 0.5px;">Habilidades Clave Identificadas:</span>
+                                        <div id="masterSkillsCloud" style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.4rem;"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; justify-content: flex-end;">
+                                <button class="btn-auth-solid" style="padding: 0.85rem 1.8rem; font-size: 0.95rem;" onclick="seleccionarHerramienta('adaptar')">
+                                    <span>🎯 Ir a Adaptar CV con este Expediente →</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- ESTADO 2: DROPZONE PARA CARGAR EXPEDIENTE -->
+                        <div id="masterEmptyCard" style="display: block;">
+                            <form onsubmit="guardarPerfilMaestro(event)">
+                                <div class="dropzone" onclick="document.getElementById('masterFileInput').click()">
+                                    <span style="font-size: 2.8rem; display: block; margin-bottom: 0.75rem;">📑</span>
+                                    <strong style="color: #fff; font-size: 1.15rem; display: block; margin-bottom: 0.35rem;">Haz clic o arrastra aquí tu Currículum en PDF</strong>
+                                    <p style="font-size: 0.85rem; color: var(--text-muted); max-width: 550px; margin: 0 auto;">
+                                        Sube tu CV base una sola vez. Nuestro motor OCR con Gemini 3.6 Flash analiza PDFs complejos (2 o 3 columnas, escaneados o baja resolución) para consolidar tu perfil.
+                                    </p>
+                                    <div id="masterFileName" style="font-size: 0.92rem; color: var(--accent); font-weight: 700; margin-top: 1rem;">Ningún archivo seleccionado</div>
+                                    <input type="file" id="masterFileInput" accept="application/pdf" onchange="mostrarNombreMaster(this)">
+                                </div>
+
+                                <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+                                    <button type="submit" class="btn-auth-solid" id="btnMasterSave" style="padding: 0.85rem 1.8rem; border-radius: 10px; font-weight: 700; font-size: 0.95rem;">
+                                        <span id="txtBtnSaveMaster">Guardar y Procesar Expediente Maestro con IA</span>
+                                        <span id="txtLoaderSaveMaster" style="display: none;">⏳ Procesando OCR con Gemini 3.6 Flash...</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ------------------------------------------ -->
+                <!-- MÓDULO 2: ADAPTAR CV (DISEÑO RENOVADO)     -->
+                <!-- ------------------------------------------ -->
+                <div id="mod-adaptar" class="module-pane active-module">
+                    <div class="module-card">
+                        <div class="module-header">
+                            <div>
+                                <h2>🎯 Adaptar CV a Oferta Laboral con IA</h2>
+                                <p style="font-size: 0.85rem; color: var(--text-muted);">
+                                    La IA contrasta tu Expediente Maestro permanente contra la vacante, analiza qué competencias te hacen falta y genera tu CV optimizado.
+                                </p>
+                            </div>
+                            <div class="coin-badge" onclick="abrirModalPacks()">⚡ <span id="dashCoinsDisplay">2</span> TC</div>
+                        </div>
+
+                        <!-- ALERTA SI NO TIENE EXPEDIENTE MAESTRO -->
+                        <div id="adaptarNoMasterWarning" style="display: none; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 14px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                            <span style="font-size: 2rem; display: block; margin-bottom: 0.4rem;">⚠️</span>
+                            <h3 style="font-size: 1.1rem; color: #fca5a5; font-weight: 800; margin-bottom: 0.35rem;">Aún no has cargado tu Expediente Maestro</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); max-width: 500px; margin: 0 auto 1.2rem;">
+                                Para adaptar tu currículum, primero debes subir tu CV base permanente. La IA lo conservará para todas tus postulaciones.
+                            </p>
+                            <button class="btn-auth-solid" onclick="seleccionarHerramienta('expediente')">
+                                📄 Subir Expediente Maestro Ahora
+                            </button>
+                        </div>
+
+                        <!-- GRID PRINCIPAL DE 2 COLUMNAS -->
+                        <div class="adaptar-two-col" id="adaptarMainGrid">
+                            
+                            <!-- ========================================= -->
+                            <!-- COLUMNA IZQUIERDA: ENTRADA Y PARÁMETROS   -->
+                            <!-- ========================================= -->
+                            <div>
+                                <!-- Píldora informativa de Expediente Activo -->
+                                <div id="adaptarActiveMasterPill" style="display: flex; align-items: center; justify-content: space-between; background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1.25rem;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; overflow: hidden;">
+                                        <span style="font-size: 1.15rem;">📄</span>
+                                        <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                            <div style="font-size: 0.72rem; text-transform: uppercase; font-weight: 800; color: var(--accent);">Base Curricular Activa:</div>
+                                            <strong id="adaptarMasterNameDisplay" style="font-size: 0.88rem; color: #fff;">Seminario UMG (VIP PRO)</strong>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn-auth-outline" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;" onclick="seleccionarHerramienta('expediente')">
+                                        Gestionar
+                                    </button>
+                                </div>
+
+                                <!-- Selector de Estilos (2 Opciones ATS vs Formal) -->
+                                <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #cbd5e1; margin-bottom: 0.45rem; text-transform: uppercase;">
+                                    Selecciona el Formato y Estilo del CV:
+                                </label>
+                                <div class="style-selector-grid">
+                                    <div class="style-card-option selected" id="styleCard-ats" onclick="selectStyleOption('ats')">
+                                        <span class="style-card-badge">✓ ACTIVO</span>
+                                        <div style="font-size: 1.25rem; margin-bottom: 0.3rem;">📋</div>
+                                        <strong style="font-size: 0.92rem; color: #fff; display: block; margin-bottom: 0.2rem;">Estándar ATS</strong>
+                                        <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
+                                            Estructura lineal 100% optimizada para superar filtros automáticos de reclutamiento (Workday, Taleo).
+                                        </p>
+                                    </div>
+
+                                    <div class="style-card-option" id="styleCard-formal" onclick="selectStyleOption('formal')">
+                                        <span class="style-card-badge">✓ ACTIVO</span>
+                                        <div style="font-size: 1.25rem; margin-bottom: 0.3rem;">🏛️</div>
+                                        <strong style="font-size: 0.92rem; color: #fff; display: block; margin-bottom: 0.2rem;">Formal Ejecutivo</strong>
+                                        <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
+                                            Diseño sobrio y elegante para impacto visual en reclutadores humanos, jefaturas y cargos de alta dirección.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Textarea de Requisitos de la Vacante -->
+                                <form onsubmit="ejecutarAdaptacionCv(event)">
+                                    <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #cbd5e1; margin-bottom: 0.4rem; text-transform: uppercase;">
+                                        Requisitos y Oferta de Empleo a Postular:
+                                    </label>
+                                    <textarea id="jobTargetText" class="input-field" style="height: 150px; resize: vertical;" placeholder="Pega aquí los requisitos, tecnologías y descripción de la vacante...">Buscamos Desarrollador Backend con experiencia en Node.js, microservicios, bases de datos PostgreSQL, Docker y despliegues en Linux. Deseable conocimiento en arquitecturas cloud y metodologías ágiles Scrum.</textarea>
+
+                                    <button type="submit" class="btn-auth-solid" id="btnAdaptarCv" style="width: 100%; padding: 0.95rem; border-radius: 12px; font-size: 1rem; font-weight: 700;">
+                                        <span id="txtBtnAdaptar">🚀 Adaptar y Optimizar CV con IA</span>
+                                        <span id="txtLoaderAdaptar" style="display: none;">⏳ Analizando contexto y brechas con Gemini...</span>
+                                    </button>
+                                </form>
+
+                                <!-- Banner Publicitario para Free Tier -->
+                                <div id="appAdBanner" style="margin-top: 1.5rem; background: rgba(56, 189, 248, 0.05); border: 1px dashed rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <span style="font-size: 0.72rem; text-transform: uppercase; font-weight: 800; color: var(--accent); letter-spacing: 1px;">Oportunidad Destacada (Sponsor)</span>
+                                        <h4 style="font-size: 0.95rem; color: #fff; margin-top: 0.15rem;">Banco Industrial • Desarrolladores Backend Jr & Semi-Sr</h4>
+                                        <p style="font-size: 0.8rem; color: var(--text-muted);">Aplica directo enviando tu CV adaptado a reclutamiento@bi.com.gt</p>
+                                    </div>
+                                    <button class="btn-auth-outline" style="font-size: 0.78rem; padding: 0.4rem 0.8rem;" onclick="abrirModalPacks()">Remover con PRO</button>
+                                </div>
+                            </div>
+
+                            <!-- ========================================= -->
+                            <!-- COLUMNA DERECHA: RESULTADOS Y HOJA A4     -->
+                            <!-- ========================================= -->
+                            <div>
+                                <!-- Placeholder inicial si aún no ha generado -->
+                                <div id="cvEmptyPlaceholder" style="background: rgba(13, 19, 34, 0.5); border: 1px dashed rgba(255, 255, 255, 0.12); border-radius: 16px; padding: 3rem 1.5rem; text-align: center;">
+                                    <span style="font-size: 2.5rem; display: block; margin-bottom: 0.75rem;">📄</span>
+                                    <h4 style="font-size: 1.1rem; color: #fff; font-weight: 700; margin-bottom: 0.35rem;">Vista Previa de tu CV Adaptado</h4>
+                                    <p style="font-size: 0.85rem; color: var(--text-muted); max-width: 400px; margin: 0 auto;">
+                                        Ingresa los requisitos de la vacante a la izquierda y presiona <strong>Adaptar CV con IA</strong> para auditar tu compatibilidad y generar tu currículum.
+                                    </p>
+                                </div>
+
+                                <!-- Contenedor de Resultados (se activa al generar) -->
+                                <div id="cvResultsBox" style="display: none;">
+                                    <!-- Medidor de Score ATS -->
+                                    <div style="display: flex; align-items: center; gap: 1.25rem; background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.2); padding: 1.2rem; border-radius: 14px; margin-bottom: 1.25rem;">
+                                        <div style="width: 76px; height: 76px; border-radius: 50%; background: conic-gradient(var(--secondary) calc(var(--score, 88) * 1%), rgba(255, 255, 255, 0.1) 0); display: flex; align-items: center; justify-content: center; flex-shrink: 0;" id="gaugeScoreBox">
+                                            <div style="width: 60px; height: 60px; border-radius: 50%; background: #090d1a; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.25rem; color: #fff;">
+                                                <span id="scoreTextVal">88%</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h4 style="font-size: 1.05rem; font-weight: 800; color: #fff;">Score de Compatibilidad ATS</h4>
+                                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.1rem;">
+                                                Afinidad algorítmica real calculada contra los requisitos del puesto.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- ANÁLISIS DE BRECHAS (DE QUÉ CARECE PARA CALIFICAR AL PUESTO) -->
+                                    <div style="margin-bottom: 1.25rem;">
+                                        <div style="display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.4rem;">
+                                            <span style="font-size: 0.95rem;">💡</span>
+                                            <strong style="font-size: 0.82rem; text-transform: uppercase; color: #cbd5e1;">Análisis de Brechas (Lo que te hace falta para este puesto):</strong>
+                                        </div>
+                                        <div id="resBrechasList">
+                                            <!-- Se rellena dinámicamente -->
+                                        </div>
+                                    </div>
+
+                                    <!-- Fortalezas coincidentes -->
+                                    <div style="margin-bottom: 1.25rem;">
+                                        <strong style="font-size: 0.8rem; text-transform: uppercase; color: #cbd5e1; display: block; margin-bottom: 0.4rem;">Fortalezas Coincidentes:</strong>
+                                        <div id="resMatchSkills" style="display: flex; flex-wrap: wrap; gap: 0.4rem;"></div>
+                                    </div>
+
+                                    <!-- Barra de Acciones del CV Adaptado -->
+                                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 10px; padding: 0.6rem 1rem; margin-top: 1.5rem;">
+                                        <span style="font-size: 0.82rem; font-weight: 700; color: #fff;">Currículum Generado:</span>
+                                        <div style="display: flex; gap: 0.6rem;">
+                                            <button type="button" class="btn-auth-outline" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;" onclick="copiarTextoCv()">
+                                                📋 Copiar Texto
+                                            </button>
+                                            <button type="button" class="btn-auth-solid" style="font-size: 0.78rem; padding: 0.35rem 0.85rem;" onclick="imprimirCvAdaptado()">
+                                                🖨️ Imprimir / Guardar como PDF
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- HOJA A4 CON EL CV ADAPTADO RENDERIZADO -->
+                                    <div class="a4-preview-sheet" id="cvRenderArea">
+                                        <!-- Se inyecta el HTML limpio generado -->
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ------------------------------------------ -->
+                <!-- MÓDULO 3: ENTREVISTAS (SIMULADOR IA)       -->
+                <!-- ------------------------------------------ -->
+                <div id="mod-entrevistas" class="module-pane">
+                    <div class="module-card">
+                        <div class="module-header">
+                            <div>
+                                <h2>🎙️ Simulador de Entrevistas (Práctica con IA)</h2>
+                                <p style="font-size: 0.85rem; color: var(--text-muted);">Genera preguntas técnicas y conductuales con tips bajo el método STAR.</p>
+                            </div>
+                            <span class="pro-badge">Gemini 3.6 Flash</span>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem;">
+                            <div>
+                                <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #cbd5e1; margin-bottom: 0.35rem;">Puesto Objetivo:</label>
+                                <input type="text" id="interviewRole" class="input-field" value="Desarrollador Backend Node.js">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #cbd5e1; margin-bottom: 0.35rem;">Seniority:</label>
+                                <select id="interviewSeniority" class="input-field">
+                                    <option value="Junior">Junior (0-2 años)</option>
+                                    <option value="Semi-Senior" selected>Semi-Senior (2-4 años)</option>
+                                    <option value="Senior">Senior (+5 años)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button class="btn-auth-solid" style="width: 100%; padding: 0.85rem; border-radius: 10px; margin-bottom: 1.5rem;" onclick="generarSimulacionEntrevista()">
+                            <span id="txtBtnInterview">🎙️ Generar Preguntas de Entrevista con IA</span>
+                            <span id="loaderInterview" style="display: none;">⏳ Generando cuestionario dinámico...</span>
+                        </button>
+
+                        <div id="interviewQuestionsContainer" style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div style="background: rgba(10, 14, 26, 0.8); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem;">
+                                <span style="font-size: 0.75rem; font-weight: 700; color: var(--accent); background: rgba(56,189,248,0.15); padding: 0.2rem 0.6rem; border-radius: 6px;">Pregunta 1 • Técnica</span>
+                                <h4 style="font-size: 1rem; font-weight: 700; color: #fff; margin: 0.5rem 0 0.3rem;">¿Cómo gestionas la concurrencia y el Event Loop en Node.js para evitar bloqueos en operaciones intensivas de I/O?</h4>
+                                <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.75rem;"><strong style="color: #c084fc;">💡 Tip del Reclutador:</strong> Explica el papel de libuv, Worker Threads, procesos hijos y llamadas asíncronas con promesas.</p>
+                                <textarea class="input-field" style="height: 70px; margin-bottom: 0.5rem; font-size: 0.85rem;" placeholder="Escribe aquí tu respuesta para practicar..."></textarea>
+                                <button class="btn-auth-outline" style="font-size: 0.75rem; padding: 0.3rem 0.7rem;" onclick="alert('✓ Respuesta registrada para tu simulación.')">Guardar Respuesta</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ------------------------------------------ -->
+                <!-- MÓDULO 4: HISTORIAL (POSTULACIONES)        -->
+                <!-- ------------------------------------------ -->
+                <div id="mod-historial" class="module-pane">
+                    <div class="module-card">
+                        <div class="module-header">
+                            <div>
+                                <h2>📂 Historial de Adaptaciones y Postulaciones</h2>
+                                <p style="font-size: 0.85rem; color: var(--text-muted);">Registro persistente en PostgreSQL con los análisis y scores obtenidos.</p>
+                            </div>
+                            <button class="btn-auth-outline" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;" onclick="cargarHistorial()">🔄 Actualizar</button>
+                        </div>
+
+                        <div id="historyTableContainer">
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Cargando registros desde PostgreSQL...</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ============================================== -->
+    <!-- WIDGET FLOTANTE DE TICKET EN LA ESQUINA 👑     -->
+    <!-- ============================================== -->
+    <div id="supportWidgetWrapper" style="display: none;">
+        <!-- BOTÓN FLOTANTE EN LA ESQUINA INFERIOR -->
+        <button class="support-fab" id="supportFabBtn" onclick="toggleSupportFlyout()" title="Mesa de Ayuda y Tickets VIP">
+            <span style="font-size: 1.15rem;">👑</span>
+            <span id="supportFabText">Soporte VIP</span>
+            <span class="support-fab-dot"></span>
+        </button>
+
+        <!-- FLYOUT MENUSITO DE ATENCIÓN Y TICKETS -->
+        <div id="supportFlyout" class="support-flyout">
+            <div class="support-flyout-header">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 0.45rem;">
+                        <span style="font-size: 1.1rem;">👑</span>
+                        <strong style="font-size: 0.92rem; color: #fff;">Mesa de Ayuda VIP 24/7</strong>
+                    </div>
+                    <div style="font-size: 0.72rem; color: #6ee7b7; display: flex; align-items: center; gap: 0.3rem; margin-top: 0.15rem;">
+                        <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+                        <span>En línea • Respuesta garantizada &lt; 2h</span>
+                    </div>
+                </div>
+                <button style="background: transparent; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer;" onclick="toggleSupportFlyout()">×</button>
+            </div>
+
+            <div class="support-flyout-body">
+                <!-- FORMULARIO DE TICKET PARA USUARIOS PRO -->
+                <div id="flyoutProSection" style="display: block;">
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.85rem;">
+                        Hola <strong id="flyoutUserName" style="color: #fff;">Usuario</strong>, envía tu consulta a la mesa técnica del Seminario UMG.
+                    </p>
+                    <form onsubmit="enviarTicketFlyout(event)">
+                        <label style="display: block; font-size: 0.72rem; font-weight: 700; color: #cbd5e1; margin-bottom: 0.25rem; text-transform: uppercase;">Asunto del Ticket:</label>
+                        <input type="text" id="flyoutSubject" class="input-field" style="margin-bottom: 0.65rem; padding: 0.6rem 0.8rem; font-size: 0.82rem;" placeholder="Ej: Revisión de CV para vacante senior" required>
+
+                        <label style="display: block; font-size: 0.72rem; font-weight: 700; color: #cbd5e1; margin-bottom: 0.25rem; text-transform: uppercase;">Descripción o Consulta:</label>
+                        <textarea id="flyoutMsg" class="input-field" style="height: 85px; margin-bottom: 0.85rem; padding: 0.6rem 0.8rem; font-size: 0.82rem; resize: none;" placeholder="¿En qué podemos apoyarte hoy?" required></textarea>
+
+                        <button type="submit" class="btn-auth-solid" id="btnSendFlyout" style="width: 100%; padding: 0.65rem; font-size: 0.85rem; border-radius: 8px;">
+                            <span>Enviar Ticket a Mesa VIP</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- GATE SI ES FREE TIER -->
+                <div id="flyoutFreeGate" style="display: none; text-align: center; padding: 0.75rem 0.25rem;">
+                    <div style="font-size: 2.2rem; margin-bottom: 0.35rem;">👑</div>
+                    <h4 style="font-size: 1.05rem; color: #fde047; font-weight: 800; margin-bottom: 0.35rem;">Soporte VIP 24/7 Exclusivo PRO</h4>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.1rem; line-height: 1.5;">
+                        Los suscriptores PRO cuentan con canal prioritario directo con ingenieros de talento y revisión individual de currículum.
+                    </p>
+                    <button class="btn-auth-solid" style="width: 100%; background: var(--gradient-gold); color: #000; font-weight: 800; padding: 0.65rem; font-size: 0.85rem; border-radius: 8px;" onclick="activarProApp()">
+                        Activar Plan PRO (Q69/mes)
+                    </button>
+                </div>
+
+                <!-- ESTADO NO AUTENTICADO -->
+                <div id="flyoutUnauthSection" style="display: none; text-align: center; padding: 1rem 0.5rem;">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">👑</div>
+                    <h4 style="font-size: 1rem; color: #fff; font-weight: 700; margin-bottom: 0.4rem;">Mesa de Ayuda & Soporte</h4>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.5;">
+                        Inicia sesión o regístrate para comunicarte con el equipo de soporte técnico.
+                    </p>
+                    <button class="btn-auth-solid" style="width: 100%; padding: 0.65rem; font-size: 0.85rem; border-radius: 8px;" onclick="cerrarFlyoutYLogin()">
+                        Iniciar Sesión / Registrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Autenticación / Registro -->
+    <div id="authModal" class="modal-overlay">
+        <div class="modal-card">
+            <button class="close-btn" onclick="cerrarModal()">×</button>
+            
+            <div class="modal-tab-group">
+                <button id="tabLogin" class="modal-tab active" onclick="cambiarTabModal('login')">Iniciar Sesión</button>
+                <button id="tabRegister" class="modal-tab" onclick="cambiarTabModal('register')">Registrar</button>
+            </div>
+
+            <!-- Botón de Acceso Instantáneo DEMO VIP -->
+            <button class="btn-auth-solid" style="width: 100%; padding: 0.85rem; border-radius: 10px; margin-bottom: 1.25rem; background: var(--gradient-gold); color: #000; font-weight: 800;" onclick="iniciarDemoVIP()">
+                ⚡ Ingresar con Cuenta Demo VIP (Acceso Total PRO)
+            </button>
+
+            <div style="display: flex; align-items: center; margin: 1rem 0; color: var(--text-sub); font-size: 0.78rem;">
+                <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
+                <span style="padding: 0 0.6rem;">O CON TUS DATOS</span>
+                <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
+            </div>
+
+            <form onsubmit="enviarAuthForm(event)">
+                <div id="nombreWrap" style="display: none;">
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #cbd5e1; margin-bottom: 0.35rem;">Nombre Completo:</label>
+                    <input type="text" id="regNombreInput" class="input-field" placeholder="Tu nombre">
+                </div>
+
+                <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #cbd5e1; margin-bottom: 0.35rem;">Correo Electrónico:</label>
+                <input type="email" id="authEmailInput" class="input-field" placeholder="correo@ejemplo.com" required>
+
+                <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #cbd5e1; margin-bottom: 0.35rem;">Contraseña:</label>
+                <input type="password" id="authPassInput" class="input-field" placeholder="••••••••" required>
+
+                <button type="submit" id="modalSubmitBtn" class="btn-auth-solid" style="width: 100%; padding: 0.85rem; border-radius: 10px; font-weight: 700; margin-top: 0.5rem;">
+                    Iniciar Sesión
+                </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 1.25rem; font-size: 0.8rem; color: var(--text-muted);">
+                <span id="modalFooterText">¿No tienes cuenta? <a href="#" onclick="cambiarTabModal('register'); return false;" style="color: var(--accent); font-weight: 700;">Regístrate gratis</a></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Comprar Monedas / Packs -->
+    <div id="packsModal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 520px;">
+            <button class="close-btn" onclick="cerrarModalPacks()">×</button>
+            <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 0.35rem;">Packs de TrabajaCoins</h3>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.5rem;">Monedas digitales sin vencimiento para adaptar tus currículums con IA.</p>
+
+            <div style="display: flex; flex-direction: column; gap: 0.85rem; margin-bottom: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 1rem;">
+                    <div>
+                        <strong style="color: #fff; font-size: 0.95rem;">Pack Esencial (5 TC)</strong>
+                        <p style="font-size: 0.78rem; color: var(--text-muted);">Q4.00 por adaptación de CV</p>
+                    </div>
+                    <button class="btn-auth-solid" style="font-size: 0.82rem;" onclick="comprarCoinsApp('pack_5', 'Q20')">Q20</button>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(139,92,246,0.1); border: 1px solid var(--secondary); border-radius: 12px; padding: 1rem;">
+                    <div>
+                        <strong style="color: #fff; font-size: 0.95rem;">Pack Profesional (15 TC)</strong>
+                        <p style="font-size: 0.78rem; color: var(--accent);">Q3.33 por adaptación (Más Vendido)</p>
+                    </div>
+                    <button class="btn-auth-solid" style="font-size: 0.82rem;" onclick="comprarCoinsApp('pack_15', 'Q50')">Q50</button>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.4); border-radius: 12px; padding: 1rem;">
+                    <div>
+                        <strong style="color: #fde047; font-size: 0.95rem;">👑 Plan PRO Ilimitado</strong>
+                        <p style="font-size: 0.78rem; color: var(--text-muted);">Adaptaciones ilimitadas + Soporte VIP 24/7</p>
+                    </div>
+                    <button class="btn-auth-solid" style="font-size: 0.82rem; background: var(--gradient-gold); color: #000; font-weight: 800;" onclick="activarProApp()">Q69 / mes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Términos y Privacidad -->
+    <div id="legalModal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 650px; max-height: 85vh; overflow-y: auto;">
+            <button class="close-btn" onclick="cerrarLegalModal()">×</button>
+            
+            <div class="modal-tab-group" style="margin-bottom: 1rem;">
+                <button id="tabLegalTerminos" class="modal-tab active" onclick="cambiarTabLegal('terminos')">Términos de Servicio</button>
+                <button id="tabLegalPrivacidad" class="modal-tab" onclick="cambiarTabLegal('privacidad')">Políticas de Privacidad</button>
+            </div>
+
+            <div id="legalContentTerminos" style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+                <h4 style="color: #fff; margin-bottom: 0.5rem; font-size: 1.05rem;">1. Marco Institucional y Propósito</h4>
+                <p style="margin-bottom: 0.75rem;">La plataforma <strong>TrabajaYa</strong> es un proyecto académico de investigación y desarrollo formulado para el Seminario de Tecnologías de Información 2026 de la Universidad Mariano Gálvez de Guatemala.</p>
+                
+                <h4 style="color: #fff; margin-bottom: 0.5rem; font-size: 1.05rem;">2. Modelo de Créditos (TrabajaCoins)</h4>
+                <p style="margin-bottom: 0.75rem;">Las TrabajaCoins adquiridas no tienen fecha de caducidad. No son transferibles ni canjeables por dinero en efectivo de curso legal fuera del ecosistema del proyecto.</p>
+
+                <h4 style="color: #fff; margin-bottom: 0.5rem; font-size: 1.05rem;">3. Uso Responsable de Inteligencia Artificial</h4>
+                <p>El usuario acepta que los resultados generados por el modelo Gemini 3.6 Flash son sugerencias algorítmicas de optimización y redacción profesional basadas en su Expediente Maestro.</p>
+            </div>
+
+            <div id="legalContentPrivacidad" style="display: none; font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+                <h4 style="color: #fff; margin-bottom: 0.5rem; font-size: 1.05rem;">1. Protección de Datos y Privacidad</h4>
+                <p style="margin-bottom: 0.75rem;">Los currículums y datos profesionales cargados se procesan de forma cifrada en reposo mediante PostgreSQL y se comunican bajo HTTPS y Cloudflare Zero Trust Tunnels.</p>
+                
+                <h4 style="color: #fff; margin-bottom: 0.5rem; font-size: 1.05rem;">2. No Comercialización</h4>
+                <p style="margin-bottom: 0.75rem;">Bajo ninguna circunstancia se venderá, transferirá ni compartirá la información personal o curricular de los usuarios a empresas de telemercadeo.</p>
+
+                <h4 style="color: #fff; margin-bottom: 0.5rem; font-size: 1.05rem;">3. Derecho al Olvido</h4>
+                <p>Cualquier usuario puede solicitar o ejecutar en cualquier momento la eliminación definitiva de su Expediente Maestro haciendo clic en la opción "Borrar Expediente Maestro" desde su perfil.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-inner">
+            <div>
+                © 2026 TrabajaYa Todos los derechos reservados.
+            </div>
+            <div style="display: flex; gap: 1.25rem; align-items: center;">
+                <span class="legal-link" onclick="abrirLegalModal('terminos')">Términos de Servicio</span>
+                <span style="color: rgba(255,255,255,0.2);">•</span>
+                <span class="legal-link" onclick="abrirLegalModal('privacidad')">Políticas de Privacidad</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Three.js 3D Background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Fondo 3D Constelación
+        (function init3D() {
+            const canvas = document.getElementById('canvas3d');
+            if (!canvas || !window.THREE) return;
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
+            camera.position.z = 400;
+
+            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            const particleCount = 75;
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const velocities = [];
+
+            for (let i = 0; i < particleCount; i++) {
+                positions[i * 3] = (Math.random() - 0.5) * 800;
+                positions[i * 3 + 1] = (Math.random() - 0.5) * 600;
+                positions[i * 3 + 2] = (Math.random() - 0.5) * 400;
+
+                velocities.push({
+                    x: (Math.random() - 0.5) * 0.45,
+                    y: (Math.random() - 0.5) * 0.45,
+                    z: (Math.random() - 0.5) * 0.25
+                });
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+            const material = new THREE.PointsMaterial({
+                color: 0x8b5cf6,
+                size: 3.5,
+                transparent: true,
+                opacity: 0.7
+            });
+
+            const points = new THREE.Points(geometry, material);
+            scene.add(points);
+
+            function animate() {
+                requestAnimationFrame(animate);
+                const pos = geometry.attributes.position.array;
+                for (let i = 0; i < particleCount; i++) {
+                    pos[i * 3] += velocities[i].x;
+                    pos[i * 3 + 1] += velocities[i].y;
+                    pos[i * 3 + 2] += velocities[i].z;
+
+                    if (pos[i * 3] > 400 || pos[i * 3] < -400) velocities[i].x *= -1;
+                    if (pos[i * 3 + 1] > 300 || pos[i * 3 + 1] < -300) velocities[i].y *= -1;
+                    if (pos[i * 3 + 2] > 200 || pos[i * 3 + 2] < -200) velocities[i].z *= -1;
+                }
+                geometry.attributes.position.needsUpdate = true;
+                points.rotation.y += 0.0006;
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        })();
+
+        // ==========================================
+        // ESTADO GLOBAL DE LA APLICACIÓN
+        // ==========================================
+        let currentUser = null;
+        let currentView = 'inicio';
+        let currentTool = localStorage.getItem('tj_active_tool') || 'adaptar';
+        let selectedStyleFormat = 'ats';
+
+        // Verificación de sesión al recargar página
+        async function checkSession() {
+            const token = localStorage.getItem('tj_token');
+            if (!token) {
+                renderUnauth();
+                return;
+            }
+            try {
+                const res = await fetch('/api/auth/me', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+                if (res.ok && data.user) {
+                    currentUser = data.user;
+                    renderAuthUser(currentUser);
+                    
+                    // Al recargar estando logeado: entrar directo a la herramienta
+                    const savedView = sessionStorage.getItem('tj_preferred_view');
+                    if (savedView && ['acerca', 'faq', 'contacto'].includes(savedView)) {
+                        mostrarVista(savedView);
+                    } else {
+                        mostrarVista('app');
+                    }
+                } else {
+                    renderUnauth();
+                }
+            } catch (err) {
+                renderUnauth();
+            }
+        }
+
+        function renderUnauth() {
+            currentUser = null;
+            document.getElementById('unauthNav').style.display = 'flex';
+            document.getElementById('authNav').style.display = 'none';
+            document.getElementById('btnToggleVistaLeft').style.display = 'none';
+            document.getElementById('publicNavMenu').style.display = 'flex';
+            document.getElementById('appToolSelector').style.display = 'none';
+            document.getElementById('supportWidgetWrapper').style.display = 'none';
+            mostrarVista('inicio');
+        }
+
+        function renderAuthUser(user) {
+            document.getElementById('unauthNav').style.display = 'none';
+            document.getElementById('authNav').style.display = 'flex';
+            document.getElementById('btnToggleVistaLeft').style.display = 'block';
+            document.getElementById('supportWidgetWrapper').style.display = (currentView === 'app') ? 'block' : 'none';
+
+            document.getElementById('userNameHeader').innerText = user.nombre.split(' ')[0];
+            document.getElementById('userInitial').innerText = user.nombre.charAt(0).toUpperCase();
+            
+            const ddName = document.getElementById('ddUserName');
+            if (ddName) ddName.innerText = user.nombre;
+            const ddEmail = document.getElementById('ddUserEmail');
+            if (ddEmail) ddEmail.innerText = user.email;
+
+            const flyoutName = document.getElementById('flyoutUserName');
+            if (flyoutName) flyoutName.innerText = user.nombre.split(' ')[0];
+
+            // Badges
+            const coinBadge = document.getElementById('coinBadge');
+            const dashCoins = document.getElementById('dashCoinsDisplay');
+            const appAdBanner = document.getElementById('appAdBanner');
+            const fabBtn = document.getElementById('supportFabBtn');
+            const flyoutProSection = document.getElementById('flyoutProSection');
+            const flyoutFreeGate = document.getElementById('flyoutFreeGate');
+            const ddPlan = document.getElementById('ddUserPlan');
+
+            if (user.plan === 'pro_unlimited') {
+                coinBadge.className = 'pro-badge';
+                coinBadge.innerText = '👑 Plan PRO';
+                if (dashCoins) dashCoins.innerText = '∞';
+                if (appAdBanner) appAdBanner.style.display = 'none';
+                if (fabBtn) fabBtn.classList.add('pro-glow');
+                if (flyoutProSection) flyoutProSection.style.display = 'block';
+                if (flyoutFreeGate) flyoutFreeGate.style.display = 'none';
+                if (ddPlan) ddPlan.innerText = '👑 Plan PRO Ilimitado';
+            } else {
+                coinBadge.className = 'coin-badge';
+                coinBadge.innerText = '⚡ ' + user.trabajacoins_saldo + ' TC';
+                if (dashCoins) dashCoins.innerText = user.trabajacoins_saldo;
+                if (appAdBanner) appAdBanner.style.display = 'flex';
+                if (fabBtn) fabBtn.classList.remove('pro-glow');
+                if (flyoutProSection) flyoutProSection.style.display = 'none';
+                if (flyoutFreeGate) flyoutFreeGate.style.display = 'block';
+                if (ddPlan) ddPlan.innerText = '⚡ ' + user.trabajacoins_saldo + ' TrabajaCoins';
+            }
+
+            actualizarVistaExpediente();
+        }
+
+        // ==========================================
+        // VISTAS PRINCIPALES (SPA)
+        // ==========================================
+        function mostrarVista(vistaId) {
+            if (vistaId === 'app' && !currentUser) {
+                abrirModal('login');
+                return;
+            }
+
+            document.querySelectorAll('.view-pane').forEach(el => el.classList.remove('active-pane'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+            const targetPane = document.getElementById('vista-' + vistaId);
+            const targetNav = document.getElementById('nav-' + vistaId);
+
+            if (targetPane) targetPane.classList.add('active-pane');
+            if (targetNav) targetNav.classList.add('active');
+
+            currentView = vistaId;
+            sessionStorage.setItem('tj_preferred_view', vistaId);
+
+            const publicNav = document.getElementById('publicNavMenu');
+            const toolSelector = document.getElementById('appToolSelector');
+            const btnToggleLeft = document.getElementById('txtBtnToggleVista');
+
+            if (vistaId === 'app') {
+                publicNav.style.display = 'none';
+                toolSelector.style.display = 'flex';
+                if (btnToggleLeft) btnToggleLeft.innerText = '🌐 Ver Sitio';
+                seleccionarHerramienta(currentTool || 'adaptar');
+            } else {
+                publicNav.style.display = 'flex';
+                toolSelector.style.display = 'none';
+                if (btnToggleLeft) btnToggleLeft.innerText = '🚀 Herramienta';
+            }
+
+            // Botón flotante Soporte VIP: visible ÚNICAMENTE para usuarios autenticados dentro de la herramienta ('app')
+            const supportWidget = document.getElementById('supportWidgetWrapper');
+            if (supportWidget) {
+                if (currentUser && vistaId === 'app') {
+                    supportWidget.style.display = 'block';
+                } else {
+                    supportWidget.style.display = 'none';
+                    const flyout = document.getElementById('supportFlyout');
+                    if (flyout) flyout.style.display = 'none';
+                }
+            }
+        }
+
+        function toggleVistaLandingApp() {
+            if (currentView === 'app') {
+                mostrarVista('inicio');
+            } else {
+                mostrarVista('app');
+            }
+        }
+
+        function clickLogoBrand() {
+            if (currentUser) {
+                mostrarVista('app');
+            } else {
+                mostrarVista('inicio');
+            }
+        }
+
+        function irALaHerramienta() {
+            if (!currentUser) {
+                abrirModal('login');
+            } else {
+                mostrarVista('app');
+            }
+        }
+
+        // ==========================================
+        // SELECCIÓN DE HERRAMIENTAS
+        // ==========================================
+        function seleccionarHerramienta(toolId) {
+            currentTool = toolId;
+            localStorage.setItem('tj_active_tool', toolId);
+
+            document.querySelectorAll('.tool-tab-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById('btnTool-' + toolId);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            document.querySelectorAll('.module-pane').forEach(m => m.classList.remove('active-module'));
+            const targetMod = document.getElementById('mod-' + toolId);
+            if (targetMod) targetMod.classList.add('active-module');
+
+            if (toolId === 'historial') cargarHistorial();
+            if (toolId === 'expediente') actualizarVistaExpediente();
+        }
+
+        // ==========================================
+        // MENÚ DROPDOWN DE USUARIO
+        // ==========================================
+        function toggleUserDropdown(e) {
+            if (e) e.stopPropagation();
+            const dd = document.getElementById('userDropdownMenu');
+            if (!dd) return;
+            if (dd.style.display === 'block') {
+                dd.style.display = 'none';
+            } else {
+                if (currentUser) {
+                    document.getElementById('ddUserName').innerText = currentUser.nombre;
+                    document.getElementById('ddUserEmail').innerText = currentUser.email;
+                    document.getElementById('ddUserPlan').innerText = currentUser.plan === 'pro_unlimited' ? '👑 Plan PRO Ilimitado' : '⚡ ' + currentUser.trabajacoins_saldo + ' TC';
+                    const badge = document.getElementById('ddExpedienteBadge');
+                    if (badge) {
+                        badge.innerText = currentUser.perfil_maestro ? 'Sincronizado' : 'No cargado';
+                        badge.style.color = currentUser.perfil_maestro ? '#10b981' : '#f87171';
+                    }
+                }
+                dd.style.display = 'block';
+            }
+        }
+
+        // ==========================================
+        // MÓDULO 1: EXPEDIENTE MAESTRO PERMANENTE
+        // ==========================================
+        function mostrarNombreMaster(input) {
+            const label = document.getElementById('masterFileName');
+            if (input.files && input.files[0]) {
+                label.innerText = '✓ ' + input.files[0].name + ' (' + Math.round(input.files[0].size / 1024) + ' KB)';
+            }
+        }
+
+        function actualizarVistaExpediente() {
+            const hasMaster = !!(currentUser && currentUser.perfil_maestro);
+            const viewLoaded = document.getElementById('masterLoadedCard');
+            const viewEmpty = document.getElementById('masterEmptyCard');
+            const warningAdaptar = document.getElementById('adaptarNoMasterWarning');
+            const gridAdaptar = document.getElementById('adaptarMainGrid');
+            const pillAdaptar = document.getElementById('adaptarActiveMasterPill');
+
+            if (hasMaster) {
+                if (viewLoaded) viewLoaded.style.display = 'block';
+                if (viewEmpty) viewEmpty.style.display = 'none';
+                if (warningAdaptar) warningAdaptar.style.display = 'none';
+                if (gridAdaptar) gridAdaptar.style.display = 'grid';
+                if (pillAdaptar) pillAdaptar.style.display = 'flex';
+
+                const master = currentUser.perfil_maestro;
+                const docName = master.nombreArchivo || 'Expediente_Maestro.pdf';
+                const fecha = new Date(master.actualizadoEn || Date.now()).toLocaleDateString('es-GT', { year: 'numeric', month: 'short', day: 'numeric' });
+                
+                const titleEl = document.getElementById('masterDocTitle');
+                if (titleEl) titleEl.innerText = docName;
+                const metaEl = document.getElementById('masterDocMeta');
+                if (metaEl) metaEl.innerText = 'Sincronizado: ' + fecha + ' • Tamaño: ' + Math.round((master.tamano || 0) / 1024) + ' KB';
+
+                const candName = master.datos?.nombre || currentUser.nombre;
+                const candRole = master.datos?.profesion || 'Profesional';
+                const infoEl = document.getElementById('masterCandidateInfo');
+                if (infoEl) infoEl.innerText = candName + ' — ' + candRole;
+
+                const sumEl = document.getElementById('masterSummaryPreview');
+                if (sumEl) sumEl.innerText = master.resumenEjecutivo || master.datos?.resumen || 'Perfil maestro consolidado en base de datos PostgreSQL.';
+
+                const skillsWrap = document.getElementById('masterSkillsCloud');
+                if (skillsWrap) {
+                    skillsWrap.innerHTML = '';
+                    const skills = master.datos?.habilidades || ['Ingeniería de Sistemas', 'Desarrollo de Software', 'PostgreSQL', 'Linux'];
+                    skills.slice(0, 15).forEach(sk => {
+                        const sp = document.createElement('span');
+                        sp.className = 'tag-pill-ok';
+                        sp.innerText = sk;
+                        skillsWrap.appendChild(sp);
+                    });
+                }
+
+                const namePill = document.getElementById('adaptarMasterNameDisplay');
+                if (namePill) namePill.innerText = candName + ' (' + candRole + ')';
+
+                const ddBadge = document.getElementById('ddExpedienteBadge');
+                if (ddBadge) {
+                    ddBadge.innerText = 'Sincronizado';
+                    ddBadge.style.color = '#10b981';
+                }
+            } else {
+                if (viewLoaded) viewLoaded.style.display = 'none';
+                if (viewEmpty) viewEmpty.style.display = 'block';
+                if (warningAdaptar) warningAdaptar.style.display = 'block';
+                if (gridAdaptar) gridAdaptar.style.display = 'none';
+                if (pillAdaptar) pillAdaptar.style.display = 'none';
+
+                const ddBadge = document.getElementById('ddExpedienteBadge');
+                if (ddBadge) {
+                    ddBadge.innerText = 'No cargado';
+                    ddBadge.style.color = '#f87171';
+                }
+            }
+        }
+
+        async function guardarPerfilMaestro(e) {
+            e.preventDefault();
+            const input = document.getElementById('masterFileInput');
+            if (!input.files || !input.files[0]) {
+                alert('Selecciona un archivo PDF para consolidar tu Expediente Maestro.');
+                return;
+            }
+
+            const token = localStorage.getItem('tj_token');
+            const formData = new FormData();
+            formData.append('resume', input.files[0]);
+
+            const btn = document.getElementById('btnMasterSave');
+            const txt = document.getElementById('txtBtnSaveMaster');
+            const loader = document.getElementById('txtLoaderSaveMaster');
+
+            btn.disabled = true;
+            txt.style.display = 'none';
+            loader.style.display = 'inline';
+
+            try {
+                const res = await fetch('/api/cv/master', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    body: formData
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert('✓ ' + data.message);
+                    currentUser.perfil_maestro = data.perfilMaestro;
+                    actualizarVistaExpediente();
+                } else {
+                    alert('Error: ' + (data.error || 'No se pudo sincronizar el expediente'));
+                }
+            } catch (err) {
+                alert('Error al comunicar con el servidor.');
+            } finally {
+                btn.disabled = false;
+                txt.style.display = 'inline';
+                loader.style.display = 'none';
+            }
+        }
+
+        async function confirmarBorrarExpediente() {
+            if (!currentUser || !currentUser.perfil_maestro) {
+                alert('No tienes ningún Expediente Maestro activo.');
+                return;
+            }
+            if (confirm('¿Estás seguro de que deseas eliminar tu Expediente Maestro? Deberás subir uno nuevo para poder adaptar tu currículum.')) {
+                const token = localStorage.getItem('tj_token');
+                try {
+                    const res = await fetch('/api/cv/master', {
+                        method: 'DELETE',
+                        headers: { 'Authorization': 'Bearer ' + token }
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        currentUser.perfil_maestro = null;
+                        actualizarVistaExpediente();
+                        alert('✓ ' + data.message);
+                        const dd = document.getElementById('userDropdownMenu');
+                        if (dd) dd.style.display = 'none';
+                    } else {
+                        alert('Error: ' + (data.error || 'No se pudo eliminar el expediente'));
+                    }
+                } catch (e) {
+                    alert('Error al comunicar con el servidor.');
+                }
+            }
+        }
+
+        // ==========================================
+        // MÓDULO 2: ADAPTAR CV (ATS / FORMAL)
+        // ==========================================
+        function selectStyleOption(style) {
+            selectedStyleFormat = style;
+            document.querySelectorAll('.style-card-option').forEach(card => card.classList.remove('selected'));
+            const activeCard = document.getElementById('styleCard-' + style);
+            if (activeCard) activeCard.classList.add('selected');
+        }
+
+        async function ejecutarAdaptacionCv(e) {
+            if (e) e.preventDefault();
+            if (!currentUser) {
+                abrirModal('login');
+                return;
+            }
+            if (!currentUser.perfil_maestro) {
+                alert('⚠️ Primero debes subir tu Expediente Maestro en la sección "Expediente".');
+                seleccionarHerramienta('expediente');
+                return;
+            }
+
+            const jobText = document.getElementById('jobTargetText').value;
+            if (!jobText || jobText.trim().length < 15) {
+                alert('Ingresa los requisitos o descripción de la vacante a la que deseas postular.');
+                return;
+            }
+
+            const token = localStorage.getItem('tj_token');
+            const btn = document.getElementById('btnAdaptarCv');
+            const txt = document.getElementById('txtBtnAdaptar');
+            const loader = document.getElementById('txtLoaderAdaptar');
+
+            btn.disabled = true;
+            txt.style.display = 'none';
+            loader.style.display = 'inline';
+
+            try {
+                const res = await fetch('/api/cv/tailor', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        jobDescription: jobText,
+                        styleFormat: selectedStyleFormat
+                    })
+                });
+                const result = await res.json();
+
+                if (res.status === 402) {
+                    alert(result.message || result.error);
+                    abrirModalPacks();
+                    return;
+                }
+                if (!res.ok) {
+                    alert('Error: ' + (result.error || 'Fallo al procesar'));
+                    return;
+                }
+
+                // Renderizar resultados en la columna derecha
+                renderizarResultadosAdaptacion(result.data);
+
+                // Actualizar saldo
+                if (currentUser.plan !== 'pro_unlimited') {
+                    currentUser.trabajacoins_saldo = result.userBalance;
+                    renderAuthUser(currentUser);
+                }
+            } catch (err) {
+                alert('Error al comunicar con la IA.');
+            } finally {
+                btn.disabled = false;
+                txt.style.display = 'inline';
+                loader.style.display = 'none';
+            }
+        }
+
+        function renderizarResultadosAdaptacion(data) {
+            document.getElementById('cvEmptyPlaceholder').style.display = 'none';
+            const box = document.getElementById('cvResultsBox');
+            box.style.display = 'block';
+
+            // Score
+            const scoreVal = data.matchScore || 85;
+            document.getElementById('scoreTextVal').innerText = scoreVal + '%';
+            const gauge = document.getElementById('gaugeScoreBox');
+            if (gauge) {
+                const gaugeColor = scoreVal >= 80 ? '#10b981' : (scoreVal >= 60 ? '#f59e0b' : '#ef4444');
+                gauge.style.background = 'conic-gradient(' + gaugeColor + ' calc(' + scoreVal + ' * 1%), rgba(255,255,255,0.1) 0)';
+            }
+
+            // Fortalezas
+            const pfWrap = document.getElementById('resMatchSkills');
+            pfWrap.innerHTML = '';
+            (data.puntosFuertes || []).forEach(f => {
+                const s = document.createElement('span');
+                s.className = 'tag-pill-ok';
+                s.innerText = '✓ ' + f;
+                pfWrap.appendChild(s);
+            });
+
+            // Brechas detectadas (de qué carece para calificar)
+            const brechasWrap = document.getElementById('resBrechasList');
+            brechasWrap.innerHTML = '';
+            const brechas = data.brechasDetectadas || [];
+            if (brechas.length === 0) {
+                brechasWrap.innerHTML = '<div style="color: #6ee7b7; font-size: 0.85rem; padding: 0.5rem; background: rgba(16,185,129,0.1); border-radius: 8px;">✓ ¡Excelente afinidad! Tu perfil cumple con las competencias clave solicitadas en la vacante.</div>';
+            } else {
+                brechas.forEach(b => {
+                    const item = document.createElement('div');
+                    item.className = 'brecha-item-card';
+                    item.innerHTML = '<div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.25rem;">' +
+                        '<strong style="color: #fca5a5; font-size: 0.85rem;">⚠️ ' + b.requisito + '</strong>' +
+                        '<span style="font-size: 0.7rem; color: #f87171; background: rgba(239,68,68,0.2); padding: 0.1rem 0.45rem; border-radius: 4px; font-weight: 700;">' + (b.estado || 'Faltante') + '</span>' +
+                        '</div>' +
+                        '<p style="font-size: 0.8rem; color: var(--text-muted); margin: 0; line-height: 1.4;">' +
+                        '<strong style="color: #cbd5e1;">Consejo IA:</strong> ' + b.recomendacion +
+                        '</p>';
+                    brechasWrap.appendChild(item);
+                });
+            }
+
+            // Hoja A4 renderizada
+            const sheetArea = document.getElementById('cvRenderArea');
+            if (data.htmlCv) {
+                sheetArea.innerHTML = data.htmlCv;
+            } else {
+                sheetArea.innerHTML = '<div class="cv-render-doc cv-style-' + selectedStyleFormat + '">' +
+                    '<h1>' + currentUser.nombre + '</h1>' +
+                    '<p>' + data.resumenAdaptado + '</p>' +
+                    '</div>';
+            }
+
+            if (window.innerWidth < 960) {
+                box.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function imprimirCvAdaptado() {
+            const cvContent = document.getElementById('cvRenderArea').innerHTML;
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(
+                '<!DOCTYPE html>' +
+                '<html>' +
+                '<head>' +
+                '<title>CV Adaptado - TrabajaYa</title>' +
+                '<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">' +
+                '<style>' +
+                '@page { size: A4; margin: 15mm 15mm 15mm 15mm; }' +
+                'body { font-family: "Inter", Arial, sans-serif; color: #111827; margin: 0; padding: 0; background: #fff; }' +
+                '.cv-render-doc { max-width: 100%; margin: 0 auto; line-height: 1.5; font-size: 10pt; }' +
+                '.cv-style-ats h1 { font-size: 18pt; text-transform: uppercase; margin: 0 0 4pt; border-bottom: 2pt solid #111; padding-bottom: 2pt; letter-spacing: -0.5px; }' +
+                '.cv-style-ats h2 { font-size: 11pt; text-transform: uppercase; border-bottom: 1pt solid #333; margin: 12pt 0 6pt; padding-bottom: 2pt; letter-spacing: 0.5px; }' +
+                '.cv-style-ats p, .cv-style-ats li { font-size: 9.5pt; color: #1f2937; }' +
+                '.cv-style-ats ul { margin: 4pt 0 8pt 18pt; padding: 0; }' +
+                '.cv-style-formal { font-family: "Plus Jakarta Sans", sans-serif; }' +
+                '.cv-style-formal h1 { font-size: 20pt; color: #0f172a; margin: 0 0 2pt; }' +
+                '.cv-style-formal h2 { font-size: 11pt; color: #1e293b; text-transform: uppercase; border-bottom: 1.5pt solid #6366f1; margin: 12pt 0 6pt; padding-bottom: 3pt; }' +
+                '.cv-style-formal p, .cv-style-formal li { font-size: 9.5pt; color: #334155; }' +
+                '.cv-skills-cloud { display: flex; flex-wrap: wrap; gap: 4pt; margin-top: 4pt; }' +
+                '.cv-skill-item { font-size: 9pt; font-weight: 600; color: #111827; }' +
+                '@media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }' +
+                '</style>' +
+                '</head>' +
+                '<body>' +
+                cvContent +
+                '<' + 'script>' +
+                'window.onload = function() { window.print(); };' +
+                '<' + '/script>' +
+                '</body>' +
+                '</html>'
+            );
+            printWindow.document.close();
+        }
+
+        function guardarRespuestaPractica() { alert('✓ Respuesta registrada para tu simulación.'); }
+
+        function copiarTextoCv() {
+            const sheet = document.getElementById('cvRenderArea');
+            if (!sheet) return;
+            navigator.clipboard.writeText(sheet.innerText).then(() => {
+                alert('✓ Contenido del currículum copiado al portapapeles.');
+            }).catch(() => {
+                alert('No se pudo copiar automáticamente.');
+            });
+        }
+
+        // ==========================================
+        // MÓDULO 3: SIMULADOR DE ENTREVISTAS
+        // ==========================================
+        async function generarSimulacionEntrevista() {
+            const role = document.getElementById('interviewRole').value;
+            const seniority = document.getElementById('interviewSeniority').value;
+            const token = localStorage.getItem('tj_token');
+
+            const btnTxt = document.getElementById('txtBtnInterview');
+            const loader = document.getElementById('loaderInterview');
+            btnTxt.style.display = 'none';
+            loader.style.display = 'inline';
+
+            try {
+                const res = await fetch('/api/ai/interview-prep', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ role, seniority })
+                });
+                const data = await res.json();
+                if (data.success && data.data && data.data.questions) {
+                    const container = document.getElementById('interviewQuestionsContainer');
+                    container.innerHTML = '';
+                    data.data.questions.forEach((q, index) => {
+                        const box = document.createElement('div');
+                        box.style.background = 'rgba(10, 14, 26, 0.8)';
+                        box.style.border = '1px solid var(--border)';
+                        box.style.borderRadius = '14px';
+                        box.style.padding = '1.25rem';
+
+                        box.innerHTML = '<span style="font-size: 0.75rem; font-weight: 700; color: var(--accent); background: rgba(56,189,248,0.15); padding: 0.2rem 0.6rem; border-radius: 6px;">Pregunta ' + (index + 1) + ' • ' + q.type + '</span>' +
+                            '<h4 style="font-size: 1rem; font-weight: 700; color: #fff; margin: 0.5rem 0 0.3rem;">' + q.question + '</h4>' +
+                            '<p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.75rem;"><strong style="color: #c084fc;">💡 Tip del Reclutador:</strong> ' + q.hint + '</p>' +
+                            '<textarea class="input-field" style="height: 70px; margin-bottom: 0.5rem; font-size: 0.85rem;" placeholder="Escribe aquí tu respuesta para practicar..."></textarea>' +
+                            '<button class="btn-auth-outline" style="font-size: 0.75rem; padding: 0.3rem 0.7rem;" onclick="guardarRespuestaPractica()">Guardar Respuesta</button>';
+                        container.appendChild(box);
+                    });
+                }
+            } catch (err) {
+                alert('Error al generar preguntas de simulación.');
+            } finally {
+                btnTxt.style.display = 'inline';
+                loader.style.display = 'none';
+            }
+        }
+
+        // ==========================================
+        // MÓDULO 4: HISTORIAL DE POSTULACIONES
+        // ==========================================
+        async function cargarHistorial() {
+            const token = localStorage.getItem('tj_token');
+            const container = document.getElementById('historyTableContainer');
+            try {
+                const res = await fetch('/api/cv/history', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+                if (data.success && data.history) {
+                    if (data.history.length === 0) {
+                        container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.88rem;">Aún no tienes adaptaciones registradas. Ve a la herramienta "Adaptar CV" para generar tu primera versión.</p>';
+                        return;
+                    }
+                    let html = '<div style="display: flex; flex-direction: column; gap: 0.75rem;">';
+                    data.history.forEach(item => {
+                        const date = new Date(item.creado_en).toLocaleDateString('es-GT', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                        html += '<div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 1rem;">' +
+                            '<div>' +
+                            '<strong style="color: #fff; font-size: 0.95rem;">' + item.puesto_objetivo + '</strong>' +
+                            '<div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">' + date + ' • Inferencia Gemini 3.6 Flash</div>' +
+                            '</div>' +
+                            '<div style="display: flex; align-items: center; gap: 1rem;">' +
+                            '<span style="font-size: 0.88rem; font-weight: 800; color: #10b981; background: rgba(16,185,129,0.15); padding: 0.25rem 0.65rem; border-radius: 6px;">' + item.score_match + '% Match</span>' +
+                            '</div>' +
+                            '</div>';
+                    });
+                    html += '</div>';
+                    container.innerHTML = html;
+                }
+            } catch (err) {
+                container.innerHTML = '<p style="color: #ef4444; font-size: 0.88rem;">Error al cargar historial desde PostgreSQL.</p>';
+            }
+        }
+
+        // ==========================================
+        // WIDGET FLOTANTE DE TICKET (FLYOUT MENU)
+        // ==========================================
+        function toggleSupportFlyout() {
+            const flyout = document.getElementById('supportFlyout');
+            if (flyout.style.display === 'flex') {
+                flyout.style.display = 'none';
+            } else {
+                flyout.style.display = 'flex';
+                const proSec = document.getElementById('flyoutProSection');
+                const freeGate = document.getElementById('flyoutFreeGate');
+                const unauthSec = document.getElementById('flyoutUnauthSection');
+                if (!currentUser) {
+                    if (proSec) proSec.style.display = 'none';
+                    if (freeGate) freeGate.style.display = 'none';
+                    if (unauthSec) unauthSec.style.display = 'block';
+                } else if (currentUser.plan === 'pro_unlimited') {
+                    if (proSec) proSec.style.display = 'block';
+                    if (freeGate) freeGate.style.display = 'none';
+                    if (unauthSec) unauthSec.style.display = 'none';
+                } else {
+                    if (proSec) proSec.style.display = 'none';
+                    if (freeGate) freeGate.style.display = 'block';
+                    if (unauthSec) unauthSec.style.display = 'none';
+                }
+            }
+        }
+
+        function cerrarFlyoutYLogin() {
+            toggleSupportFlyout();
+            abrirModal('login');
+        }
+
+        async function enviarTicketFlyout(e) {
+            e.preventDefault();
+            const subject = document.getElementById('flyoutSubject').value;
+            const message = document.getElementById('flyoutMsg').value;
+            const token = localStorage.getItem('tj_token');
+
+            const btn = document.getElementById('btnSendFlyout');
+            btn.disabled = true;
+            btn.innerText = '⏳ Enviando...';
+
+            try {
+                const res = await fetch('/api/support/ticket', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ subject, message })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('✓ Ticket ' + data.ticketId + ' recibido.\nTiempo estimado de respuesta: ' + data.estimatedResponse);
+                    document.getElementById('flyoutSubject').value = '';
+                    document.getElementById('flyoutMsg').value = '';
+                    toggleSupportFlyout();
+                } else {
+                    alert('Error: ' + (data.error || 'No se pudo enviar el ticket'));
+                }
+            } catch (err) {
+                alert('Error al comunicar con la mesa de ayuda.');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Enviar Ticket a Mesa VIP';
+            }
+        }
+
+        // ==========================================
+        // AUTENTICACIÓN Y MODALES
+        // ==========================================
+        function abrirModal(tab) {
+            cambiarTabModal(tab);
+            document.getElementById('authModal').style.display = 'flex';
+        }
+        function cerrarModal() { document.getElementById('authModal').style.display = 'none'; }
+
+        function cambiarTabModal(tab) {
+            const tabLog = document.getElementById('tabLogin');
+            const tabReg = document.getElementById('tabRegister');
+            const wrap = document.getElementById('nombreWrap');
+            const btn = document.getElementById('modalSubmitBtn');
+
+            if (tab === 'login') {
+                tabLog.classList.add('active');
+                tabReg.classList.remove('active');
+                wrap.style.display = 'none';
+                btn.innerText = 'Iniciar Sesión';
+                document.getElementById('modalFooterText').innerHTML = '¿No tienes cuenta? <a href="#" onclick="cambiarTabModal(\'register\'); return false;" style="color: var(--accent); font-weight: 700;">Regístrate gratis</a>';
+            } else {
+                tabReg.classList.add('active');
+                tabLog.classList.remove('active');
+                wrap.style.display = 'block';
+                btn.innerText = 'Registrar Cuenta';
+                document.getElementById('modalFooterText').innerHTML = '¿Ya tienes cuenta? <a href="#" onclick="cambiarTabModal(\'login\'); return false;" style="color: var(--accent); font-weight: 700;">Inicia sesión</a>';
+            }
+        }
+
+        async function iniciarDemoVIP() {
+            try {
+                const res = await fetch('/api/auth/demo-vip', { method: 'POST' });
+                const data = await res.json();
+                if (data.success) {
+                    localStorage.setItem('tj_token', data.token);
+                    currentUser = data.user;
+                    cerrarModal();
+                    renderAuthUser(currentUser);
+                    mostrarVista('app');
+                } else {
+                    alert(data.error || 'Error al iniciar sesión demo');
+                }
+            } catch (err) {
+                alert('Error al conectar con el servidor.');
+            }
+        }
+
+        async function enviarAuthForm(e) {
+            e.preventDefault();
+            const email = document.getElementById('authEmailInput').value;
+            const password = document.getElementById('authPassInput').value;
+            const isReg = document.getElementById('tabRegister').classList.contains('active');
+            const nombre = isReg ? document.getElementById('regNombreInput').value : '';
+
+            const url = isReg ? '/api/auth/register' : '/api/auth/login';
+            const payload = isReg ? { nombre, email, password } : { email, password };
+
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    localStorage.setItem('tj_token', data.token);
+                    currentUser = data.user;
+                    cerrarModal();
+                    renderAuthUser(currentUser);
+                    mostrarVista('app');
+                } else {
+                    alert(data.error || 'Fallo en autenticación');
+                }
+            } catch (err) {
+                alert('Error al comunicar con el servidor.');
+            }
+        }
+
+        function cerrarSesion() {
+            if (confirm('¿Deseas cerrar tu sesión en TrabajaYa?')) {
+                localStorage.removeItem('tj_token');
+                sessionStorage.removeItem('tj_preferred_view');
+                const dd = document.getElementById('userDropdownMenu');
+                if (dd) dd.style.display = 'none';
+                renderUnauth();
+            }
+        }
+
+        // ==========================================
+        // PACKS Y COMPRAS
+        // ==========================================
+        function abrirModalPacks() { document.getElementById('packsModal').style.display = 'flex'; }
+        function cerrarModalPacks() { document.getElementById('packsModal').style.display = 'none'; }
+
+        async function comprarCoinsApp(pack, precio) {
+            const token = localStorage.getItem('tj_token');
+            if (!token) {
+                abrirModal('login');
+                return;
+            }
+            try {
+                const res = await fetch('/api/billing/buy-coins', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pack })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert(data.message);
+                    currentUser.trabajacoins_saldo = data.newBalance;
+                    renderAuthUser(currentUser);
+                    cerrarModalPacks();
+                }
+            } catch (e) { alert('Error al procesar compra de monedas.'); }
+        }
+
+        async function activarProApp() {
+            const token = localStorage.getItem('tj_token');
+            if (!token) {
+                abrirModal('login');
+                return;
+            }
+            try {
+                const res = await fetch('/api/billing/upgrade-pro', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert(data.message);
+                    currentUser.plan = 'pro_unlimited';
+                    renderAuthUser(currentUser);
+                    cerrarModalPacks();
+                }
+            } catch (e) { alert('Error al activar Plan PRO.'); }
+        }
+
+        function gestionarCompraInicio(pack, precio) {
+            if (!currentUser) {
+                alert('¡Regístrate primero y recibe tus 2 TrabajaCoins de bienvenida gratis para comenzar!');
+                abrirModal('register');
+            } else {
+                comprarCoinsApp(pack, precio);
+            }
+        }
+
+        function gestionarProInicio() {
+            if (!currentUser) {
+                alert('¡Regístrate primero o inicia sesión para activar tu Plan PRO Ilimitado!');
+                abrirModal('register');
+            } else {
+                activarProApp();
+            }
+        }
+
+        function toggleFaq(el) { el.classList.toggle('open'); }
+
+        function enviarMensajeContacto(e) {
+            e.preventDefault();
+            alert('¡Gracias por comunicarte! El equipo del Seminario UMG responderá a tu mensaje.');
+            document.getElementById('cNombre').value = '';
+            document.getElementById('cEmail').value = '';
+            document.getElementById('cMensaje').value = '';
+        }
+
+        function abrirLegalModal(seccion) {
+            cambiarTabLegal(seccion);
+            document.getElementById('legalModal').style.display = 'flex';
+        }
+        function cerrarLegalModal() { document.getElementById('legalModal').style.display = 'none'; }
+
+        function cambiarTabLegal(tab) {
+            const tabTerminos = document.getElementById('tabLegalTerminos');
+            const tabPrivacidad = document.getElementById('tabLegalPrivacidad');
+            const contentTerminos = document.getElementById('legalContentTerminos');
+            const contentPrivacidad = document.getElementById('legalContentPrivacidad');
+
+            if (tab === 'terminos') {
+                tabTerminos.classList.add('active');
+                tabPrivacidad.classList.remove('active');
+                contentTerminos.style.display = 'block';
+                contentPrivacidad.style.display = 'none';
+            } else {
+                tabPrivacidad.classList.add('active');
+                tabTerminos.classList.remove('active');
+                contentPrivacidad.style.display = 'block';
+                contentTerminos.style.display = 'none';
+            }
+        }
+
+        window.addEventListener('click', (e) => {
+            const legal = document.getElementById('legalModal');
+            const auth = document.getElementById('authModal');
+            const packs = document.getElementById('packsModal');
+            const flyout = document.getElementById('supportFlyout');
+            const fab = document.getElementById('supportFabBtn');
+            const userDropdown = document.getElementById('userDropdownMenu');
+
+            if (e.target === legal) cerrarLegalModal();
+            if (e.target === auth) cerrarModal();
+            if (e.target === packs) cerrarModalPacks();
+
+            // Cerrar menú dropdown de usuario al hacer clic fuera
+            if (userDropdown && userDropdown.style.display === 'block') {
+                const userPill = document.querySelector('.user-pill');
+                if (!userDropdown.contains(e.target) && (!userPill || !userPill.contains(e.target))) {
+                    userDropdown.style.display = 'none';
+                }
+            }
+
+            // Cerrar el flyout de tickets si se hace clic afuera de él y afuera del botón flotante
+            if (flyout && flyout.style.display === 'flex') {
+                if (!flyout.contains(e.target) && !fab.contains(e.target)) {
+                    flyout.style.display = 'none';
+                }
+            }
+        });
+
+        // Iniciar verificación de sesión al cargar página
+        checkSession();
+    </script>
+</body>
+</html>
