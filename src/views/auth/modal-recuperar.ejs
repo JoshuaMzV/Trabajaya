@@ -1,0 +1,40 @@
+<%
+  // disenos/landing/TY-Recuperar · Tras enviar muestra "Revisa tu correo". Parámetro: auth
+  const abierto = auth.abrir === 'recuperar';
+  const enviado = abierto && auth.enviado;
+  const e = abierto ? auth.errores : {};
+  const v = abierto ? auth.valores : {};
+%>
+<dialog class="modal auth-modal modal--sm" id="modal-recuperar" aria-labelledby="recuperar-t"<% if (abierto) { %> data-modal-autoopen data-modal-return="/"<% } %>>
+  <div class="modal__content">
+    <div class="modal__header auth-modal__bar">
+      <a class="auth-back" href="/entrar" data-modal-open="modal-entrar"><%- icon('chevron-left', { size: 18, strokeWidth: 2.2 }) %>Volver a Entrar</a>
+      <a class="btn-icon" href="/" data-modal-close aria-label="Cerrar"><%- icon('x', { size: 18, strokeWidth: 2.4 }) %></a>
+    </div>
+
+    <% if (!enviado) { %>
+      <form class="modal__content" method="post" action="/auth/recuperar" novalidate>
+        <span class="auth-icon"><%- icon('lock', { size: 26, strokeWidth: 1.8 }) %></span>
+        <div class="modal__heading auth-modal__heading">
+          <h2 class="modal__title auth-modal__title-sm" id="recuperar-t">¿Olvidaste tu contraseña?</h2>
+          <span class="text-muted">Escribe tu correo y te enviaremos un enlace para crear una nueva.</span>
+        </div>
+        <%- include('../partials/form-field', { id: 'recuperar-correo', name: 'correo', label: 'Correo', type: 'email', value: v.correo, error: e.correo, autocomplete: 'email', required: true }) %>
+        <button type="submit" class="btn btn--ink btn--block auth-modal__submit">Enviar enlace</button>
+      </form>
+    <% } else { %>
+      <div class="modal__content auth-sent" role="status">
+        <span class="auth-icon auth-icon--success"><%- icon('check', { size: 26, strokeWidth: 2.2 }) %></span>
+        <div class="modal__heading auth-modal__heading">
+          <h2 class="modal__title auth-modal__title-sm" id="recuperar-t">Revisa tu correo</h2>
+          <span class="text-muted">Si <strong><%= v.correo %></strong> tiene una cuenta, recibirás un enlace en unos minutos. Revisa también tu carpeta de spam.</span>
+        </div>
+        <a class="btn btn--ink btn--block auth-modal__submit" href="/entrar" data-modal-open="modal-entrar">Volver a Entrar</a>
+        <form method="post" action="/auth/recuperar" class="auth-sent__resend">
+          <input type="hidden" name="correo" value="<%= v.correo %>">
+          <button type="submit" class="btn btn--ghost auth-link-btn">Reenviar enlace</button>
+        </form>
+      </div>
+    <% } %>
+  </div>
+</dialog>

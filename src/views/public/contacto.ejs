@@ -1,0 +1,42 @@
+<%# disenos/landing/TY-Contacto.dc.html · formulario POST /contacto %>
+<section class="contact container">
+  <div class="contact__info">
+    <h1 class="display-1">Hablemos.</h1>
+    <p class="lead-sm">Cuéntanos qué necesitas y te respondemos por correo.</p>
+    <ul class="contact__cards" role="list">
+      <li class="contact-card">
+        <span class="contact-card__icon"><%- icon('mail') %></span>
+        <div class="contact-card__body"><span class="contact-card__title">Correo</span><a class="contact-card__text" href="mailto:<%= correoContacto %>"><%= correoContacto %></a></div>
+      </li>
+      <li class="contact-card contact-card--dark">
+        <span class="contact-card__icon"><%- icon('clock') %></span>
+        <div class="contact-card__body"><span class="contact-card__title">Soporte VIP para PRO</span><span class="contact-card__text">Respuesta garantizada en menos de 2 horas desde tu cuenta.</span></div>
+      </li>
+      <li class="contact-card">
+        <span class="contact-card__icon" aria-hidden="true">?</span>
+        <div class="contact-card__body"><span class="contact-card__title">¿Duda rápida?</span><a href="/faq">Revisa las preguntas frecuentes →</a></div>
+      </li>
+    </ul>
+  </div>
+
+  <form class="contact-form" method="post" action="/contacto" novalidate aria-label="Formulario de contacto">
+    <% if (enviado) { %>
+      <div class="alert alert--success" role="status"><%- icon('circle-check') %><span>Recibimos tu mensaje. Te responderemos por correo.</span></div>
+    <% } %>
+    <fieldset class="choice-group">
+      <legend>Escribo como</legend>
+      <div class="choice-group__options">
+        <% tipos.forEach((t) => { %>
+          <label class="choice-chip"><input type="radio" name="tipo" value="<%= t.value %>"<% if (t.value === valores.tipo) { %> checked<% } %>><%= t.label %></label>
+        <% }) %>
+      </div>
+    </fieldset>
+    <div class="contact-form__row">
+      <%- include('../partials/form-field', { id: 'contacto-nombre', name: 'nombre', label: 'Nombre', placeholder: 'Tu nombre', value: valores.nombre, error: errores.nombre, autocomplete: 'name', required: true }) %>
+      <%- include('../partials/form-field', { id: 'contacto-correo', name: 'correo', label: 'Correo', type: 'email', placeholder: 'tu@correo.com', value: valores.correo, error: errores.correo, autocomplete: 'email', required: true }) %>
+    </div>
+    <%- include('../partials/form-field', { id: 'contacto-asunto', name: 'asunto', label: 'Asunto', type: 'select', value: valores.asunto, opciones: asuntos }) %>
+    <%- include('../partials/form-field', { id: 'contacto-mensaje', name: 'mensaje', label: 'Mensaje', type: 'textarea', placeholder: 'Cuéntanos con detalle', value: valores.mensaje, error: errores.mensaje, required: true }) %>
+    <button type="submit" class="btn btn--accent btn--block contact-form__submit">Enviar mensaje</button>
+  </form>
+</section>

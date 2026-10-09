@@ -1,0 +1,102 @@
+<%# disenos/app/WA-Metricas.dc.html · el filtro de periodo afecta a todo lo que está debajo %>
+<%
+  const fmt = (v) => Number(v).toLocaleString('en-US');
+  const maxUso = Math.max(...m.usoIA.map((x) => x.usos));
+%>
+<div class="page">
+  <div class="page__header">
+    <h1 class="title-app">Métricas globales y facturación</h1>
+    <div class="toolbar__filters">
+      <form class="inline-field" method="get" action="/admin/metricas" data-autosubmit>
+        <label class="field__label" for="met-periodo">Periodo</label>
+        <select class="select input--compact" id="met-periodo" name="periodo">
+          <% periodos.forEach((p) => { %><option value="<%= p.value %>"<% if (p.value === periodo) { %> selected<% } %>><%= p.label %></option><% }) %>
+        </select>
+        <noscript><button type="submit" class="btn btn--soft btn--sm">Aplicar</button></noscript>
+      </form>
+      <a class="btn btn--soft btn--sm" href="/admin/metricas.csv?periodo=<%= periodo %>" download><%- icon('download', { size: 18 }) %>Exportar CSV</a>
+    </div>
+  </div>
+
+  <ul class="stat-grid stat-grid--180" role="list" aria-label="Indicadores del periodo">
+    <% m.kpis.forEach((k) => {
+      const sube = k.delta >= 0;
+      const bueno = (sube && k.bueno === 'up') || (!sube && k.bueno === 'down');
+    %>
+      <li class="stat-tile">
+        <span class="stat-tile__label"><%= k.label %></span>
+        <span class="stat-tile__value"><%= k.moneda ? 'US$ ' : '' %><%= fmt(k.valor) %></span>
+        <span class="stat-tile__delta <%= bueno ? 'stat-tile__delta--up' : 'stat-tile__delta--down' %>">
+          <%- icon(sube ? 'trending-up' : 'trending-down', { size: 14 }) %><%= sube ? '+' : '−' %><%= Math.abs(k.delta).toFixed(1) %> % vs periodo anterior
+        </span>
+      </li>
+    <% }) %>
+  </ul>
+
+  <div class="chart-row">
+    <section class="card panel chart-card">
+      <%- include('../partials/chart-columnas', { id: 'ch-registros', titulo: 'Registros por día (candidatos vs empresas)', fechas: m.registros.fechas, series: m.registros.series }) %>
+    </section>
+    <section class="card panel chart-card">
+      <%- include('../partials/chart-lineas', { id: 'ch-ingresos', titulo: 'Ingresos (packs vs PRO)', fechas: m.ingresos.fechas, series: m.ingresos.series, prefijo: 'US$ ' }) %>
+    </section>
+    <section class="card panel chart-card chart-card--narrow" aria-labelledby="uso-t">
+      <h2 class="panel__title" id="uso-t">Uso de IA por módulo</h2>
+      <ul class="usage" role="list">
+        <% m.usoIA.forEach((u) => { %>
+          <li class="usage__row">
+            <div class="meter-row__head"><span><%= u.modulo %></span><strong><%= fmt(u.usos) %> · US$ <%= fmt(u.costo) %></strong></div>
+            <progress class="progress progress--chart" max="<%= maxUso %>" value="<%= u.usos %>" aria-label="<%= u.modulo %>: <%= fmt(u.usos) %> usos, US$ <%= fmt(u.costo) %>"><%= u.usos %></progress>
+          </li>
+        <% }) %>
+      </ul>
+      <span class="text-muted text-small">Usos en el periodo · costo estimado del proveedor de IA.</span>
+    </section>
+  </div>
+
+  <section class="card panel" id="facturacion" aria-labelledby="fact-t">
+    <div class="toolbar">
+      <h2 class="panel__title" id="fact-t">Facturación · transacciones de candidatos</h2>
+      <div class="toolbar__filters">
+        <label class="visually-hidden" for="fact-q">Buscar transacción</label>
+        <input class="input input--compact toolbar__search" id="fact-q" type="search" placeholder="Usuario o #ID" data-filter-for="tabla-fact" data-filter-key="q">
+        <label class="visually-hidden" for="fact-tipo">Tipo</label>
+        <select class="select input--compact" id="fact-tipo" data-filter-for="tabla-fact" data-filter-key="tipo">
+          <option value="">Tipo: todos</option><option value="pack">Packs</option><option value="pro">Plan PRO</option>
+        </select>
+        <label class="visually-hidden" for="fact-estado">Estado</label>
+        <select class="select input--compact" id="fact-estado" data-filter-for="tabla-fact" data-filter-key="estado">
+          <option value="">Estado: todos</option>
+          <% Object.entries(estados).forEach(([k, e]) => { %><option value="<%= k %>"><%= e.label %></option><% }) %>
+        </select>
+      </div>
+    </div>
+    <div class="table-card table-card--flush">
+      <table class="data-table data-table--wide data-table--stack">
+        <thead><tr><th scope="col">ID</th><th scope="col">Fecha</th><th scope="col">Usuario</th><th scope="col">Concepto</th><th scope="col">Importe</th><th scope="col">Estado</th><th scope="col"><span class="visually-hidden">Acciones</span></th></tr></thead>
+        <tbody id="tabla-fact" data-filter-list>
+          <% transacciones.forEach((t) => { %>
+            <tr data-filter-item data-tipo="<%= t.tipo %>" data-estado="<%= t.estado %>">
+              <td class="text-muted" data-label="ID">#<%= t.id %></td>
+              <td class="text-muted" data-label="Fecha"><%= t.fecha %></td>
+              <td data-label="Usuario"><a class="link-strong" href="/admin/cuentas?cuenta=<%= t.cuentaId %>"><%= t.usuario %></a></td>
+              <td data-label="Concepto"><%= t.concepto %></td>
+              <td class="num" data-label="Importe"><%= t.importe %></td>
+              <td data-label="Estado"><%- include('../partials/badge', estados[t.estado]) %></td>
+              <td data-label="">
+                <% if (t.estado === 'pagado') { %>
+                  <form method="post" action="/admin/transacciones/<%= t.id %>/reembolsar">
+                    <button type="submit" class="btn btn--soft btn--sm" data-confirm data-confirm-title="¿Reembolsar <%= t.importe %> a <%= t.usuario %>?" data-confirm-text="<%= t.concepto %> · #<%= t.id %>. El reembolso queda en la auditoría de la cuenta." data-confirm-label="Reembolsar">Reembolsar</button>
+                  </form>
+                <% } else { %>
+                  <a class="btn btn--soft btn--sm" href="/admin/cuentas?cuenta=<%= t.cuentaId %>">Ver</a>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <div class="empty-state" data-filter-empty="tabla-fact" hidden><h3 class="empty-state__title">No hay transacciones con estos filtros</h3></div>
+  </section>
+</div>

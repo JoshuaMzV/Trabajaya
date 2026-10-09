@@ -1,0 +1,59 @@
+<%
+  // Contenido del drawer de vacante (WC-Muro). También se sirve suelto en /candidato/vacantes/:id/detalle.
+  // Parámetros: vacante · estado (null | { tipo, label, variante }) · tieneExpediente
+  const v = vacante;
+  const iniciales = v.empresa.split(/\s+/).slice(0, 2).map((p) => p[0]).join('').toUpperCase();
+%>
+<div class="drawer__header">
+  <div class="media">
+    <span class="avatar avatar--lg avatar--square" aria-hidden="true"><%= iniciales %><% if (v.logoUrl) { %><img src="<%= v.logoUrl %>" alt="" data-avatar-img><% } %></span>
+    <div class="media__body">
+      <h2 class="drawer__title" id="drawer-vacante-t" data-drawer-focus><%= v.puesto %></h2>
+      <span class="text-muted text-small"><%= v.empresa %> · <%= v.ciudad %></span>
+    </div>
+  </div>
+  <a class="btn-icon" href="/candidato/muro" data-drawer-close aria-label="Cerrar detalle"><%- icon('x', { size: 18 }) %></a>
+</div>
+
+<div class="chip-group">
+  <span class="tag"><%= v.modalidad %></span>
+  <span class="tag"><%= v.jornada %></span>
+  <span class="tag"><%= v.salario %></span>
+  <% if (tieneExpediente) { %><span class="tag tag--match">Match <%= v.match %>%</span><% } %>
+</div>
+
+<div class="drawer__actions">
+  <% if (estado && estado.tipo === 'postulado') { %>
+    <div class="status-box">
+      <span>Ya te postulaste a esta vacante</span>
+      <%- include('../../partials/badge', { label: estado.label, variante: estado.variante }) %>
+    </div>
+    <a class="btn btn--soft btn--block" href="/candidato/postulaciones">Ver en Mis Postulaciones</a>
+  <% } else if (!tieneExpediente) { %>
+    <a class="btn btn--ink btn--block" href="/candidato/expediente">Sube tu CV para postularte</a>
+  <% } else { %>
+    <a class="btn btn--accent btn--block" href="/candidato/entrevista?modo=postulacion&amp;vacante=<%= v.id %>">Postularme · inicia entrevista IA</a>
+  <% } %>
+  <div class="grid-2">
+    <a class="btn btn--soft btn--sm" href="/candidato/adaptador?vacante=<%= v.id %>">Adaptar mi CV</a>
+    <a class="btn btn--soft btn--sm" href="/candidato/entrevista?modo=practica&amp;vacante=<%= v.id %>">Practicar entrevista</a>
+  </div>
+</div>
+
+<section class="drawer__section">
+  <h3>Descripción</h3>
+  <% v.descripcion.forEach((p) => { %><p class="text-muted"><%= p %></p><% }) %>
+</section>
+<section class="drawer__section">
+  <h3>Requisitos</h3>
+  <ul class="bullets"><% v.requisitos.forEach((r) => { %><li><%= r %></li><% }) %></ul>
+</section>
+<section class="drawer__section">
+  <h3>Sobre la empresa</h3>
+  <p class="text-muted"><%= v.sobreEmpresa %></p>
+</section>
+<section class="drawer__section">
+  <h3>La entrevista IA evaluará</h3>
+  <div class="chip-group"><% v.competencias.forEach((c) => { %><span class="tag tag--outline"><%= c %></span><% }) %></div>
+  <span class="text-muted text-small"><%= v.preguntas %> preguntas · aprox. <%= v.duracion %> min · voz o texto</span>
+</section>

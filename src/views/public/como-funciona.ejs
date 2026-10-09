@@ -1,0 +1,101 @@
+<%# disenos/landing/TY-Como-Funciona.dc.html %>
+<section class="hero hero--page container">
+  <h1 class="display-1 hero__title--narrow">Así funciona TrabajaYa</h1>
+  <p class="lead-sm">Dos caminos que se encuentran en la entrevista IA.</p>
+  <nav class="segmented segmented--light anchor-nav" aria-label="Ir a" data-anchor-nav>
+    <a href="#candidatos" class="is-active">Si buscas empleo</a>
+    <a href="#empresas">Si contratas</a>
+  </nav>
+</section>
+
+<section class="flow container" id="candidatos" aria-labelledby="candidatos-t">
+  <h2 class="eyebrow" id="candidatos-t">Si buscas empleo</h2>
+
+  <article class="feature">
+    <div class="feature__text">
+      <span class="feature__num" aria-hidden="true">01</span>
+      <h3 class="feature__title">Sube tu CV y crea tu Expediente Maestro</h3>
+      <p>Sube tu CV en PDF. Lo leemos con OCR, extraemos tu experiencia, estudios y habilidades, y puedes corregir lo que haga falta. Lo reemplazas o eliminas cuando quieras.</p>
+    </div>
+    <div class="feature__visual" aria-hidden="true">
+      <div class="upload-row">
+        <span class="upload-row__icon"><%- icon('file', { size: 22, strokeWidth: 1.8 }) %></span>
+        <div class="upload-row__body">
+          <span class="upload-row__name">mi-cv-2026.pdf · Leyendo…</span>
+          <progress class="progress progress--accent progress--on-soft" max="100" value="72"></progress>
+        </div>
+      </div>
+      <div class="chip-group"><span class="tag tag--lg tag--white">Experiencia · 3</span><span class="tag tag--lg tag--white">Estudios · 2</span><span class="tag tag--lg tag--white">Habilidades · 14</span></div>
+    </div>
+  </article>
+
+  <article class="feature feature--reverse">
+    <div class="feature__visual feature__visual--dark" aria-hidden="true">
+      <%- include('../partials/score-ring', { valor: 82, tamano: 'lg' }) %>
+      <div class="gaps">
+        <span class="gaps__label">Fortalezas</span><span class="gaps__value">SQL · Power BI</span>
+        <span class="gaps__label">Brechas</span><span class="gaps__value">Python · Inglés B2</span>
+      </div>
+    </div>
+    <div class="feature__text">
+      <span class="feature__num" aria-hidden="true">02</span>
+      <h3 class="feature__title">Contrasta tu perfil con una vacante</h3>
+      <p>Pega o elige una vacante y te mostramos tu compatibilidad ATS, tus puntos fuertes y las brechas, con recomendaciones concretas para cubrirlas.</p>
+    </div>
+  </article>
+
+  <article class="feature">
+    <div class="feature__text">
+      <span class="feature__num" aria-hidden="true">03</span>
+      <h3 class="feature__title">Genera un CV adaptado</h3>
+      <p>Elige el estilo Estándar ATS o Formal Ejecutivo, revísalo en una hoja A4 interactiva y descárgalo o imprímelo en PDF.</p>
+    </div>
+    <div class="feature__visual feature__visual--doc" aria-hidden="true">
+      <div class="doc-sheet">
+        <span class="line line--title line--70"></span><span class="line line--sub line--50"></span>
+        <span class="line line--100"></span><span class="line line--90"></span><span class="line line--95"></span><span class="line line--80"></span>
+      </div>
+      <div class="doc-styles">
+        <span class="tag tag--ink">Estándar ATS</span>
+        <span class="tag tag--white">Formal Ejecutivo</span>
+        <span class="tag tag--accent">Descargar PDF</span>
+      </div>
+    </div>
+  </article>
+
+  <article class="feature feature--reverse">
+    <div class="feature__visual feature__visual--chat" aria-hidden="true">
+      <span class="bubble bubble--white">Cuéntame de un proyecto donde cambiaste de herramienta.</span>
+      <span class="bubble--me">Nota de voz · 2:05</span>
+      <span class="bubble bubble--accent"><strong>Repregunta:</strong> ¿Qué obstáculo encontraste?</span>
+    </div>
+    <div class="feature__text">
+      <span class="feature__num" aria-hidden="true">04</span>
+      <h3 class="feature__title">Ensaya la entrevista y recibe feedback</h3>
+      <p>Responde por voz o por texto. La IA transcribe, repregunta según lo que dijiste y al final te da un score, tus fortalezas y qué mejorar. Todo queda en tu historial.</p>
+    </div>
+  </article>
+</section>
+
+<section class="flow flow--last container" id="empresas" aria-labelledby="empresas-t">
+  <h2 class="eyebrow" id="empresas-t">Si contratas</h2>
+  <ol class="grid-auto grid-auto--270 dark-steps" role="list">
+    <% pasosEmpresa.forEach((r) => { %>
+      <li class="card card--dark">
+        <span class="dark-steps__num" aria-hidden="true"><%= r.n %></span>
+        <h3 class="dark-steps__title"><%= r.t %></h3>
+        <p class="card__text"><%= r.d %></p>
+      </li>
+    <% }) %>
+  </ol>
+</section>
+
+<section class="band-wrap" aria-labelledby="cta-t">
+  <div class="band band--accent band--row">
+    <h2 class="band__title-38" id="cta-t">¿Listo para empezar?</h2>
+    <div class="band__actions">
+      <a class="btn btn--light" href="/registro?paso=2&amp;rol=candidato" data-modal-open="modal-registro" data-registro-rol="candidato">Busco empleo</a>
+      <a class="btn btn--ink" href="/registro?paso=2&amp;rol=empresa" data-modal-open="modal-registro" data-registro-rol="empresa">Contrato talento</a>
+    </div>
+  </div>
+</section>

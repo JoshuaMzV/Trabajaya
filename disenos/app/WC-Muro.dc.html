@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Candidato · Muro de empleos</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#18181B}a:hover{color:#52525B}
+</style>
+</helmet>
+<div style="min-height: 1000px; background: #F4F4F5; color: #18181B; font-family: Figtree, system-ui, sans-serif; font-size: 15px; line-height: 1.5; display: flex; flex-wrap: wrap; align-items: stretch">
+<div style="flex: 1 1 240px; max-width: 100%; background: #FFFFFF; border-right: 1px solid #D4D4D8"><dc-import name="WFSide" role="cand" active="muro" hint-size="100%,900px"></dc-import></div>
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-wrap: wrap; align-items: stretch">
+<main style="flex: 999 1 460px; min-width: 0; padding: 28px 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px">
+<h1 style="margin: 0; font-size: 26px; font-weight: 800">Muro de empleos</h1>
+<div style="display: flex; gap: 8px; flex-wrap: wrap"><a href="WC-Postulaciones.dc.html" style="font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 999px; background: #E4E4E7; text-decoration: none">[N] postulaciones activas</a><span style="font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 999px; background: #E4E4E7">[N] monedas</span></div>
+</div>
+
+<div style="background: #FFFFFF; border: 2px dashed #A1A1AA; border-radius: 12px; padding: 14px 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between">
+<span><strong>Sube tu Expediente Maestro</strong> para ver tu match y postularte. <span style="color: #52525B">(Se oculta si ya existe.)</span></span>
+<a href="WC-Expediente.dc.html" style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #18181B; display: flex; align-items: center; text-decoration: none; font-weight: 700">Subir CV</a>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end">
+<label style="flex: 3 1 240px; display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 14px">Buscar<input type="search" placeholder="Puesto, empresa o habilidad" style="min-height: 44px; padding: 0 12px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400; background: #FFFFFF"></label>
+<sc-for list="{{filters}}" as="f" hint-placeholder-count="3"><label style="flex: 1 1 130px; display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 14px">{{f}}<select style="min-height: 44px; padding: 0 10px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400; background: #FFFFFF"><option>Todas</option></select></label></sc-for>
+<label style="flex: 1 1 150px; display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 14px">Ordenar<select style="min-height: 44px; padding: 0 10px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400; background: #FFFFFF"><option>Mayor match</option><option>Más recientes</option></select></label>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 10px">
+<sc-for list="{{cards}}" as="c" hint-placeholder-count="6">
+<button type="button" onClick="{{c.pick}}" aria-pressed="{{c.on}}" style="{{c.s}}">
+<span style="width: 48px; height: 48px; border-radius: 8px; background: #E4E4E7; flex-shrink: 0; display: block"></span>
+<span style="flex: 1 1 200px; display: flex; flex-direction: column; gap: 4px; min-width: 0"><span style="font-weight: 800; font-size: 16px">[Puesto de la vacante {{c.n}}]</span><span style="font-size: 14px; color: #52525B">[Empresa] · [Ciudad] · [Modalidad] · hace [N] días</span></span>
+<span style="font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid #18181B; white-space: nowrap">Match [%]</span>
+<span style="{{c.badge}}">{{c.st}}</span>
+</button>
+</sc-for>
+</div>
+<span style="font-size: 14px; color: #52525B">Scroll infinito / “Cargar más”. Vacío: “Sin vacantes con estos filtros” + Limpiar filtros.</span>
+</main>
+
+<sc-if value="{{open}}" hint-placeholder-val="{{true}}">
+<aside role="dialog" aria-labelledby="dt" style="flex: 1 1 420px; max-width: 100%; background: #FFFFFF; border-left: 1px solid #D4D4D8; box-shadow: -10px 0 30px rgba(0,0,0,0.08); padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; justify-content: space-between; gap: 10px; align-items: flex-start">
+<div style="display: flex; gap: 12px; align-items: center"><span style="width: 52px; height: 52px; border-radius: 10px; background: #E4E4E7; display: block; flex-shrink: 0"></span><div style="display: flex; flex-direction: column"><h2 id="dt" style="margin: 0; font-size: 20px; font-weight: 800">[Puesto de la vacante {{sel}}]</h2><span style="font-size: 14px; color: #52525B">[Empresa] · [Ciudad]</span></div></div>
+<button type="button" onClick="{{close}}" aria-label="Cerrar detalle" style="width: 40px; height: 40px; border-radius: 50%; border: 0; background: #F4F4F5; font: inherit; font-weight: 800; cursor: pointer; flex-shrink: 0">×</button>
+</div>
+<div style="display: flex; gap: 6px; flex-wrap: wrap"><span style="font-size: 13px; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: #E4E4E7">[Modalidad]</span><span style="font-size: 13px; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: #E4E4E7">[Jornada]</span><span style="font-size: 13px; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: #E4E4E7">[Salario]</span><span style="font-size: 13px; font-weight: 700; padding: 3px 10px; border-radius: 999px; border: 1px solid #18181B">Match [%]</span></div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<a href="WC-Sala.dc.html" style="min-height: 48px; border-radius: 8px; background: #18181B; color: #FFFFFF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 800">Postularme · inicia entrevista IA</a>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<a href="WC-Adaptador.dc.html" style="min-height: 44px; border-radius: 8px; border: 1px solid #A1A1AA; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 700; font-size: 14px; text-align: center">Adaptar mi CV</a>
+<a href="WC-Sala.dc.html" style="min-height: 44px; border-radius: 8px; border: 1px solid #A1A1AA; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 700; font-size: 14px; text-align: center">Practicar entrevista</a>
+</div>
+<span style="font-size: 13px; color: #52525B">Si ya te postulaste, en lugar del botón se ve el estado.</span>
+</div>
+<sc-for list="{{secs}}" as="s" hint-placeholder-count="3">
+<section style="display: flex; flex-direction: column; gap: 6px; padding-top: 12px; border-top: 1px solid #E4E4E7"><h3 style="margin: 0; font-size: 15px; font-weight: 800">{{s.t}}</h3><sc-for list="{{s.l}}" as="w" hint-placeholder-count="3"><span style="{{w}}"></span></sc-for></section>
+</sc-for>
+<section style="display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 1px solid #E4E4E7"><h3 style="margin: 0; font-size: 15px; font-weight: 800">La entrevista IA evaluará</h3><div style="display: flex; gap: 6px; flex-wrap: wrap"><span style="font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 999px; border: 1px solid #A1A1AA">[Competencia]</span><span style="font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 999px; border: 1px solid #A1A1AA">[Competencia]</span><span style="font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 999px; border: 1px solid #A1A1AA">[Competencia]</span></div><span style="font-size: 13px; color: #52525B">[N] preguntas · aprox. [N] min · voz o texto</span></section>
+</aside>
+</sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { sel: 1 }; }
+renderVals() {
+const sel = this.state.sel;
+const b = 'width: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 14px; border-radius: 12px; background: #FFFFFF; font: inherit; color: #18181B; text-align: left; cursor: pointer; ';
+const bd = 'font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; ';
+const st = ['', 'Postulado', '', '', 'Práctica hecha', ''];
+const l = (w) => 'height: 8px; border-radius: 4px; background: #E4E4E7; display: block; width: ' + w + '%';
+return {
+open: sel > 0, sel,
+close: () => this.setState({ sel: 0 }),
+filters: ['Ubicación', 'Modalidad', 'Área'],
+cards: [1, 2, 3, 4, 5, 6].map((n, i) => ({
+n, on: n === sel, st: st[i],
+badge: st[i] ? bd + 'background: #E4E4E7' : 'display: none',
+s: b + (n === sel ? 'border: 2px solid #18181B' : 'border: 1px solid #D4D4D8'),
+pick: () => this.setState({ sel: n })
+})),
+secs: [
+{ t: 'Descripción', l: [l(100), l(92), l(70)] },
+{ t: 'Requisitos', l: [l(80), l(66), l(74)] },
+{ t: 'Sobre la empresa', l: [l(90), l(55)] }
+]
+};
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<%
+  // Aviso renderizado por el servidor (p. ej. ?enviada=1 en Mis Postulaciones).
+  // Parámetros: titulo (opcional) · mensaje · variante = info | success | error
+  const variante = locals.variante || 'info';
+  const iconos = { info: 'info', success: 'circle-check', error: 'circle-alert' };
+%>
+<div class="toast toast--<%= variante %>" role="status" data-toast>
+  <span class="toast__body">
+    <%- icon(iconos[variante] || 'info') %>
+    <span><% if (locals.titulo) { %><strong><%= titulo %></strong> <% } %><%= mensaje %></span>
+  </span>
+  <button type="button" class="btn-icon btn-icon--on-dark" data-toast-close aria-label="Cerrar aviso"><%- icon('x', { size: 16 }) %></button>
+</div>

@@ -1,0 +1,210 @@
+<%# disenos/app/WC-Expediente.dc.html · estados: sin-archivo | leyendo | error | cargado (los decide el backend) %>
+<%
+  const e = expediente;
+  const subirForm = (id, etiqueta, clase) => `
+    <form class="upload-inline" method="post" action="/candidato/expediente/cv" enctype="multipart/form-data" data-upload-form>
+      <label class="btn ${clase}" for="${id}">${etiqueta}</label>
+      <input class="visually-hidden" id="${id}" type="file" name="cv" accept="application/pdf" required data-upload-input>
+      <noscript><button type="submit" class="btn btn--soft btn--sm">Subir</button></noscript>
+    </form>`;
+%>
+<div class="page">
+  <div class="page__header">
+    <div class="page__title">
+      <h1 class="title-app">Expediente Maestro</h1>
+      <p class="text-muted">Tu CV una sola vez, base de todas tus postulaciones.</p>
+    </div>
+  </div>
+
+  <% if (estado === 'sin-archivo') { %>
+    <form class="dropzone-form" method="post" action="/candidato/expediente/cv" enctype="multipart/form-data" data-upload-form data-max-mb="<%= maxMb %>">
+      <label class="dropzone" for="cv-archivo" data-dropzone>
+        <span class="dropzone__icon"><%- icon('file-up', { size: 28, strokeWidth: 1.8 }) %></span>
+        <span class="dropzone__title">Arrastra tu CV aquí</span>
+        <span class="text-muted">PDF · máx. <%= maxMb %> MB · Leemos experiencia, estudios, habilidades e idiomas</span>
+        <span class="btn btn--accent btn--sm" aria-hidden="true">Seleccionar archivo</span>
+        <input class="visually-hidden" id="cv-archivo" type="file" name="cv" accept="application/pdf" required data-upload-input aria-describedby="cv-error">
+      </label>
+      <span class="field__error" id="cv-error" data-upload-error hidden></span>
+      <noscript><button type="submit" class="btn btn--ink">Subir CV</button></noscript>
+    </form>
+
+  <% } else if (estado === 'leyendo' || estado === 'error') { %>
+    <section class="card reading" aria-live="polite"<% if (estado === 'leyendo' && consultarEstado) { %> data-expediente-poll="/candidato/expediente/estado"<% } %>>
+      <div class="reading__file">
+        <span class="file-thumb"><%- icon('file-text', { size: 22, strokeWidth: 1.8 }) %></span>
+        <div class="reading__body">
+          <% if (estado === 'leyendo') { %>
+            <span class="reading__name"><%= e.archivo.nombre %> · leyendo con OCR…</span>
+            <progress class="progress" max="100" value="<%= e.archivo.progreso %>">Leyendo <%= e.archivo.progreso %>%</progress>
+          <% } else { %>
+            <span class="reading__name"><%= e.archivo.nombre %></span>
+            <span class="field__error">No pudimos leer el archivo.</span>
+          <% } %>
+        </div>
+        <% if (estado === 'leyendo') { %>
+          <form method="post" action="/candidato/expediente/cancelar"><button type="submit" class="btn btn--soft btn--sm">Cancelar</button></form>
+        <% } else { %>
+          <%- subirForm('cv-reintentar', 'Reintentar', 'btn--ink btn--sm') %>
+        <% } %>
+      </div>
+      <% if (estado === 'leyendo') { %>
+        <div class="reading__grid" aria-hidden="true">
+          <% for (let i = 0; i < 4; i++) { %>
+            <div class="reading__sk"><span class="skeleton skeleton--title skeleton--50"></span><span class="skeleton skeleton--90"></span><span class="skeleton skeleton--70"></span></div>
+          <% } %>
+        </div>
+      <% } else { %>
+        <p class="text-muted">Asegúrate de que sea un PDF con texto seleccionable y de menos de <%= maxMb %> MB.</p>
+      <% } %>
+    </section>
+
+  <% } else { %>
+    <section class="card filebar" aria-label="Archivo del expediente">
+      <div class="media">
+        <span class="file-thumb"><%- icon('file-text', { size: 22, strokeWidth: 1.8 }) %></span>
+        <div class="media__body">
+          <span class="filebar__name"><%= e.archivo.nombre %></span>
+          <span class="text-muted text-small">Actualizado el <%= e.archivo.actualizado %> · revisa y corrige los datos</span>
+        </div>
+      </div>
+      <div class="filebar__actions">
+        <%- subirForm('cv-reemplazar', 'Reemplazar CV', 'btn--soft btn--sm') %>
+        <button type="button" class="btn btn--soft btn--sm" data-modal-open="modal-eliminar">Eliminar</button>
+        <button type="submit" class="btn btn--accent btn--sm" form="form-expediente">Guardar cambios</button>
+      </div>
+    </section>
+
+    <div class="exp-layout">
+      <form class="exp-main" id="form-expediente" method="post" action="/candidato/expediente">
+        <section class="card panel">
+          <h2 class="panel__title">Datos personales y resumen</h2>
+          <div class="grid-fields">
+            <%- include('../partials/form-field', { id: 'exp-nombre', name: 'nombre', label: 'Nombre completo', value: e.personal.nombre, autocomplete: 'name', compact: true }) %>
+            <%- include('../partials/form-field', { id: 'exp-correo', name: 'correo', label: 'Correo', type: 'email', value: e.personal.correo, autocomplete: 'email', compact: true }) %>
+            <%- include('../partials/form-field', { id: 'exp-telefono', name: 'telefono', label: 'Teléfono', type: 'tel', value: e.personal.telefono, autocomplete: 'tel', compact: true }) %>
+            <%- include('../partials/form-field', { id: 'exp-ciudad', name: 'ciudad', label: 'Ciudad', value: e.personal.ciudad, autocomplete: 'address-level2', compact: true }) %>
+          </div>
+          <%- include('../partials/form-field', { id: 'exp-resumen', name: 'resumen', label: 'Resumen profesional', type: 'textarea', value: e.resumen }) %>
+        </section>
+
+        <section class="card panel" aria-labelledby="exp-exp-t">
+          <div class="panel__head">
+            <h2 class="panel__title" id="exp-exp-t">Experiencia laboral</h2>
+            <button type="button" class="btn btn--soft btn--sm" data-modal-open="modal-experiencia" data-item="">
+              <%- icon('plus', { size: 16 }) %>Agregar
+            </button>
+          </div>
+          <ul class="item-list" role="list">
+            <% e.experiencia.forEach((x) => { %>
+              <li class="item-row">
+                <span class="item-row__body"><strong><%= x.puesto %> · <%= x.empresa %></strong><span class="text-muted text-small"><%= x.desde %> – <%= x.hasta %></span></span>
+                <button type="button" class="btn btn--soft btn--sm" data-modal-open="modal-experiencia" data-item="<%= JSON.stringify(x) %>" aria-label="Editar <%= x.puesto %> en <%= x.empresa %>">Editar</button>
+              </li>
+            <% }) %>
+          </ul>
+        </section>
+
+        <section class="card panel" aria-labelledby="exp-edu-t">
+          <div class="panel__head">
+            <h2 class="panel__title" id="exp-edu-t">Educación y certificaciones</h2>
+            <button type="button" class="btn btn--soft btn--sm" data-modal-open="modal-educacion" data-item="">
+              <%- icon('plus', { size: 16 }) %>Agregar
+            </button>
+          </div>
+          <ul class="item-list" role="list">
+            <% e.educacion.forEach((x) => { %>
+              <li class="item-row">
+                <span class="item-row__body"><strong><%= x.titulo %> · <%= x.institucion %></strong><span class="text-muted text-small"><%= x.anio %></span></span>
+                <button type="button" class="btn btn--soft btn--sm" data-modal-open="modal-educacion" data-item="<%= JSON.stringify(x) %>" aria-label="Editar <%= x.titulo %>">Editar</button>
+              </li>
+            <% }) %>
+          </ul>
+        </section>
+
+        <section class="card panel" aria-labelledby="exp-hab-t">
+          <h2 class="panel__title" id="exp-hab-t">Habilidades e idiomas</h2>
+          <div class="skills" data-tags data-tags-name="habilidades">
+            <ul class="chip-group" role="list" data-tags-list>
+              <% e.habilidades.forEach((h) => { %>
+                <li class="skill-chip"><span><%= h %></span><input type="hidden" name="habilidades" value="<%= h %>"><button type="button" class="skill-chip__x" data-tags-remove aria-label="Quitar <%= h %>"><%- icon('x', { size: 14, strokeWidth: 2.4 }) %></button></li>
+              <% }) %>
+            </ul>
+            <label class="visually-hidden" for="exp-skill">Añadir habilidad o idioma</label>
+            <input class="skill-add" id="exp-skill" type="text" placeholder="+ Añadir" data-tags-input autocomplete="off">
+          </div>
+          <span class="text-muted text-small">Escribe y pulsa Enter. Para idiomas usa “Idioma · nivel”.</span>
+        </section>
+      </form>
+
+      <aside class="card panel exp-aside" aria-labelledby="exp-cv-t">
+        <h2 class="panel__title" id="exp-cv-t">CV original</h2>
+        <% if (e.archivo.url) { %>
+          <iframe class="pdf-preview" src="<%= e.archivo.url %>" title="Vista previa de <%= e.archivo.nombre %>"></iframe>
+        <% } else { %>
+          <div class="pdf-preview pdf-preview--empty">
+            <%- icon('file-text', { size: 36, strokeWidth: 1.5 }) %>
+            <span><%= e.archivo.nombre %></span>
+          </div>
+        <% } %>
+        <a class="btn btn--ink btn--block" href="/candidato/adaptador">Adaptar a una vacante</a>
+      </aside>
+    </div>
+
+    <dialog class="modal" id="modal-eliminar" aria-labelledby="modal-eliminar-t" role="alertdialog">
+      <form class="modal__content" method="post" action="/candidato/expediente/eliminar">
+        <div class="modal__header">
+          <div class="modal__heading">
+            <h2 class="modal__title modal__title--sm" id="modal-eliminar-t">¿Eliminar tu Expediente Maestro de forma permanente?</h2>
+            <span class="text-muted">No podrás adaptar CVs ni postularte hasta subir uno nuevo.</span>
+          </div>
+          <button type="button" class="btn-icon" data-modal-close aria-label="Cerrar"><%- icon('x', { size: 18, strokeWidth: 2.4 }) %></button>
+        </div>
+        <div class="modal__actions">
+          <button type="button" class="btn btn--soft" data-modal-close autofocus>Cancelar</button>
+          <button type="submit" class="btn btn--danger">Eliminar</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="modal modal--md" id="modal-experiencia" aria-labelledby="modal-experiencia-t" data-item-modal>
+      <form class="modal__content" method="post" action="/candidato/expediente/experiencia">
+        <input type="hidden" name="id" value="">
+        <div class="modal__header">
+          <h2 class="modal__title modal__title--sm" id="modal-experiencia-t" data-title-new="Agregar experiencia" data-title-edit="Editar experiencia">Agregar experiencia</h2>
+          <button type="button" class="btn-icon" data-modal-close aria-label="Cerrar"><%- icon('x', { size: 18, strokeWidth: 2.4 }) %></button>
+        </div>
+        <div class="grid-fields">
+          <%- include('../partials/form-field', { id: 'mx-puesto', name: 'puesto', label: 'Puesto', required: true, compact: true }) %>
+          <%- include('../partials/form-field', { id: 'mx-empresa', name: 'empresa', label: 'Empresa', required: true, compact: true }) %>
+          <%- include('../partials/form-field', { id: 'mx-desde', name: 'desde', label: 'Desde', placeholder: 'Mar 2022', compact: true }) %>
+          <%- include('../partials/form-field', { id: 'mx-hasta', name: 'hasta', label: 'Hasta', placeholder: 'Actualidad', compact: true }) %>
+        </div>
+        <%- include('../partials/form-field', { id: 'mx-descripcion', name: 'descripcion', label: 'Logros y responsabilidades', type: 'textarea' }) %>
+        <div class="modal__actions">
+          <button type="button" class="btn btn--soft" data-modal-close>Cancelar</button>
+          <button type="submit" class="btn btn--ink">Guardar</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="modal modal--md" id="modal-educacion" aria-labelledby="modal-educacion-t" data-item-modal>
+      <form class="modal__content" method="post" action="/candidato/expediente/educacion">
+        <input type="hidden" name="id" value="">
+        <div class="modal__header">
+          <h2 class="modal__title modal__title--sm" id="modal-educacion-t" data-title-new="Agregar estudio o certificación" data-title-edit="Editar estudio o certificación">Agregar estudio o certificación</h2>
+          <button type="button" class="btn-icon" data-modal-close aria-label="Cerrar"><%- icon('x', { size: 18, strokeWidth: 2.4 }) %></button>
+        </div>
+        <%- include('../partials/form-field', { id: 'md-titulo', name: 'titulo', label: 'Título o certificación', required: true, compact: true }) %>
+        <div class="grid-fields">
+          <%- include('../partials/form-field', { id: 'md-institucion', name: 'institucion', label: 'Institución', required: true, compact: true }) %>
+          <%- include('../partials/form-field', { id: 'md-anio', name: 'anio', label: 'Año', compact: true }) %>
+        </div>
+        <div class="modal__actions">
+          <button type="button" class="btn btn--soft" data-modal-close>Cancelar</button>
+          <button type="submit" class="btn btn--ink">Guardar</button>
+        </div>
+      </form>
+    </dialog>
+  <% } %>
+</div>

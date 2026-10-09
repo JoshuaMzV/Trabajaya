@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Reclutador · Asistente de vacante</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#18181B}a:hover{color:#52525B}
+</style>
+</helmet>
+<div style="min-height: 1100px; background: rgba(24,24,27,0.55); color: #18181B; font-family: Figtree, system-ui, sans-serif; font-size: 15px; line-height: 1.5; display: flex; justify-content: center; align-items: flex-start; padding: 32px; box-sizing: border-box">
+<div role="dialog" aria-modal="true" aria-labelledby="t" style="width: 100%; max-width: 1160px; background: #FFFFFF; border-radius: 16px; display: flex; flex-direction: column; overflow: hidden">
+<div style="padding: 20px 26px; border-bottom: 1px solid #D4D4D8; display: flex; justify-content: space-between; align-items: center; gap: 12px">
+<div style="display: flex; flex-direction: column"><h2 id="t" style="margin: 0; font-size: 22px; font-weight: 800">Nueva vacante</h2><span style="color: #52525B; font-size: 14px">Datos del puesto y filtro de entrevista IA en una sola pantalla · se guarda como borrador automáticamente</span></div>
+<a href="WR-Vacantes.dc.html" aria-label="Cerrar" style="width: 44px; height: 44px; border-radius: 50%; background: #F4F4F5; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 800">×</a>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 0; align-items: stretch">
+<section aria-label="Datos del puesto" style="flex: 1 1 460px; min-width: 0; padding: 22px 26px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; border-right: 1px solid #E4E4E7">
+<h3 style="margin: 0; font-size: 16px; font-weight: 800">1 · Datos del puesto</h3>
+<label style="display: flex; flex-direction: column; gap: 4px; font-weight: 700; font-size: 13px">Título del puesto *<input type="text" placeholder="[Puesto]" style="min-height: 44px; padding: 0 12px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400"></label>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr)); gap: 10px">
+<sc-for list="{{selects}}" as="s" hint-placeholder-count="6"><label style="display: flex; flex-direction: column; gap: 4px; font-weight: 700; font-size: 13px">{{s}}<select style="min-height: 42px; padding: 0 10px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400; background: #FFFFFF"><option>Seleccionar</option></select></label></sc-for>
+</div>
+<div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end"><label style="flex: 1 1 120px; display: flex; flex-direction: column; gap: 4px; font-weight: 700; font-size: 13px">Salario mín.<input type="text" placeholder="[Monto]" style="min-height: 42px; padding: 0 10px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400"></label><label style="flex: 1 1 120px; display: flex; flex-direction: column; gap: 4px; font-weight: 700; font-size: 13px">Salario máx.<input type="text" placeholder="[Monto]" style="min-height: 42px; padding: 0 10px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400"></label><label style="flex: 1 1 160px; display: flex; gap: 6px; align-items: center; min-height: 42px; font-size: 14px"><input type="checkbox" style="width: 18px; height: 18px; accent-color: #18181B">Mostrar salario</label></div>
+<label style="display: flex; flex-direction: column; gap: 4px; font-weight: 700; font-size: 13px">Descripción y responsabilidades *<textarea rows="4" style="padding: 10px 12px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400; resize: vertical"></textarea></label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-weight: 700; font-size: 13px">Requisitos (uno por línea, marca los obligatorios)<textarea rows="3" style="padding: 10px 12px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400; resize: vertical"></textarea></label>
+<div style="display: flex; flex-direction: column; gap: 6px"><span style="font-weight: 700; font-size: 13px">Skills requeridos</span><div style="display: flex; gap: 6px; flex-wrap: wrap"><span style="min-height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid #A1A1AA; display: flex; align-items: center; font-weight: 600">[Skill] ×</span><span style="min-height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid #A1A1AA; display: flex; align-items: center; font-weight: 600">[Skill] ×</span><input type="text" aria-label="Añadir skill" placeholder="+ Añadir" style="min-height: 32px; padding: 0 12px; border: 1px dashed #A1A1AA; border-radius: 999px; font: inherit"></div></div>
+<label style="display: flex; flex-direction: column; gap: 4px; font-weight: 700; font-size: 13px">Beneficios<textarea rows="2" style="padding: 10px 12px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400; resize: vertical"></textarea></label>
+</section>
+
+<section aria-label="Filtro IA" style="flex: 1 1 420px; min-width: 0; padding: 22px 26px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px; background: #FAFAFA">
+<h3 style="margin: 0; font-size: 16px; font-weight: 800">2 · Filtro de entrevista IA</h3>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; justify-content: space-between; align-items: center"><span style="font-weight: 700; font-size: 13px">Competencias y ponderación</span><button type="button" style="min-height: 34px; padding: 0 10px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer">+ Agregar</button></div>
+<sc-for list="{{comps}}" as="c" hint-placeholder-count="3"><div style="display: flex; gap: 10px; align-items: center; padding: 8px 10px; border: 1px solid #E4E4E7; border-radius: 10px; background: #FFFFFF; flex-wrap: wrap"><span style="flex: 1 1 140px; font-weight: 700">{{c}}</span><label style="flex: 2 1 160px; display: flex; gap: 8px; align-items: center; font-size: 13px">Peso<input type="range" min="1" max="5" value="3" style="flex: 1; accent-color: #18181B"></label><button type="button" aria-label="Quitar" style="width: 32px; height: 32px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; cursor: pointer">×</button></div></sc-for>
+<span style="font-size: 12px; color: #52525B">Sugeridas por la IA a partir de la descripción.</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); gap: 10px">
+<div style="display: flex; flex-direction: column; gap: 4px"><span style="font-weight: 700; font-size: 13px">Nº de preguntas</span><div style="display: flex; align-items: center; gap: 6px"><button type="button" aria-label="Menos" onClick="{{dec}}" style="width: 40px; height: 40px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 800; cursor: pointer">−</button><span style="min-width: 36px; text-align: center; font-size: 20px; font-weight: 800">{{n}}</span><button type="button" aria-label="Más" onClick="{{inc}}" style="width: 40px; height: 40px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 800; cursor: pointer">+</button></div></div>
+<label style="display: flex; flex-direction: column; gap: 4px; font-weight: 700; font-size: 13px">Repreguntas máx.<select style="min-height: 40px; padding: 0 10px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400; background: #FFFFFF"><option>[N]</option></select></label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-weight: 700; font-size: 13px">Duración máx.<select style="min-height: 40px; padding: 0 10px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400; background: #FFFFFF"><option>[N] min</option></select></label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-weight: 700; font-size: 13px">Respuesta<select style="min-height: 40px; padding: 0 10px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400; background: #FFFFFF"><option>Voz y texto</option><option>Solo voz</option><option>Solo texto</option></select></label>
+</div>
+<label style="display: flex; gap: 8px; align-items: center; font-size: 14px"><input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #18181B">Enfocar en método STAR</label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-weight: 700; font-size: 13px">Criterios para la IA<textarea rows="3" placeholder="Ej. priorizar experiencia con [herramienta]…" style="padding: 10px 12px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400; resize: vertical"></textarea></label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-weight: 700; font-size: 13px">Pregunta obligatoria (opcional)<input type="text" placeholder="+ Escribe una pregunta" style="min-height: 42px; padding: 0 12px; border: 1px dashed #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400"></label>
+<div style="padding: 12px; border-radius: 10px; border: 1px solid #D4D4D8; background: #FFFFFF; font-size: 14px">Resumen: <strong>{{n}} preguntas</strong> + hasta [N] repreguntas · aprox. [N] min · [N] competencias</div>
+</section>
+</div>
+
+<div style="padding: 16px 26px; border-top: 1px solid #D4D4D8; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px">
+<span style="font-size: 13px; color: #52525B">Validación en línea en campos * · Publicar requiere los campos obligatorios y al menos 1 competencia.</span>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<a href="WR-Vacantes.dc.html" style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #A1A1AA; display: flex; align-items: center; text-decoration: none; font-weight: 700">Cancelar</a>
+<a href="WR-Vacantes.dc.html" style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #A1A1AA; display: flex; align-items: center; text-decoration: none; font-weight: 700">Guardar borrador</a>
+<a href="WR-Vacantes.dc.html" style="min-height: 44px; padding: 0 18px; border-radius: 8px; background: #18181B; color: #FFFFFF; display: flex; align-items: center; text-decoration: none; font-weight: 800">Publicar vacante</a>
+</div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { n: 6 }; }
+renderVals() {
+const n = this.state.n;
+return {
+n, inc: () => this.setState({ n: Math.min(15, n + 1) }), dec: () => this.setState({ n: Math.max(3, n - 1) }),
+selects: ['Área *', 'Experiencia *', 'Ubicación *', 'Modalidad *', 'Jornada *', 'Fecha de cierre'],
+comps: ['Adaptabilidad', 'Experiencia', 'Implementación técnica']
+};
+}
+}
+</script>
+</body>
+</html>

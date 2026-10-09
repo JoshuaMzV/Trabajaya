@@ -1,0 +1,82 @@
+<%# disenos/landing/TY-Planes.dc.html · CLAUDE.md §9: solo el candidato paga; la pestaña Empresa solo dice "Gratis para empresas". %>
+<%
+  const esEmpresa = para === 'empresa';
+%>
+<section class="hero hero--page container">
+  <h1 class="display-1">Paga lo que uses o <span class="text-accent">no pienses</span> en eso.</h1>
+  <p class="lead-sm">Empieza gratis. Recarga TrabajaCoins cuando las necesites o activa PRO para usar todo sin límites.</p>
+  <div class="segmented" role="tablist" aria-label="Planes para" data-tabs-param="para">
+    <button type="button" role="tab" id="tab-candidato" data-value="candidato" aria-controls="panel-candidato" aria-selected="<%= !esEmpresa %>">Busco empleo</button>
+    <button type="button" role="tab" id="tab-empresa" data-value="empresa" aria-controls="panel-empresa" aria-selected="<%= esEmpresa %>">Contrato talento</button>
+  </div>
+</section>
+
+<div role="tabpanel" id="panel-candidato" aria-labelledby="tab-candidato"<% if (esEmpresa) { %> hidden<% } %>>
+  <section class="plans container" aria-label="Planes para candidatos">
+    <div class="plans__grid">
+      <article class="plan card">
+        <h2 class="plan__name">Gratis</h2>
+        <span class="plan__price">$0</span>
+        <p class="plan__lead">Crea tu cuenta y paga cada acción con TrabajaCoins.</p>
+        <ul class="plan__features" role="list">
+          <% gratis.forEach((f) => { %><li><%- icon('check', { strokeWidth: 2.2 }) %><%= f %></li><% }) %>
+        </ul>
+        <a class="btn btn--outline btn--block plan__cta" href="/registro?paso=2&amp;rol=candidato" data-modal-open="modal-registro" data-registro-rol="candidato">Crear cuenta gratis</a>
+      </article>
+
+      <article class="plan card">
+        <div class="plan__coin"><span class="plan__coin-dot" aria-hidden="true"></span><h2 class="plan__name">TrabajaCoins</h2></div>
+        <p class="plan__lead">Packs de monedas sin vencimiento mensual. Cada acción descuenta monedas de tu saldo.</p>
+        <fieldset class="choice-group plan__packs">
+          <legend class="visually-hidden">Elige un pack</legend>
+          <% packs.forEach((p) => { %>
+            <label class="option-card">
+              <input type="radio" name="pack" value="<%= p.id %>"<% if (p.destacado) { %> checked<% } %>>
+              <span class="option-card__body"><span class="option-card__title"><%= p.monedas %> monedas</span><span class="option-card__desc"><%= p.desc %></span></span>
+              <span class="option-card__price"><%= p.precio %></span>
+            </label>
+          <% }) %>
+        </fieldset>
+        <a class="btn btn--ink btn--block plan__cta" href="/registro?paso=2&amp;rol=candidato" data-modal-open="modal-registro" data-registro-rol="candidato">Comprar monedas</a>
+      </article>
+
+      <article class="plan plan--pro card card--accent">
+        <div class="plan__head"><h2 class="plan__name">Plan PRO</h2><span class="badge badge--light">Recomendado</span></div>
+        <span class="plan__price"><%= precios.proMensual %><small>/mes</small></span>
+        <p class="plan__lead"><%= proLead %></p>
+        <ul class="plan__features" role="list">
+          <% pro.forEach((f) => { %><li><%- icon('check', { strokeWidth: 2.2 }) %><%= f %></li><% }) %>
+        </ul>
+        <a class="btn btn--light btn--block plan__cta" href="/registro?paso=2&amp;rol=candidato" data-modal-open="modal-registro" data-registro-rol="candidato">Activar PRO</a>
+      </article>
+    </div>
+  </section>
+
+  <section class="section section--tight container" aria-labelledby="costos-t">
+    <h2 class="section-title-sm" id="costos-t">¿Cuánto cuesta cada acción?</h2>
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th scope="col">Acción</th><th scope="col">Gratis</th><th scope="col">PRO</th></tr></thead>
+        <tbody>
+          <% costos.forEach((c) => { %>
+            <tr><td><%= c.accion %></td><td><%= c.gratis %></td><td><%= c.pro %></td></tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<div role="tabpanel" id="panel-empresa" aria-labelledby="tab-empresa"<% if (!esEmpresa) { %> hidden<% } %>>
+  <section class="plans container">
+    <div class="card card--lg plans__free">
+      <h2 class="display-3">Gratis para empresas</h2>
+    </div>
+  </section>
+</div>
+
+<section class="mini-faq grid-auto grid-auto--320 container" aria-label="Dudas frecuentes">
+  <div class="card card--soft"><h2 class="mini-faq__q">¿Qué pasa si me quedo sin monedas?</h2><p class="card__text">Te avisamos antes de cada acción y puedes recargar en el momento, sin perder tu trabajo.</p></div>
+  <div class="card card--soft"><h2 class="mini-faq__q">¿Puedo cancelar PRO?</h2><p class="card__text"><%= politicaCancelacion %></p></div>
+  <div class="card card--soft"><h2 class="mini-faq__q">¿Más dudas?</h2><a class="link-strong" href="/faq">Ver preguntas frecuentes →</a></div>
+</section>

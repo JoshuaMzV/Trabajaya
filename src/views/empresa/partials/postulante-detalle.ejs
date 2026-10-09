@@ -1,0 +1,100 @@
+<%
+  // Drawer del postulante (WR-Postulantes). También se sirve suelto en /empresa/postulantes/:id/detalle.
+  // Parámetros: p (postulante con estadoVista y enTerna) · ternaLlena
+  const ini = p.nombre.split(/\s+/).slice(0, 2).map((x) => x[0]).join('').toUpperCase();
+  const d = p.dictamen;
+  const descartado = p.estado === 'descartado';
+  const recVariante = d && d.recomendacion === 'Recomendado' ? 'success' : d && d.recomendacion === 'No recomendado' ? 'danger' : 'neutral';
+  const tabsId = `pt-${p.id}`;
+%>
+<div class="drawer__header">
+  <div class="media">
+    <span class="avatar avatar--lg" aria-hidden="true"><%= ini %><% if (p.avatarUrl) { %><img src="<%= p.avatarUrl %>" alt="" data-avatar-img><% } %></span>
+    <div class="media__body">
+      <h2 class="drawer__title" id="drawer-postulante-t" data-drawer-focus><%= p.nombre %></h2>
+      <span class="text-muted text-small"><%= p.correo %> · <%= p.telefono %> · <%= p.ciudad %></span>
+    </div>
+  </div>
+  <a class="btn-icon" href="/empresa/postulantes?vacante=<%= p.vacanteId %>" data-drawer-close aria-label="Cerrar"><%- icon('x', { size: 18 }) %></a>
+</div>
+
+<div class="score-pair">
+  <div><span>Score ATS</span><strong><%= p.ats %></strong></div>
+  <div><span>Entrevista</span><strong><%= p.entrevista ?? '—' %></strong></div>
+</div>
+<span data-drawer-estado><%- include('../../partials/badge', p.estadoVista) %></span>
+
+<% if (!d) { %>
+  <div class="status-box">El candidato aún no completa la entrevista IA. Verás el dictamen cuando termine.</div>
+<% } else { %>
+  <div class="tabs-underline" role="tablist" aria-label="Secciones">
+    <button type="button" role="tab" id="<%= tabsId %>-d" aria-controls="<%= tabsId %>-dp" aria-selected="true">Dictamen IA</button>
+    <button type="button" role="tab" id="<%= tabsId %>-t" aria-controls="<%= tabsId %>-tp" aria-selected="false">Transcripción</button>
+    <button type="button" role="tab" id="<%= tabsId %>-c" aria-controls="<%= tabsId %>-cp" aria-selected="false">CV</button>
+  </div>
+
+  <div role="tabpanel" id="<%= tabsId %>-dp" aria-labelledby="<%= tabsId %>-d" class="drawer__panel">
+    <div class="verdict verdict--<%= recVariante %>"><span>Recomendación</span><strong><%= d.recomendacion %></strong></div>
+    <p class="text-muted"><%= d.resumen %></p>
+    <% d.competencias.forEach((c) => { %>
+      <div class="meter-row">
+        <div class="meter-row__head"><span><%= c.nombre %></span><strong><%= c.valor %></strong></div>
+        <progress class="progress" max="100" value="<%= c.valor %>" aria-label="<%= c.nombre %>: <%= c.valor %> de 100"><%= c.valor %></progress>
+      </div>
+    <% }) %>
+    <dl class="kv">
+      <div><dt>Fortalezas</dt><dd><%= d.fortalezas %></dd></div>
+      <div><dt>Brechas</dt><dd><%= d.brechas %></dd></div>
+      <div><dt>Validar en entrevista</dt><dd><%= d.validar %></dd></div>
+    </dl>
+  </div>
+
+  <div role="tabpanel" id="<%= tabsId %>-tp" aria-labelledby="<%= tabsId %>-t" class="drawer__panel" hidden>
+    <% p.qa.forEach((q) => { %>
+      <article class="qa">
+        <strong><%= q.tag %> · <%= q.pregunta %></strong>
+        <% if (q.duracion) { %>
+          <div class="audio-row">
+            <button type="button" class="audio-row__play" data-action="reproducir-audio" aria-label="Reproducir audio de <%= q.tag %>"><%- icon('play', { size: 16 }) %></button>
+            <progress class="progress" max="100" value="0" aria-label="Progreso del audio">0</progress>
+            <span class="audio-row__time"><%= q.duracion %></span>
+          </div>
+        <% } %>
+        <p class="text-muted"><%= q.resumen %></p>
+        <details class="disclosure disclosure--plain">
+          <summary>Ver transcripción completa</summary>
+          <p><%= q.transcripcion %></p>
+        </details>
+      </article>
+    <% }) %>
+  </div>
+
+  <div role="tabpanel" id="<%= tabsId %>-cp" aria-labelledby="<%= tabsId %>-c" class="drawer__panel" hidden>
+    <% if (p.cvUrl) { %>
+      <iframe class="pdf-preview" src="<%= p.cvUrl %>" title="CV de <%= p.nombre %>"></iframe>
+    <% } else { %>
+      <div class="pdf-preview pdf-preview--empty"><%- icon('file-text', { size: 36, strokeWidth: 1.5 }) %><span>CV resumido de <%= p.nombre %></span></div>
+    <% } %>
+    <a class="btn btn--soft btn--sm btn--block" href="<%= p.cvUrl || '#' %>"<% if (!p.cvUrl) { %> aria-disabled="true"<% } %> download>Descargar</a>
+  </div>
+<% } %>
+
+<div class="drawer__footer">
+  <form method="post" action="/empresa/postulantes/<%= p.id %>/terna" data-terna-toggle>
+    <button type="submit" class="btn btn--outline btn--block" data-terna-label<% if (descartado || (!p.enTerna && ternaLlena)) { %> disabled<% } %>>
+      <%= p.enTerna ? 'Quitar de la terna' : 'Agregar a la terna' %>
+    </button>
+  </form>
+  <% if (!p.enTerna && ternaLlena && !descartado) { %><span class="text-muted text-small">La terna ya tiene 3 candidatos.</span><% } %>
+  <div class="grid-2">
+    <form method="post" action="/empresa/postulantes/<%= p.id %>/estado">
+      <input type="hidden" name="estado" value="descartado">
+      <button type="submit" class="btn btn--soft btn--block" data-confirm data-confirm-title="¿Descartar a <%= p.nombre %>?" data-confirm-text="Le enviaremos un correo con el nuevo estado." data-confirm-label="Descartar"<% if (descartado) { %> disabled<% } %>>Descartar</button>
+    </form>
+    <form method="post" action="/empresa/postulantes/<%= p.id %>/estado">
+      <input type="hidden" name="estado" value="aprobado">
+      <button type="submit" class="btn btn--accent btn--block"<% if (p.estado === 'aprobado' || descartado || !d) { %> disabled<% } %>><%= p.estado === 'aprobado' ? 'Aprobado' : 'Aprobar 1ra entrevista' %></button>
+    </form>
+  </div>
+  <span class="text-muted text-small">El candidato recibe un correo con el nuevo estado.</span>
+</div>

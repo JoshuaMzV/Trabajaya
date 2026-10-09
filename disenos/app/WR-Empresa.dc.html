@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Reclutador · Perfil de empresa</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#18181B}a:hover{color:#52525B}
+</style>
+</helmet>
+<div style="min-height: 900px; background: #F4F4F5; color: #18181B; font-family: Figtree, system-ui, sans-serif; font-size: 15px; line-height: 1.5; display: flex; flex-wrap: wrap; align-items: stretch">
+<div style="flex: 1 1 240px; max-width: 100%; background: #FFFFFF; border-right: 1px solid #D4D4D8"><dc-import name="WFSide" role="rec" active="empresa" hint-size="100%,900px"></dc-import></div>
+<main style="flex: 999 1 560px; min-width: 0; padding: 28px 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px; max-width: 1000px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px"><h1 style="margin: 0; font-size: 26px; font-weight: 800">Perfil de empresa</h1><span style="color: #52525B">Visible para los candidatos en tus vacantes.</span></div>
+<button type="button" style="min-height: 44px; padding: 0 18px; border-radius: 8px; border: 0; background: #18181B; color: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Guardar</button>
+</div>
+<section style="background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; gap: 14px; align-items: center"><span style="width: 72px; height: 72px; border-radius: 14px; background: #E4E4E7; display: block"></span><button type="button" style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Subir logo</button></div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 12px">
+<sc-for list="{{fields}}" as="f" hint-placeholder-count="6"><label style="display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 14px">{{f}}<input type="text" placeholder="[{{f}}]" style="min-height: 44px; padding: 0 12px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400"></label></sc-for>
+</div>
+<label style="display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 14px">Descripción de la empresa<textarea rows="4" style="padding: 10px 12px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400; resize: vertical"></textarea></label>
+</section>
+<section style="background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 12px; padding: 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end">
+<label style="flex: 1 1 260px; display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 14px">Correo de acceso<input type="email" placeholder="[correo]" style="min-height: 44px; padding: 0 12px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400"></label>
+<button type="button" style="min-height: 44px; padding: 0 14px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Cambiar contraseña</button>
+<button type="button" style="min-height: 44px; padding: 0 14px; border-radius: 8px; border: 1px dashed #18181B; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Eliminar cuenta</button>
+</section>
+<span style="font-size: 14px; color: #52525B">Las empresas no usan monedas ni planes: publicar vacantes y evaluar postulantes no tiene costo.</span>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() { return { fields: ['Nombre comercial', 'Sector', 'Tamaño', 'Sitio web', 'País / ciudad', 'Teléfono de contacto'] }; }
+}
+</script>
+</body>
+</html>

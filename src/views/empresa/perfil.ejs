@@ -1,0 +1,66 @@
+<%# disenos/app/WR-Empresa.dc.html %>
+<%
+  const ini = perfil.nombre.split(/\s+/).slice(0, 2).map((p) => p[0]).join('').toUpperCase();
+  const e = errores || {};
+%>
+<div class="page page--narrow">
+  <div class="page__header">
+    <div class="page__title">
+      <h1 class="title-app">Perfil de empresa</h1>
+      <p class="text-muted">Visible para los candidatos en tus vacantes.</p>
+    </div>
+    <button type="submit" class="btn btn--accent btn--sm" form="form-perfil">Guardar</button>
+  </div>
+
+  <form class="card panel" id="form-perfil" method="post" action="/empresa/perfil" enctype="application/x-www-form-urlencoded">
+    <div class="logo-field">
+      <span class="avatar avatar--xl avatar--square" data-logo-preview>
+        <span aria-hidden="true"><%= ini %></span>
+        <% if (perfil.logoUrl) { %><img src="<%= perfil.logoUrl %>" alt="" data-avatar-img><% } %>
+      </span>
+      <label class="btn btn--soft btn--sm" for="perfil-logo">Subir logo</label>
+      <input class="visually-hidden" id="perfil-logo" type="file" accept="image/png,image/jpeg,image/svg+xml" data-logo-input aria-describedby="perfil-logo-ayuda">
+      <span class="text-muted text-small" id="perfil-logo-ayuda">PNG, JPG o SVG cuadrado, de al menos 200 px.</span>
+    </div>
+    <div class="grid-fields grid-fields--220">
+      <%- include('../partials/form-field', { id: 'pe-nombre', name: 'nombre', label: 'Nombre comercial', value: perfil.nombre, autocomplete: 'organization', compact: true }) %>
+      <%- include('../partials/form-field', { id: 'pe-sector', name: 'sector', label: 'Sector', value: perfil.sector, compact: true }) %>
+      <%- include('../partials/form-field', { id: 'pe-tamano', name: 'tamano', label: 'Tamaño', type: 'select', value: perfil.tamano, opciones: opciones.tamanos.map((t) => ({ value: t, label: t })), compact: true }) %>
+      <%- include('../partials/form-field', { id: 'pe-sitio', name: 'sitio', label: 'Sitio web', type: 'url', value: perfil.sitio, autocomplete: 'url', compact: true }) %>
+      <%- include('../partials/form-field', { id: 'pe-ubicacion', name: 'ubicacion', label: 'País / ciudad', value: perfil.ubicacion, compact: true }) %>
+      <%- include('../partials/form-field', { id: 'pe-telefono', name: 'telefono', label: 'Teléfono de contacto', type: 'tel', value: perfil.telefono, autocomplete: 'tel', compact: true }) %>
+    </div>
+    <%- include('../partials/form-field', { id: 'pe-descripcion', name: 'descripcion', label: 'Descripción de la empresa', type: 'textarea', value: perfil.descripcion }) %>
+  </form>
+
+  <section class="card panel account-row" aria-labelledby="pe-cuenta-t">
+    <h2 class="visually-hidden" id="pe-cuenta-t">Cuenta de acceso</h2>
+    <div class="field account-row__email">
+      <label class="field__label" for="pe-correo">Correo de acceso</label>
+      <input class="input input--compact" id="pe-correo" type="email" value="<%= perfil.correo %>" readonly aria-describedby="pe-correo-ayuda">
+      <span class="field__help" id="pe-correo-ayuda">Para cambiarlo, escríbenos desde la mesa de ayuda.</span>
+    </div>
+    <button type="button" class="btn btn--soft btn--sm" data-modal-open="modal-password">Cambiar contraseña</button>
+    <form method="post" action="/empresa/perfil/eliminar">
+      <button type="submit" class="btn btn--sm btn--danger-outline" data-confirm data-confirm-title="¿Eliminar la cuenta de la empresa?" data-confirm-text="Se cierran tus vacantes y se borran los postulantes. Esta acción no se puede deshacer." data-confirm-label="Eliminar cuenta" data-confirm-variante="danger" data-confirm-match="<%= perfil.correo %>">Eliminar cuenta</button>
+    </form>
+  </section>
+
+  <div class="alert alert--info"><%- icon('info') %><span>Las empresas no usan monedas ni planes: publicar vacantes y evaluar postulantes no tiene costo.</span></div>
+</div>
+
+<dialog class="modal modal--md" id="modal-password" aria-labelledby="modal-password-t"<% if (locals.abrirPassword) { %> data-modal-autoopen data-modal-return="/empresa/perfil"<% } %>>
+  <form class="modal__content" method="post" action="/empresa/perfil/password" novalidate>
+    <div class="modal__header">
+      <h2 class="modal__title modal__title--sm" id="modal-password-t">Cambiar contraseña</h2>
+      <button type="button" class="btn-icon" data-modal-close aria-label="Cerrar"><%- icon('x', { size: 18, strokeWidth: 2.4 }) %></button>
+    </div>
+    <%- include('../partials/form-field', { id: 'pw-actual', name: 'actual', label: 'Contraseña actual', type: 'password', error: e.actual, autocomplete: 'current-password', compact: true }) %>
+    <%- include('../partials/form-field', { id: 'pw-nueva', name: 'nueva', label: 'Nueva contraseña', type: 'password', error: e.nueva, autocomplete: 'new-password', ayuda: 'Al menos 8 caracteres.', compact: true }) %>
+    <%- include('../partials/form-field', { id: 'pw-confirmar', name: 'confirmar', label: 'Repite la nueva contraseña', type: 'password', error: e.confirmar, autocomplete: 'new-password', compact: true }) %>
+    <div class="modal__actions">
+      <button type="button" class="btn btn--soft" data-modal-close>Cancelar</button>
+      <button type="submit" class="btn btn--ink">Guardar contraseña</button>
+    </div>
+  </form>
+</dialog>

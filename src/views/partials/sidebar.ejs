@@ -1,0 +1,67 @@
+<%
+  // Menú lateral compartido (disenos/app/WFSide).
+  // Parámetros: role = cand | rec | admin · active = clave del ítem activo · usuario = { nombre, correo, avatarUrl, plan, saldo, movimientos }
+  // Opcional: sidebarId (por defecto 'app-sidebar'; cámbialo si hay más de uno en la página).
+  const cfg = navApp[role];
+  const id = locals.sidebarId || 'app-sidebar';
+  const iniciales = usuario.nombre.split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]).join('').toUpperCase();
+  const subtitulo = role === 'cand' ? `${usuario.saldo} monedas · ${usuario.plan}` : role === 'rec' ? usuario.correo : 'Administrador';
+%>
+<aside class="sidebar" id="<%= id %>" aria-label="Menú lateral">
+  <div class="sidebar__top">
+    <a class="sidebar__brand" href="<%= cfg.items[0].href %>">
+      <span class="logo logo--sm">
+        <span class="logo__mark" aria-hidden="true">t</span>
+        <span class="logo__text">Trabaja<span class="logo__ya">Ya</span></span>
+      </span>
+      <span class="sidebar__role"><%= cfg.etiqueta %></span>
+    </a>
+    <button type="button" class="btn-icon sidebar__close" data-nav-close aria-label="Cerrar menú"><%- icon('x') %></button>
+  </div>
+
+  <nav class="sidebar__nav" aria-label="Menú principal">
+    <% cfg.items.forEach((item) => { %>
+      <a class="sidebar__link" href="<%= item.href %>"<% if (item.key === active) { %> aria-current="page"<% } %>>
+        <%- icon(item.icon, { size: 19 }) %><%= item.label %>
+      </a>
+    <% }) %>
+  </nav>
+
+  <div class="sidebar__bottom">
+    <% if (cfg.ayuda) { %>
+      <a class="sidebar__link" href="?soporte=1" data-modal-open="panel-soporte"><%- icon('life-buoy', { size: 19 }) %>Ayuda</a>
+    <% } %>
+
+    <div class="dropdown sidebar__account" data-dropdown>
+      <div class="dropdown__menu dropdown__menu--up" id="<%= id %>-usuario" role="group" aria-label="Menú de usuario" data-dropdown-menu hidden>
+        <% if (cfg.billetera) { %>
+          <div class="wallet">
+            <div class="wallet__row"><span>Plan <%= usuario.plan %></span><span>Saldo</span></div>
+            <span class="wallet__balance"><%= usuario.saldo %> <small>monedas</small></span>
+            <a class="btn btn--ink btn--sm btn--block" href="?packs=1" data-modal-open="modal-packs">Comprar monedas / PRO</a>
+            <% if (usuario.movimientos && usuario.movimientos.length) { %>
+              <span class="wallet__moves">Últimos movimientos: <%= usuario.movimientos.map((m) => `${m.tipo === 'cargo' ? '−' : '+'}${m.monedas} ${m.concepto}`).join(' · ') %></span>
+            <% } %>
+          </div>
+        <% } %>
+        <a class="menu-item" href="<%= cfg.perfil.href %>"><%- icon('user', { size: 18 }) %><%= cfg.perfil.label %></a>
+        <form method="post" action="/auth/logout">
+          <button type="submit" class="menu-item"><%- icon('log-out', { size: 18 }) %>Cerrar sesión</button>
+        </form>
+      </div>
+
+      <button type="button" class="sidebar__user" data-dropdown-toggle aria-expanded="false" aria-controls="<%= id %>-usuario">
+        <span class="avatar">
+          <span aria-hidden="true"><%= iniciales %></span>
+          <% if (usuario.avatarUrl) { %><img src="<%= usuario.avatarUrl %>" alt="" data-avatar-img><% } %>
+        </span>
+        <span class="sidebar__user-text">
+          <span class="sidebar__user-name"><%= usuario.nombre %></span>
+          <span class="sidebar__user-sub"><%= subtitulo %></span>
+        </span>
+        <%- icon('chevron-up', { size: 18, className: 'sidebar__chevron' }) %>
+        <span class="visually-hidden">Abrir menú de usuario</span>
+      </button>
+    </div>
+  </div>
+</aside>

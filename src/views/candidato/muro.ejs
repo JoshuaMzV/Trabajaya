@@ -1,0 +1,89 @@
+<%# disenos/app/WC-Muro.dc.html · lista + drawer de detalle (?vacante=:id) %>
+<%
+  const conVacante = (id) => `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}vacante=${id}`;
+  const iniciales = (t) => t.split(/\s+/).slice(0, 2).map((p) => p[0]).join('').toUpperCase();
+  const opcion = (valor, actual) => `<option value="${valor}"${valor === actual ? ' selected' : ''}>`;
+%>
+<div class="split">
+  <div class="split__main page">
+    <div class="page__header">
+      <h1 class="title-app">Muro de empleos</h1>
+      <div class="chip-group">
+        <a class="tag tag--link" href="/candidato/postulaciones"><%= activas %> postulaciones activas</a>
+        <span class="tag"><%= usuario.plan === 'PRO' ? 'Plan PRO' : `${usuario.saldo} monedas` %></span>
+      </div>
+    </div>
+
+    <% if (!tieneExpediente) { %>
+      <div class="callout">
+        <span><strong>Sube tu Expediente Maestro</strong> para ver tu match y postularte.</span>
+        <a class="btn btn--outline btn--sm" href="/candidato/expediente">Subir CV</a>
+      </div>
+    <% } %>
+
+    <form class="filters" method="get" action="/candidato/muro" role="search" aria-label="Filtrar vacantes" data-autosubmit>
+      <div class="field filters__search">
+        <label class="field__label" for="muro-q">Buscar</label>
+        <input class="input input--compact" id="muro-q" type="search" name="q" value="<%= filtros.q %>" placeholder="Puesto, empresa o habilidad">
+      </div>
+      <div class="field">
+        <label class="field__label" for="muro-ubicacion">Ubicación</label>
+        <select class="select input--compact" id="muro-ubicacion" name="ubicacion"><option value="">Todas</option><% opciones.ubicaciones.forEach((o) => { %><%- opcion(o, filtros.ubicacion) %><%= o %></option><% }) %></select>
+      </div>
+      <div class="field">
+        <label class="field__label" for="muro-modalidad">Modalidad</label>
+        <select class="select input--compact" id="muro-modalidad" name="modalidad"><option value="">Todas</option><% opciones.modalidades.forEach((o) => { %><%- opcion(o, filtros.modalidad) %><%= o %></option><% }) %></select>
+      </div>
+      <div class="field">
+        <label class="field__label" for="muro-area">Área</label>
+        <select class="select input--compact" id="muro-area" name="area"><option value="">Todas</option><% opciones.areas.forEach((o) => { %><%- opcion(o, filtros.area) %><%= o %></option><% }) %></select>
+      </div>
+      <div class="field">
+        <label class="field__label" for="muro-orden">Ordenar</label>
+        <select class="select input--compact" id="muro-orden" name="orden"><option value="match"<% if (filtros.orden === 'match') { %> selected<% } %>>Mayor match</option><option value="recientes"<% if (filtros.orden === 'recientes') { %> selected<% } %>>Más recientes</option></select>
+      </div>
+      <button type="submit" class="btn btn--ink btn--sm filters__submit">Buscar</button>
+    </form>
+
+    <% if (estado === 'error') { %>
+      <div class="empty-state" role="alert">
+        <span class="empty-state__icon empty-state__icon--danger"><%- icon('circle-alert') %></span>
+        <h2 class="empty-state__title">No pudimos cargar las vacantes</h2>
+        <p class="empty-state__text">Revisa tu conexión e inténtalo de nuevo.</p>
+        <a class="btn btn--ink btn--sm" href="<%= baseUrl %>">Reintentar</a>
+      </div>
+    <% } else if (estado === 'vacio') { %>
+      <div class="empty-state">
+        <span class="empty-state__icon"><%- icon('search') %></span>
+        <% if (hayFiltros) { %>
+          <h2 class="empty-state__title">Sin vacantes con estos filtros</h2>
+          <a class="btn btn--soft btn--sm" href="/candidato/muro">Limpiar filtros</a>
+        <% } else { %>
+          <h2 class="empty-state__title">Aún no hay vacantes publicadas</h2>
+          <p class="empty-state__text">Mientras tanto, completa tu Expediente Maestro o practica una entrevista.</p>
+        <% } %>
+      </div>
+    <% } else { %>
+      <ul class="job-list" role="list" aria-label="Vacantes">
+        <% vacantes.forEach((v) => { const href = conVacante(v.id); %>
+          <li>
+            <a class="job-card" href="<%= href %>" data-drawer-open="drawer-vacante" data-drawer-src="/candidato/vacantes/<%= v.id %>/detalle" data-drawer-url="<%= href %>" data-drawer-current<% if (detalle && detalle.vacante.id === v.id) { %> aria-current="true"<% } %>>
+              <span class="avatar avatar--lg avatar--square" aria-hidden="true"><%= iniciales(v.empresa) %><% if (v.logoUrl) { %><img src="<%= v.logoUrl %>" alt="" data-avatar-img><% } %></span>
+              <span class="job-card__body">
+                <span class="job-card__title"><%= v.puesto %></span>
+                <span class="job-card__meta"><%= v.empresa %> · <%= v.ciudad %> · <%= v.modalidad %> · hace <%= v.dias %> <%= v.dias === 1 ? 'día' : 'días' %></span>
+              </span>
+              <% if (tieneExpediente) { %><span class="tag tag--match">Match <%= v.match %>%</span><% } %>
+              <% if (v.estadoCand) { %><%- include('../partials/badge', { label: v.estadoCand.label, variante: v.estadoCand.variante }) %><% } %>
+            </a>
+          </li>
+        <% }) %>
+      </ul>
+      <% if (masUrl) { %><a class="btn btn--soft btn--sm load-more" href="<%= masUrl %>">Cargar más</a><% } %>
+    <% } %>
+  </div>
+
+  <aside class="drawer" id="drawer-vacante" aria-labelledby="drawer-vacante-t" data-drawer-close-url="<%= baseUrl %>"<% if (!detalle) { %> hidden<% } %>>
+    <% if (detalle) { %><%- include('partials/vacante-detalle', detalle) %><% } %>
+  </aside>
+</div>

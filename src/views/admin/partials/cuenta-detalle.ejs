@@ -1,0 +1,70 @@
+<%
+  // Drawer de cuenta (WA-Cuentas). También se sirve suelto en /admin/cuentas/:id/detalle.
+  // Parámetros: c (cuenta) · estado ({ label, variante }) · auditoria
+  const cand = c.tipo === 'candidato';
+  const pid = `cu-${c.id}`;
+  const suspendida = c.estado === 'suspendido';
+  const tabs = cand
+    ? [['actividad', 'Actividad', c.actividad], ['transacciones', 'Transacciones', c.transacciones], ['auditoria', 'Auditoría', auditoria]]
+    : [['vacantes', 'Vacantes', c.vacantesLista], ['postulantes', 'Postulantes', c.postulantes], ['auditoria', 'Auditoría', auditoria]];
+%>
+<div class="drawer__header">
+  <div class="media__body">
+    <h2 class="drawer__title" id="drawer-cuenta-t" data-drawer-focus><%= c.nombre %></h2>
+    <span class="text-muted text-small">ID <%= c.id %> · <%= c.correo %> · alta <%= c.alta %> · último acceso <%= c.ultimoAcceso %></span>
+    <%- include('../../partials/badge', estado) %>
+  </div>
+  <a class="btn-icon" href="/admin/cuentas?tipo=<%= cand ? 'candidatos' : 'empresas' %>" data-drawer-close aria-label="Cerrar"><%- icon('x', { size: 18 }) %></a>
+</div>
+
+<div class="drawer__actions-row">
+  <form method="post" action="/admin/cuentas/<%= c.id %>/estado">
+    <button type="submit" class="btn btn--sm <%= suspendida ? 'btn--ink' : 'btn--ink' %>" data-confirm data-confirm-title="<%= suspendida ? '¿Reactivar' : '¿Suspender' %> la cuenta de <%= c.nombre %>?" data-confirm-text="<%= suspendida ? 'Podrá volver a entrar.' : 'No podrá entrar hasta que la reactives.' %>" data-confirm-label="<%= suspendida ? 'Reactivar' : 'Suspender' %>"><%= suspendida ? 'Reactivar' : 'Suspender' %></button>
+  </form>
+  <form method="post" action="/admin/cuentas/<%= c.id %>/password"><button type="submit" class="btn btn--soft btn--sm">Restablecer contraseña</button></form>
+  <% if (!cand && c.estado === 'pendiente') { %>
+    <form method="post" action="/admin/cuentas/<%= c.id %>/verificar"><button type="submit" class="btn btn--soft btn--sm"><%- icon('badge-check', { size: 18 }) %>Verificar empresa</button></form>
+  <% } %>
+</div>
+
+<% if (cand) { %>
+  <section class="wallet-admin" aria-labelledby="<%= pid %>-saldo-t">
+    <h3 class="visually-hidden" id="<%= pid %>-saldo-t">Plan y saldo</h3>
+    <div class="wallet-admin__row"><span><strong>Plan:</strong> <%= c.plan %></span><span><strong>Saldo:</strong> <%= c.saldo %> monedas</span></div>
+    <form class="wallet-admin__form" method="post" action="/admin/cuentas/<%= c.id %>/saldo">
+      <div class="field wallet-admin__n">
+        <label class="field__label" for="<%= pid %>-monedas">Monedas ±</label>
+        <input class="input input--compact" id="<%= pid %>-monedas" name="monedas" type="number" step="1" placeholder="0" required>
+      </div>
+      <div class="field wallet-admin__motivo">
+        <label class="field__label" for="<%= pid %>-motivo">Motivo *</label>
+        <input class="input input--compact" id="<%= pid %>-motivo" name="motivo" type="text" placeholder="Ej. ticket #1031" required>
+      </div>
+      <div class="wallet-admin__actions">
+        <button type="submit" class="btn btn--ink btn--sm">Aplicar ajuste</button>
+        <button type="submit" class="btn btn--soft btn--sm" formaction="/admin/cuentas/<%= c.id %>/plan" formnovalidate data-confirm data-confirm-title="¿Cambiar el plan a <%= c.plan === 'PRO' ? 'Gratis' : 'PRO' %>?" data-confirm-text="Se aplica de inmediato y queda en la auditoría." data-confirm-label="Cambiar plan">Cambiar plan</button>
+      </div>
+    </form>
+  </section>
+<% } %>
+
+<div class="tabs-underline" role="tablist" aria-label="Detalle">
+  <% tabs.forEach(([k, label], i) => { %>
+    <button type="button" role="tab" id="<%= pid %>-<%= k %>" aria-controls="<%= pid %>-<%= k %>-p" aria-selected="<%= i === 0 %>"><%= label %></button>
+  <% }) %>
+</div>
+<% tabs.forEach(([k, label, items], i) => { %>
+  <div role="tabpanel" id="<%= pid %>-<%= k %>-p" aria-labelledby="<%= pid %>-<%= k %>"<% if (i) { %> hidden<% } %>>
+    <% if (!items || !items.length) { %>
+      <p class="text-muted text-small">Sin registros.</p>
+    <% } else { %>
+      <ul class="log-list" role="list">
+        <% items.forEach((it) => { %><li><span><%= it.a %></span><span class="text-muted"><%= it.b %></span></li><% }) %>
+      </ul>
+    <% } %>
+  </div>
+<% }) %>
+
+<form class="drawer__footer drawer__footer--start" method="post" action="/admin/cuentas/<%= c.id %>/eliminar">
+  <button type="submit" class="btn btn--sm btn--danger-outline" data-confirm data-confirm-title="¿Eliminar la cuenta de <%= c.nombre %>?" data-confirm-text="Se borran sus datos de forma permanente." data-confirm-label="Eliminar cuenta" data-confirm-variante="danger" data-confirm-match="<%= c.correo %>">Eliminar cuenta (confirmar con correo)</button>
+</form>

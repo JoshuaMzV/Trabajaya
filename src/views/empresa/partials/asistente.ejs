@@ -1,0 +1,121 @@
+<%
+  // disenos/app/WR-Asistente.dc.html · modal sobre Mis Vacantes (/empresa/vacantes/nueva y /:id/editar).
+  // Parámetros: a = { abrir, vacante, errores } · opciones · limites · catalogo (competencias sugeridas, Admin › Ajustes › IA)
+  const v = a.vacante;
+  const e = a.errores || {};
+  const editando = Boolean(v.id) && v.estado !== 'nueva';
+  const publicada = v.estado === 'publicada';
+  const accion = editando ? `/empresa/vacantes/${v.id}` : '/empresa/vacantes';
+  const conVacio = (lista) => [{ value: '', label: 'Seleccionar' }, ...lista.map((x) => ({ value: x, label: x }))];
+  const duraciones = [10, 15, 20, 25, 30, 45].filter((d) => d <= limites.duracionMax);
+  const usadas = new Set(v.competencias.map((c) => c.nombre));
+%>
+<dialog class="modal modal--wide asistente" id="modal-asistente" aria-labelledby="asistente-t"<% if (a.abrir) { %> data-modal-autoopen data-modal-return="/empresa/vacantes"<% } %>>
+  <form method="post" action="<%= accion %>" novalidate data-asistente<% if (!publicada) { %> data-autosave-url="/empresa/autoguardado"<% } %>>
+    <input type="hidden" name="id" value="<%= v.id || '' %>" data-asistente-id>
+    <div class="asistente__head">
+      <div class="modal__heading">
+        <h2 class="modal__title modal__title--sm" id="asistente-t"><%= editando ? 'Editar vacante' : 'Nueva vacante' %></h2>
+        <span class="text-muted text-small">
+          <% if (publicada) { %>Esta vacante está publicada: los cambios se aplican al guardar.<% } else { %>Datos del puesto y filtro de entrevista IA en una sola pantalla · se guarda como borrador automáticamente<% } %>
+          <span class="asistente__saved" data-autosave-status aria-live="polite"></span>
+        </span>
+      </div>
+      <button type="button" class="btn-icon" data-modal-close aria-label="Cerrar"><%- icon('x', { size: 18, strokeWidth: 2.4 }) %></button>
+    </div>
+
+    <% if (Object.keys(e).length) { %>
+      <div class="asistente__alert">
+        <div class="alert alert--danger" role="alert"><%- icon('circle-alert', { strokeWidth: 2.2 }) %><span>Revisa los campos marcados para continuar.</span></div>
+      </div>
+    <% } %>
+
+    <div class="asistente__body">
+      <section class="asistente__col" aria-labelledby="as-datos-t">
+        <h3 class="panel__title" id="as-datos-t">1 · Datos del puesto</h3>
+        <%- include('../../partials/form-field', { id: 'as-titulo', name: 'titulo', label: 'Título del puesto *', value: v.titulo, error: e.titulo, placeholder: 'Ej. Analista de Datos Sr.', required: true, compact: true }) %>
+        <div class="grid-fields grid-fields--160">
+          <%- include('../../partials/form-field', { id: 'as-area', name: 'area', label: 'Área *', type: 'select', value: v.area, error: e.area, opciones: conVacio(opciones.areas), compact: true }) %>
+          <%- include('../../partials/form-field', { id: 'as-experiencia', name: 'experiencia', label: 'Experiencia *', type: 'select', value: v.experiencia, error: e.experiencia, opciones: conVacio(opciones.experiencia), compact: true }) %>
+          <%- include('../../partials/form-field', { id: 'as-ubicacion', name: 'ubicacion', label: 'Ubicación *', type: 'select', value: v.ubicacion, error: e.ubicacion, opciones: conVacio(opciones.ubicaciones), compact: true }) %>
+          <%- include('../../partials/form-field', { id: 'as-modalidad', name: 'modalidad', label: 'Modalidad *', type: 'select', value: v.modalidad, error: e.modalidad, opciones: conVacio(opciones.modalidades), compact: true }) %>
+          <%- include('../../partials/form-field', { id: 'as-jornada', name: 'jornada', label: 'Jornada *', type: 'select', value: v.jornada, error: e.jornada, opciones: conVacio(opciones.jornadas), compact: true }) %>
+          <%- include('../../partials/form-field', { id: 'as-cierre', name: 'cierre', label: 'Fecha de cierre', type: 'date', value: v.cierre, compact: true }) %>
+        </div>
+        <div class="salary-row">
+          <%- include('../../partials/form-field', { id: 'as-smin', name: 'salarioMin', label: 'Salario mín.', type: 'number', value: v.salarioMin, placeholder: 'Monto', compact: true }) %>
+          <%- include('../../partials/form-field', { id: 'as-smax', name: 'salarioMax', label: 'Salario máx.', type: 'number', value: v.salarioMax, error: e.salarioMax, placeholder: 'Monto', compact: true }) %>
+          <label class="check salary-row__check"><input type="checkbox" name="mostrarSalario" value="1"<% if (v.mostrarSalario) { %> checked<% } %>><span>Mostrar salario</span></label>
+        </div>
+        <%- include('../../partials/form-field', { id: 'as-descripcion', name: 'descripcion', label: 'Descripción y responsabilidades *', type: 'textarea', value: v.descripcion, error: e.descripcion }) %>
+        <%- include('../../partials/form-field', { id: 'as-requisitos', name: 'requisitos', label: 'Requisitos', type: 'textarea', value: v.requisitos, ayuda: 'Uno por línea. Empieza con * los obligatorios.' }) %>
+        <div class="field">
+          <span class="field__label" id="as-skills-l">Skills requeridos</span>
+          <div class="skills" data-tags data-tags-name="skills" role="group" aria-labelledby="as-skills-l">
+            <ul class="chip-group" role="list" data-tags-list>
+              <% v.skills.forEach((s) => { %>
+                <li class="skill-chip"><span><%= s %></span><input type="hidden" name="skills" value="<%= s %>"><button type="button" class="skill-chip__x" data-tags-remove aria-label="Quitar <%= s %>"><%- icon('x', { size: 14, strokeWidth: 2.4 }) %></button></li>
+              <% }) %>
+            </ul>
+            <input class="skill-add" type="text" placeholder="+ Añadir" aria-label="Añadir skill" data-tags-input autocomplete="off">
+          </div>
+        </div>
+        <%- include('../../partials/form-field', { id: 'as-beneficios', name: 'beneficios', label: 'Beneficios', type: 'textarea', value: v.beneficios }) %>
+      </section>
+
+      <section class="asistente__col asistente__col--ia" aria-labelledby="as-ia-t">
+        <h3 class="panel__title" id="as-ia-t">2 · Filtro de entrevista IA</h3>
+        <div class="field">
+          <div class="panel__head">
+            <span class="field__label" id="as-comp-l">Competencias y ponderación</span>
+            <div class="dropdown" data-dropdown>
+              <button type="button" class="btn btn--soft btn--sm" data-dropdown-toggle aria-expanded="false" aria-haspopup="menu" aria-controls="as-comp-menu"><%- icon('plus', { size: 16 }) %>Agregar</button>
+              <div class="dropdown__menu dropdown__menu--end" id="as-comp-menu" role="menu" aria-label="Competencias sugeridas" data-dropdown-menu hidden>
+                <% catalogo.forEach((c) => { %>
+                  <button type="button" class="menu-item" role="menuitem" data-add-competencia="<%= c %>"<% if (usadas.has(c)) { %> hidden<% } %>><%= c %></button>
+                <% }) %>
+              </div>
+            </div>
+          </div>
+          <ul class="comp-list" role="list" aria-labelledby="as-comp-l" data-comp-list<% if (e.competencias) { %> aria-describedby="as-comp-error"<% } %>>
+            <% v.competencias.forEach((c, i) => { %><%- include('comp-row', { c, i }) %><% }) %>
+          </ul>
+          <template data-comp-template><%- include('comp-row', { c: { nombre: '', peso: 3 }, i: '__i__' }) %></template>
+          <p class="text-muted text-small" data-comp-vacio<% if (v.competencias.length) { %> hidden<% } %>>Agrega al menos una competencia: la IA hará preguntas sobre ellas.</p>
+          <% if (e.competencias) { %><span class="field__error" id="as-comp-error"><%= e.competencias %></span><% } %>
+          <span class="text-muted text-small">Sugeridas por la IA a partir de la descripción.</span>
+        </div>
+
+        <div class="grid-fields grid-fields--150">
+          <div class="field">
+            <span class="field__label" id="as-preg-l">Nº de preguntas</span>
+            <div class="stepper-input" role="group" aria-labelledby="as-preg-l">
+              <button type="button" class="btn-icon btn-icon--outline" data-step="-1" aria-label="Menos preguntas"><%- icon('minus', { size: 18 }) %></button>
+              <output class="stepper-input__value" data-step-output aria-live="polite"><%= v.preguntas %></output>
+              <button type="button" class="btn-icon btn-icon--outline" data-step="1" aria-label="Más preguntas"><%- icon('plus', { size: 18 }) %></button>
+              <input type="hidden" name="preguntas" value="<%= v.preguntas %>" data-step-input data-min="<%= limites.preguntasMin %>" data-max="<%= limites.preguntasMax %>">
+            </div>
+          </div>
+          <%- include('../../partials/form-field', { id: 'as-repreg', name: 'repreguntas', label: 'Repreguntas máx.', type: 'select', value: v.repreguntas, opciones: Array.from({ length: limites.repreguntasMax + 1 }, (_, n) => ({ value: n, label: String(n) })), compact: true }) %>
+          <%- include('../../partials/form-field', { id: 'as-duracion', name: 'duracion', label: 'Duración máx.', type: 'select', value: v.duracion, opciones: duraciones.map((d) => ({ value: d, label: `${d} min` })), compact: true }) %>
+          <%- include('../../partials/form-field', { id: 'as-respuesta', name: 'respuesta', label: 'Respuesta', type: 'select', value: v.respuesta, opciones: opciones.respuesta.map((r) => ({ value: r, label: r })), compact: true }) %>
+        </div>
+        <label class="check"><input type="checkbox" name="star" value="1"<% if (v.star) { %> checked<% } %>><span>Enfocar en método STAR</span></label>
+        <%- include('../../partials/form-field', { id: 'as-criterios', name: 'criterios', label: 'Criterios para la IA', type: 'textarea', value: v.criterios, placeholder: 'Ej. priorizar experiencia con modelos de demanda…' }) %>
+        <%- include('../../partials/form-field', { id: 'as-obligatoria', name: 'preguntaObligatoria', label: 'Pregunta obligatoria (opcional)', value: v.preguntaObligatoria, placeholder: '+ Escribe una pregunta', compact: true }) %>
+        <p class="asistente__resumen" data-asistente-resumen aria-live="polite">
+          Resumen: <strong data-res-preguntas><%= v.preguntas %> preguntas</strong> + hasta <span data-res-repreguntas><%= v.repreguntas %></span> repreguntas · aprox. <span data-res-duracion><%= v.duracion %></span> min · <span data-res-competencias><%= v.competencias.length %></span> competencias
+        </p>
+      </section>
+    </div>
+
+    <div class="asistente__foot">
+      <span class="text-muted text-small">Los campos con * y al menos una competencia son obligatorios para publicar.</span>
+      <div class="actions-end">
+        <button type="button" class="btn btn--soft" data-modal-close>Cancelar</button>
+        <% if (!publicada) { %><button type="submit" class="btn btn--soft" name="accion" value="borrador">Guardar borrador</button><% } %>
+        <button type="submit" class="btn btn--accent" name="accion" value="publicar"><%= publicada ? 'Guardar cambios' : 'Publicar vacante' %></button>
+      </div>
+    </div>
+  </form>
+</dialog>

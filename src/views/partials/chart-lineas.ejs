@@ -1,0 +1,72 @@
+<%
+  // Líneas por día (2 series, un solo eje) en SVG. Specs: línea 2 px, marcador final ≥ 8 px con anillo de 2 px
+  // del color de superficie, etiqueta solo en el extremo, rejilla fina sólida, leyenda + vista de tabla.
+  // Parámetros: id · titulo · fechas [{ corta }] · series [{ key, label, valores }] · prefijo (p. ej. 'US$ ')
+  const W = 420, H = 240, L = 52, R = 64, T = 14, B = 26;
+  const pw = W - L - R, ph = H - T - B;
+  const n = fechas.length;
+  const pre = locals.prefijo || '';
+  const todos = series.flatMap((s) => s.valores);
+  const pasos = [10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000, 2500, 5000];
+  const crudo = Math.max(...todos, 1) / 4;
+  const paso = pasos.find((p) => p >= crudo) || Math.ceil(crudo / 5000) * 5000;
+  const max = paso * 4;
+  const x = (i) => L + (n === 1 ? pw / 2 : (i / (n - 1)) * pw);
+  const y = (v) => T + ph - (v / max) * ph;
+  const cada = Math.ceil(n / 5);
+  const fmt = (v) => Number(v).toLocaleString('en-US');
+  const finales = series.map((s) => y(s.valores[n - 1]));
+  // Si las etiquetas finales chocan, se separan lo mínimo con una línea guía.
+  const etiquetas = finales.map((v) => v);
+  if (etiquetas.length === 2 && Math.abs(etiquetas[0] - etiquetas[1]) < 16) {
+    const medio = (etiquetas[0] + etiquetas[1]) / 2;
+    const arriba = etiquetas[0] < etiquetas[1] ? 0 : 1;
+    etiquetas[arriba] = medio - 9; etiquetas[1 - arriba] = medio + 9;
+  }
+%>
+<figure class="chart" data-chart="lineas" data-chart-id="<%= id %>">
+  <figcaption class="chart__head">
+    <h2 class="panel__title" id="<%= id %>-t"><%= titulo %></h2>
+    <ul class="chart__legend" role="list">
+      <% series.forEach((s, k) => { %><li><span class="chart__key chart__key--line chart__key--<%= k + 1 %>" aria-hidden="true"></span><%= s.label %></li><% }) %>
+    </ul>
+  </figcaption>
+  <div class="chart__plot">
+    <svg viewBox="0 0 <%= W %> <%= H %>" class="chart__svg" role="img" aria-labelledby="<%= id %>-t" aria-describedby="<%= id %>-tabla-t" tabindex="0" data-chart-svg>
+      <g class="chart__grid" aria-hidden="true">
+        <% for (let t = 0; t <= 4; t++) { const v = paso * t; %>
+          <line x1="<%= L %>" x2="<%= W - R %>" y1="<%= y(v) %>" y2="<%= y(v) %>"<% if (t === 0) { %> class="chart__baseline"<% } %>></line>
+          <text x="<%= L - 8 %>" y="<%= y(v) + 4 %>" text-anchor="end"><%= pre %><%= fmt(v) %></text>
+        <% } %>
+        <% fechas.forEach((f, i) => { if (i % cada === 0 || i === n - 1) { %><text x="<%= x(i) %>" y="<%= H - 8 %>" text-anchor="middle"><%= f.corta %></text><% } }) %>
+      </g>
+      <line class="chart__crosshair" x1="0" x2="0" y1="<%= T %>" y2="<%= T + ph %>" hidden data-crosshair></line>
+      <% series.forEach((s, k) => { %>
+        <polyline class="chart__line chart__s<%= k + 1 %>" points="<%= s.valores.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ') %>" aria-hidden="true"></polyline>
+      <% }) %>
+      <% series.forEach((s, k) => { %>
+        <circle class="chart__dot chart__s<%= k + 1 %>" cx="<%= x(n - 1) %>" cy="<%= finales[k] %>" r="4" aria-hidden="true"></circle>
+        <% if (etiquetas[k] !== finales[k]) { %><line class="chart__leader" x1="<%= x(n - 1) + 6 %>" y1="<%= finales[k] %>" x2="<%= x(n - 1) + 12 %>" y2="<%= etiquetas[k] - 4 %>" aria-hidden="true"></line><% } %>
+        <text class="chart__end-label" x="<%= x(n - 1) + 14 %>" y="<%= etiquetas[k] %>" aria-hidden="true"><%= pre %><%= fmt(s.valores[n - 1]) %></text>
+        <circle class="chart__hover-dot chart__s<%= k + 1 %>" r="5" cx="0" cy="0" hidden data-hover-dot="<%= k %>"></circle>
+      <% }) %>
+      <g class="chart__hits" aria-hidden="true">
+        <% fechas.forEach((f, i) => { const w = pw / Math.max(1, n - 1); %>
+          <rect x="<%= Math.max(L, x(i) - w / 2) %>" y="<%= T %>" width="<%= w %>" height="<%= ph %>" data-i="<%= i %>" data-cx="<%= x(i) %>"<% series.forEach((s, k) => { %> data-y<%= k %>="<%= y(s.valores[i]).toFixed(1) %>"<% }) %>></rect>
+        <% }) %>
+      </g>
+    </svg>
+    <div class="chart__tip" role="status" aria-live="polite" hidden data-chart-tip></div>
+  </div>
+  <details class="disclosure disclosure--plain chart__table">
+    <summary id="<%= id %>-tabla-t">Ver como tabla</summary>
+    <div class="table-card">
+      <table class="data-table data-table--compact" data-chart-table>
+        <thead><tr><th scope="col">Día</th><% series.forEach((s) => { %><th scope="col"><%= s.label %></th><% }) %></tr></thead>
+        <tbody>
+          <% fechas.forEach((f, i) => { %><tr data-i="<%= i %>"><th scope="row"><%= f.corta %></th><% series.forEach((s) => { %><td class="num"><%= pre %><%= fmt(s.valores[i]) %></td><% }) %></tr><% }) %>
+        </tbody>
+      </table>
+    </div>
+  </details>
+</figure>

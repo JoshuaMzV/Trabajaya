@@ -1,0 +1,54 @@
+/* Tokens de diseño extraídos de disenos/landing (CLAUDE.md §3). */
+:root{
+  /* Color */
+  --color-bg:#FBFAFF; --color-surface:#FFFFFF;
+  --color-ink:#23153C;        /* texto principal, botones oscuros, bandas oscuras */
+  --color-ink-2:#3D2D5C;      /* links del navbar */
+  --color-muted:#4B3B6B;      /* texto secundario */
+  --color-label:#6A5A8A;      /* etiquetas pequeñas */
+  --color-accent:#D13A1C;     /* coral: CTA principal y acento de marca */
+  --color-link:#B8321A; --color-link-hover:#8E2412;
+  --color-lilac:#EAE4FF; --color-lilac-2:#F3F0FC;
+  --color-border:#E4DDF7; --color-border-strong:#CFC4F0;
+  --color-ink-soft:#34245A;   /* tarjetas sobre fondo oscuro */
+  --color-on-dark:#E4DDF7; --color-on-dark-muted:#CFC4F0;
+  --color-accent-soft:#FFE9E3; --color-accent-softer:#FFF4F1; --color-accent-line:#FFD3C7;
+  --color-danger:#8A2310; --color-danger-line:#C5341A; --color-danger-bg:#FFF1EE;
+  --color-success:#1B5E40; --color-success-bg:#E3F4EC;
+  --color-coin:#F2B33D;
+  /* Tipografía */
+  --font-display:'Bricolage Grotesque', system-ui, sans-serif; /* 600, 800 */
+  --font-body:'Figtree', system-ui, sans-serif;                /* 400–700 */
+  --fs-hero:80px; --fs-h1:64px; --fs-h2:44px; --fs-h3:26px; --fs-body:17px; --fs-small:14px;
+  /* Forma */
+  --radius-pill:999px; --radius-card:24px; --radius-band:32px; --radius-input:16px; --radius-sm:12px;
+  --shadow-card:0 18px 40px -20px rgba(35,21,60,.30);
+  --shadow-modal:0 40px 80px -30px rgba(0,0,0,.50);
+  /* Layout */
+  --container:1240px; --gutter:32px;
+
+  /* Valores adicionales que aparecen repetidos en la landing */
+  --color-subtle:#5A4A7A;          /* "o con tu correo", copyright, descripciones de packs */
+  --color-accent-ink:#9A2A14;      /* texto sobre --color-accent-soft ("PRO · 999 monedas", "Recomendado") */
+  --color-danger-border:#F5B3A3;   /* borde de la alerta de error */
+  --color-on-accent:#FFE9E3;       /* texto secundario sobre coral */
+  --color-overlay:rgba(35,21,60,.62);
+  --shadow-raised:0 24px 48px -32px rgba(35,21,60,.30);  /* formulario de contacto */
+  --shadow-menu:0 18px 40px -16px rgba(35,21,60,.28);
+  --shadow-tab:0 2px 6px rgba(35,21,60,.12);
+  --focus-ring:0 0 0 3px var(--color-bg), 0 0 0 5px var(--color-accent);
+  --sidebar-width:248px;
+
+  /* Gráficos (validados con dataviz/validate_palette.js sobre #FFFFFF: banda L, croma, CVD ΔE 27.6, contraste ≥ 3:1) */
+  --chart-1:#6C4FD1;   /* serie 1 · violeta de la familia lila */
+  --chart-2:#D13A1C;   /* serie 2 · coral de marca */
+  --chart-grid:#E4DDF7;
+}
+
+/* Escala tipográfica en pantallas pequeñas (diseñado a 1440px, debe funcionar a 390px). */
+@media (max-width: 720px){
+  :root{
+    --fs-hero:48px; --fs-h1:42px; --fs-h2:32px; --fs-h3:22px; --fs-body:16px;
+    --gutter:16px; --radius-band:24px;
+  }
+}

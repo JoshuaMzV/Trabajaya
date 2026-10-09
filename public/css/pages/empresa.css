@@ -1,0 +1,88 @@
+/* Área de la empresa: disenos/app/WR-*.dc.html con la piel de la landing (CLAUDE.md §2). */
+
+/* ---------- Mis Vacantes ---------- */
+.vac-list{ display:flex; flex-direction:column; gap:10px; }
+.vac-row{ flex-direction:row; flex-wrap:wrap; align-items:center; gap:16px; padding:18px 20px; border-radius:20px; }
+.vac-row__head{ flex:2 1 240px; display:flex; flex-direction:column; gap:4px; min-width:0; }
+.vac-row__title{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.vac-row__title h2{ font-weight:800; font-size:17px; }
+.vac-row__actions{ display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+.mini-stats{ flex:3 1 360px; margin:0; display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:8px; }
+.mini-stats div{ padding:8px 10px; border-radius:var(--radius-sm); background:var(--color-lilac-2); display:flex; flex-direction:column; }
+.mini-stats dt{ font-size:12px; color:var(--color-muted); }
+.mini-stats dd{ margin:0; font-weight:800; font-variant-numeric:tabular-nums; }
+@media (max-width: 560px){ .mini-stats{ grid-template-columns:repeat(2, minmax(0, 1fr)); } }
+
+/* ---------- Asistente de vacante (modal ancho) ---------- */
+.asistente form{ display:flex; flex-direction:column; }
+.asistente__head{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; padding:22px 28px; border-bottom:1px solid var(--color-border); }
+.asistente__saved{ font-weight:600; color:var(--color-success); }
+.asistente__alert{ padding:16px 28px 0; }
+.asistente__body{ display:flex; flex-wrap:wrap; align-items:stretch; }
+.asistente__col{ flex:1 1 460px; min-width:0; padding:22px 28px; display:flex; flex-direction:column; gap:14px; }
+.asistente__col + .asistente__col{ border-left:1px solid var(--color-border); }
+.asistente__col--ia{ flex-basis:420px; background:var(--color-bg); }
+.asistente__resumen{ padding:12px 14px; border-radius:var(--radius-input); background:var(--color-surface); border:1px solid var(--color-border); font-size:14px; }
+.asistente__foot{ display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; padding:16px 28px; border-top:1px solid var(--color-border); }
+.salary-row{ display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; }
+.salary-row > .field{ flex:1 1 130px; }
+.salary-row__check{ flex:1 1 160px; min-height:48px; align-items:center; }
+.salary-row__check input{ margin:0; }
+.comp-list{ display:flex; flex-direction:column; gap:8px; }
+.comp-row{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; padding:10px 12px; border:1px solid var(--color-border); border-radius:var(--radius-input); background:var(--color-surface); }
+.comp-row__name{ flex:1 1 140px; font-weight:700; }
+.comp-row__weight{ flex:2 1 170px; display:flex; gap:8px; align-items:center; font-size:13px; color:var(--color-muted); }
+.comp-row__weight input{ flex:1; min-width:80px; min-height:32px; }
+.comp-row__value{ min-width:16px; font-weight:800; color:var(--color-ink); text-align:center; font-variant-numeric:tabular-nums; }
+.stepper-input{ display:flex; align-items:center; gap:8px; min-height:48px; }
+.stepper-input__value{ min-width:36px; text-align:center; font-size:22px; font-weight:800; font-variant-numeric:tabular-nums; }
+.asistente .dropdown__menu{ max-height:280px; overflow-y:auto; }
+@media (max-width: 900px){
+  .asistente__col + .asistente__col{ border-left:0; border-top:1px solid var(--color-border); }
+  .asistente__head, .asistente__col, .asistente__foot{ padding-left:20px; padding-right:20px; }
+}
+
+/* ---------- Postulantes: drawer ---------- */
+.score-pair{ display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px; }
+.score-pair div{ padding:10px 12px; border-radius:var(--radius-input); background:var(--color-lilac-2); display:flex; flex-direction:column; }
+.score-pair span{ font-size:12px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--color-label); }
+.score-pair strong{ font-size:24px; font-weight:800; line-height:1.2; }
+.verdict{ padding:12px 14px; border-radius:var(--radius-input); border:2px solid var(--color-ink); display:flex; flex-direction:column; }
+.verdict span{ font-size:12px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; color:var(--color-label); }
+.verdict strong{ font-size:17px; }
+.verdict--success{ border-color:var(--color-success); background:var(--color-success-bg); }
+.verdict--danger{ border-color:var(--color-danger-line); background:var(--color-danger-bg); }
+.qa{ padding:14px; border:1px solid var(--color-border); border-radius:var(--radius-input); display:flex; flex-direction:column; gap:8px; }
+.audio-row{ display:flex; gap:10px; align-items:center; padding:8px 10px; border-radius:var(--radius-sm); background:var(--color-lilac-2); }
+.audio-row__play{ width:36px; height:36px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border:0; border-radius:50%; background:var(--color-ink); color:#FFFFFF; }
+.audio-row__play:hover{ background:var(--color-ink-soft); }
+.audio-row__time{ font-size:12px; font-weight:700; font-variant-numeric:tabular-nums; }
+
+/* ---------- Exportar terna ---------- */
+.terna-list{ display:flex; flex-direction:column; gap:8px; }
+.terna-item{ display:flex; gap:12px; align-items:center; padding:10px 12px; border:1px solid var(--color-border); border-radius:var(--radius-input); }
+.terna-item__pos{ width:32px; height:32px; flex-shrink:0; border-radius:10px; background:var(--color-lilac); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:800; }
+.terna-item__body{ flex:1; display:flex; flex-direction:column; min-width:0; }
+.terna-item__move{ display:flex; gap:4px; }
+
+/* ---------- Perfil ---------- */
+.logo-field{ display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+.account-row{ flex-direction:row; flex-wrap:wrap; align-items:flex-end; gap:12px; }
+.account-row__email{ flex:1 1 260px; }
+
+/* ---------- Terna imprimible ---------- */
+.print-doc{ background:var(--color-lilac-2); padding:32px 16px; }
+.print-doc__page{ max-width:760px; margin:0 auto; padding:40px; background:#FFFFFF; border-radius:var(--radius-sm); display:flex; flex-direction:column; gap:18px; }
+.print-doc__head{ display:flex; flex-direction:column; gap:4px; padding-bottom:14px; border-bottom:2px solid var(--color-ink); }
+.print-doc__card{ display:flex; flex-direction:column; gap:6px; padding-bottom:14px; border-bottom:1px solid var(--color-border); }
+.print-doc__card h2{ font-family:var(--font-display); font-weight:800; font-size:20px; }
+@media print{
+  .print-doc{ background:none; padding:0; }
+  .print-doc__page{ padding:0; max-width:none; }
+  @page{ size:A4; margin:18mm; }
+}
+
+/* Cabecera y pie fijos dentro del modal mientras el contenido se desplaza */
+.asistente__head{ position:sticky; top:0; z-index:2; background:var(--color-surface); }
+.asistente__foot{ position:sticky; bottom:0; z-index:2; background:var(--color-surface); }
+.asistente .textarea{ min-height:88px; }

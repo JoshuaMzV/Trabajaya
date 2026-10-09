@@ -1,0 +1,26 @@
+<%
+  // Parámetros: navActive = clave de la página actual (p. ej. 'acerca').
+  // Como en el diseño, el footer solo marca las páginas que no están en el menú principal.
+  const actual = navPublica.some((i) => i.key === locals.navActive) ? null : locals.navActive;
+%>
+<footer class="site-footer">
+  <div class="site-footer__inner container">
+    <div class="site-footer__top">
+      <div class="site-footer__brand">
+        <span class="logo__text">Trabaja<span class="logo__ya">Ya</span></span>
+        <span class="site-footer__tagline">Empleo con entrevista IA, para quien busca y para quien contrata.</span>
+      </div>
+      <div class="site-footer__cols">
+        <% navFooter.forEach((col) => { %>
+          <nav class="site-footer__col" aria-label="<%= col.titulo %>">
+            <span class="site-footer__col-title"><%= col.titulo %></span>
+            <% col.links.forEach((link) => { %>
+              <a href="<%= link.href %>"<% if (link.key === actual) { %> aria-current="page"<% } %>><%= link.label %></a>
+            <% }) %>
+          </nav>
+        <% }) %>
+      </div>
+    </div>
+    <div class="site-footer__bottom">© <%= anio %> TrabajaYa</div>
+  </div>
+</footer>

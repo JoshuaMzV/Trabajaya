@@ -1,0 +1,196 @@
+<%# disenos/app/WA-Ajustes.dc.html · ?tab=precios|soporte|ia · "Guardar cambios" pide confirmación y queda en el historial %>
+<%
+  const L = plataforma.limites;
+  const limites = [['preguntasMin', 'Preguntas mín.'], ['preguntasMax', 'Preguntas máx.'], ['repreguntasMax', 'Repreguntas máx.'], ['duracionMax', 'Duración máx. (min)'], ['preguntasPractica', 'Preguntas en práctica'], ['practicasDia', 'Prácticas por día']];
+  const costosAccion = [['cvAdaptado', 'Adaptador ATS (análisis + CV)'], ['entrevista', 'Entrevista de práctica'], ['postulacion', 'Postulación (entrevista IA)'], ['regenerar', 'Regenerar CV']];
+  const tk = ticketSel;
+  // Abiertos = pendientes de respuesta (igual que el contador de la pestaña): ni Respondido ni Cerrado.
+  const filtroTicket = (t) => ['todos', t.estado === 'Cerrado' ? 'cerrados' : t.estado === 'Respondido' ? '' : 'abiertos', t.vip ? 'vip' : '', t.asignado === 'Sin asignar' ? 'sin-asignar' : ''].filter(Boolean).join(' ');
+  const seccion = tab === 'ia' ? 'ia' : 'precios';
+%>
+<div class="page">
+  <div class="page__header">
+    <h1 class="title-app">Ajustes de plataforma</h1>
+    <button type="submit" class="btn btn--accent btn--sm" form="form-ajustes" data-ajustes-guardar<% if (tab === 'soporte') { %> hidden<% } %>
+      data-confirm data-confirm-title="¿Guardar los cambios de la plataforma?" data-confirm-text="Se aplican de inmediato para candidatos y empresas y quedan en el historial." data-confirm-label="Guardar cambios">Guardar cambios</button>
+  </div>
+
+  <div class="tabs-underline tabs-underline--lg" role="tablist" aria-label="Sección" data-tabs-param="tab" data-ajustes-tabs>
+    <button type="button" role="tab" id="aj-tab-precios" data-value="precios" aria-controls="aj-precios" aria-selected="<%= tab === 'precios' %>">Precios y planes</button>
+    <button type="button" role="tab" id="aj-tab-soporte" data-value="soporte" aria-controls="aj-soporte" aria-selected="<%= tab === 'soporte' %>">Soporte · <%= abiertos %> abiertos</button>
+    <button type="button" role="tab" id="aj-tab-ia" data-value="ia" aria-controls="aj-ia" aria-selected="<%= tab === 'ia' %>">Configuración IA</button>
+  </div>
+
+  <form id="form-ajustes" method="post" action="/admin/ajustes" class="ajustes-form">
+    <input type="hidden" name="seccion" value="<%= seccion %>" data-ajustes-seccion>
+
+    <%# ------------------------------------------------------ Precios y planes %>
+    <div role="tabpanel" id="aj-precios" aria-labelledby="aj-tab-precios" class="aj-panel"<% if (tab !== 'precios') { %> hidden<% } %>>
+      <section class="card panel">
+        <div class="panel__head">
+          <h2 class="panel__title">Packs de TrabajaCoins</h2>
+          <button type="button" class="btn btn--soft btn--sm" data-pack-nuevo><%- icon('plus', { size: 16 }) %>Nuevo pack</button>
+        </div>
+        <div class="table-card table-card--flush">
+          <table class="data-table data-table--form">
+            <thead><tr><th scope="col">Nombre</th><th scope="col">Monedas</th><th scope="col">Precio</th><th scope="col">Etiqueta</th><th scope="col">Activo</th></tr></thead>
+            <tbody data-packs-body>
+              <% packs.forEach((p) => { %>
+                <tr>
+                  <td><input type="hidden" name="packId" value="<%= p.id %>"><input class="input input--compact" name="packNombre" value="<%= p.nombre %>" aria-label="Nombre del pack" required></td>
+                  <td><input class="input input--compact input--num" name="packMonedas" type="number" min="1" value="<%= p.monedas %>" aria-label="Monedas de <%= p.nombre %>"></td>
+                  <td><input class="input input--compact input--price" name="packPrecio" value="<%= p.precio %>" aria-label="Precio de <%= p.nombre %>"></td>
+                  <td><input class="input input--compact" name="packEtiqueta" value="<%= p.desc %>" aria-label="Etiqueta de <%= p.nombre %>"></td>
+                  <td><input class="table-check" type="checkbox" name="packActivo" value="<%= p.id %>"<% if (p.activo) { %> checked<% } %> aria-label="<%= p.nombre %> activo"></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+        <template data-pack-template>
+          <tr>
+            <td><input type="hidden" name="packId" value=""><input class="input input--compact" name="packNombre" value="" aria-label="Nombre del pack" required></td>
+            <td><input class="input input--compact input--num" name="packMonedas" type="number" min="1" value="100" aria-label="Monedas del pack"></td>
+            <td><input class="input input--compact input--price" name="packPrecio" value="" placeholder="US$ 0" aria-label="Precio del pack"></td>
+            <td><input class="input input--compact" name="packEtiqueta" value="" aria-label="Etiqueta del pack"></td>
+            <td><input class="table-check" type="checkbox" name="packActivo" value="" checked aria-label="Pack activo"></td>
+          </tr>
+        </template>
+      </section>
+
+      <div class="two-col">
+        <section class="card panel two-col__side">
+          <h2 class="panel__title">Plan PRO (candidatos)</h2>
+          <div class="grid-2 grid-2--gap">
+            <%- include('../partials/form-field', { id: 'aj-pro-precio', name: 'proPrecio', label: 'Precio mensual', value: precios.proMensual, compact: true }) %>
+            <%- include('../partials/form-field', { id: 'aj-pro-sla', name: 'proSla', label: 'SLA soporte VIP', value: plataforma.pro.sla, compact: true }) %>
+          </div>
+          <%- include('../partials/form-field', { id: 'aj-pro-ben', name: 'proBeneficios', label: 'Beneficios mostrados', type: 'textarea', value: plataforma.pro.beneficios }) %>
+        </section>
+        <section class="card panel two-col__side">
+          <h2 class="panel__title">Acceso demo VIP</h2>
+          <label class="check"><input type="checkbox" name="demoMostrar" value="1"<% if (plataforma.demo.mostrar) { %> checked<% } %>><span>Mostrar “Acceso rápido demo” en Entrar</span></label>
+          <div class="grid-2 grid-2--gap">
+            <%- include('../partials/form-field', { id: 'aj-demo-plan', name: 'demoPlan', label: 'Plan', type: 'select', value: plataforma.demo.plan, opciones: [{ value: 'PRO', label: 'PRO' }, { value: 'Gratis', label: 'Gratis' }], compact: true }) %>
+            <%- include('../partials/form-field', { id: 'aj-demo-monedas', name: 'demoMonedas', label: 'Monedas', type: 'number', value: plataforma.demo.monedas, compact: true }) %>
+          </div>
+          <span class="text-muted text-small">El acceso demo solo aparece fuera de producción.</span>
+        </section>
+      </div>
+
+      <section class="card panel" aria-labelledby="aj-costos-t">
+        <h2 class="panel__title" id="aj-costos-t">Costo por acción del candidato</h2>
+        <ul class="cost-list" role="list">
+          <% costosAccion.forEach(([k, label]) => { %>
+            <li class="cost-row">
+              <label for="aj-costo-<%= k %>"><%= label %></label>
+              <span class="cost-row__input">
+                <input class="input input--compact input--num" id="aj-costo-<%= k %>" name="costo_<%= k %>" type="number" min="0" value="<%= costos[k] %>">
+                <span class="text-muted text-small">monedas · PRO: incluido</span>
+              </span>
+            </li>
+          <% }) %>
+        </ul>
+        <span class="text-muted text-small">Las empresas no pagan. Los cambios piden confirmación y quedan en el historial.</span>
+      </section>
+    </div>
+
+    <%# ---------------------------------------------------------- Configuración IA %>
+    <div role="tabpanel" id="aj-ia" aria-labelledby="aj-tab-ia" class="aj-panel"<% if (tab !== 'ia') { %> hidden<% } %>>
+      <ul class="stat-grid stat-grid--180" role="list" aria-label="Uso de IA">
+        <% iaKpis.forEach((k) => { %><li class="stat-tile"><span class="stat-tile__label"><%= k.label %></span><span class="stat-tile__value"><%= k.valor %></span></li><% }) %>
+      </ul>
+      <div class="two-col">
+        <section class="card panel two-col__side">
+          <h2 class="panel__title">Límites de entrevista (rangos para empresas)</h2>
+          <div class="grid-fields grid-fields--150">
+            <% limites.forEach(([k, label]) => { %>
+              <%- include('../partials/form-field', { id: `aj-lim-${k}`, name: `lim_${k}`, label, type: 'number', value: L[k], compact: true }) %>
+            <% }) %>
+          </div>
+        </section>
+        <section class="card panel two-col__side">
+          <h2 class="panel__title">Voz, transcripción y datos</h2>
+          <%- include('../partials/form-field', { id: 'aj-idioma', name: 'idioma', label: 'Idioma', type: 'select', value: plataforma.voz.idioma, opciones: plataforma.idiomas.map((i) => ({ value: i, label: i })), compact: true }) %>
+          <%- include('../partials/form-field', { id: 'aj-audios', name: 'conservarAudios', label: 'Conservar audios', type: 'select', value: plataforma.voz.conservarAudios, opciones: plataforma.retencion.map((d) => ({ value: d, label: `${d} días` })), compact: true }) %>
+          <label class="check"><input type="checkbox" name="permitirVoz" value="1"<% if (plataforma.voz.permitirVoz) { %> checked<% } %>><span>Permitir respuesta por voz</span></label>
+          <label class="check"><input type="checkbox" name="noCobrarFallos" value="1"<% if (plataforma.voz.noCobrarFallos) { %> checked<% } %>><span>No descontar monedas si la IA falla</span></label>
+        </section>
+      </div>
+      <section class="card panel" aria-labelledby="aj-comp-t">
+        <h2 class="panel__title" id="aj-comp-t">Catálogo de competencias sugeridas</h2>
+        <div class="skills" data-tags data-tags-name="competencias">
+          <ul class="chip-group" role="list" data-tags-list>
+            <% plataforma.competencias.forEach((c) => { %>
+              <li class="skill-chip"><span><%= c %></span><input type="hidden" name="competencias" value="<%= c %>"><button type="button" class="skill-chip__x" data-tags-remove aria-label="Quitar <%= c %>"><%- icon('x', { size: 14, strokeWidth: 2.4 }) %></button></li>
+            <% }) %>
+          </ul>
+          <label class="visually-hidden" for="aj-comp-nueva">Agregar competencia</label>
+          <input class="skill-add" id="aj-comp-nueva" type="text" placeholder="+ Agregar" data-tags-input autocomplete="off">
+        </div>
+        <span class="text-muted text-small">Escribe y pulsa Enter. Las empresas eligen de este catálogo en el asistente de vacantes.</span>
+      </section>
+    </div>
+  </form>
+
+  <%# ------------------------------------------------------------------- Soporte %>
+  <div role="tabpanel" id="aj-soporte" aria-labelledby="aj-tab-soporte" class="aj-panel"<% if (tab !== 'soporte') { %> hidden<% } %>>
+    <div class="support">
+      <section class="card panel support__list" aria-label="Tickets">
+        <div class="chip-group" role="group" aria-label="Filtrar tickets" data-chip-group data-filter-for="lista-tickets" data-filter-key="filtro">
+          <button type="button" class="chip" aria-pressed="false" data-value="todos">Todos</button>
+          <button type="button" class="chip" aria-pressed="true" data-value="abiertos">Abiertos</button>
+          <button type="button" class="chip" aria-pressed="false" data-value="vip">VIP</button>
+          <button type="button" class="chip" aria-pressed="false" data-value="sin-asignar">Sin asignar</button>
+          <button type="button" class="chip" aria-pressed="false" data-value="cerrados">Cerrados</button>
+        </div>
+        <ul class="ticket-list" id="lista-tickets" role="list" data-filter-list data-filtro-inicial="abiertos">
+          <% tickets.forEach((t) => { %>
+            <li data-filter-item data-filtro="<%= filtroTicket(t) %>">
+              <a class="ticket-card" href="/admin/ajustes?tab=soporte&amp;ticket=<%= t.id %>"<% if (t.id === tk.id) { %> aria-current="true"<% } %>>
+                <span class="ticket-card__top"><strong>#<%= t.id %> · <%= t.asunto %></strong><% if (t.vip) { %><span class="badge badge--ink">VIP</span><% } %></span>
+                <span class="text-muted text-small"><%= t.usuario %> · <%= t.categoria %></span>
+                <span class="ticket-card__sla"><%= t.sla %></span>
+              </a>
+            </li>
+          <% }) %>
+        </ul>
+        <p class="text-muted text-small" data-filter-empty="lista-tickets" hidden>No hay tickets con este filtro.</p>
+      </section>
+
+      <section class="card panel support__detail" aria-labelledby="tk-t">
+        <div class="panel__head">
+          <div class="media__body">
+            <h2 class="panel__title" id="tk-t">#<%= tk.id %> · <%= tk.asunto %></h2>
+            <span class="text-muted text-small"><a class="link-strong" href="/admin/cuentas?cuenta=<%= tk.cuentaId %>"><%= tk.usuario %></a> · <%= tk.perfil %></span>
+          </div>
+          <span class="sla-chip<%= tk.vip ? ' sla-chip--vip' : '' %>">SLA: <%= tk.sla %></span>
+        </div>
+        <form class="inline-form" method="post" action="/admin/tickets/<%= tk.id %>">
+          <label class="visually-hidden" for="tk-estado">Estado</label>
+          <select class="select input--compact" id="tk-estado" name="estado"><% estadosTicket.forEach((e) => { %><option<% if (e === tk.estado) { %> selected<% } %>><%= e %></option><% }) %></select>
+          <label class="visually-hidden" for="tk-asignado">Asignado</label>
+          <select class="select input--compact" id="tk-asignado" name="asignado"><% agentes.forEach((a) => { %><option<% if (a === tk.asignado) { %> selected<% } %>><%= a %></option><% }) %></select>
+          <button type="submit" class="btn btn--soft btn--sm">Actualizar</button>
+        </form>
+        <ol class="thread" role="list" aria-label="Conversación">
+          <% tk.mensajes.forEach((m) => { %>
+            <li class="thread__msg thread__msg--<%= m.tipo %>">
+              <% if (m.tipo === 'nota') { %><span class="thread__tag">Nota interna</span><% } %>
+              <span><%= m.texto %></span>
+              <span class="thread__time"><%= m.tipo === 'agente' ? 'Agente' : m.tipo === 'nota' ? 'Solo equipo' : tk.usuario %> · <%= m.fecha %></span>
+            </li>
+          <% }) %>
+        </ol>
+        <form class="reply" method="post" action="/admin/tickets/<%= tk.id %>/mensajes">
+          <label class="visually-hidden" for="tk-texto">Respuesta</label>
+          <textarea class="textarea" id="tk-texto" name="texto" rows="3" placeholder="Responder o agregar nota interna…" required></textarea>
+          <div class="actions-end">
+            <button type="submit" class="btn btn--soft btn--sm" name="tipo" value="nota">Nota interna</button>
+            <button type="submit" class="btn btn--ink btn--sm" name="tipo" value="respuesta">Responder</button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </div>
+</div>

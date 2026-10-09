@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terna · <%= vacante.titulo %> · <%= empresa.nombre %></title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/css/tokens.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/components.css">
+<link rel="stylesheet" href="/css/pages/empresa.css">
+</head>
+<body class="print-doc">
+<%# STUB: el backend genera el PDF real. Esta página muestra la terna y abre el diálogo de impresión. %>
+<main class="print-doc__page">
+  <header class="print-doc__head">
+    <span class="text-label"><%= empresa.nombre %> · Terna recomendada</span>
+    <h1 class="title-app"><%= vacante.titulo %></h1>
+  </header>
+  <% if (!candidatos.length) { %>
+    <p class="text-muted">La terna de esta vacante está vacía.</p>
+  <% } %>
+  <% candidatos.forEach((c, i) => { %>
+    <section class="print-doc__card">
+      <h2><%= i + 1 %>. <%= c.nombre %></h2>
+      <p class="text-muted"><%= c.puesto %> · <%= c.anios %> años · <%= c.correo %></p>
+      <% if (incluir.has('scores')) { %><p><strong>ATS</strong> <%= c.ats %> · <strong>Entrevista</strong> <%= c.entrevista ?? '—' %></p><% } %>
+      <% if (incluir.has('dictamen') && c.dictamen) { %><p><strong>Dictamen IA:</strong> <%= c.dictamen.recomendacion %></p><% } %>
+      <% if (incluir.has('resumen') && c.dictamen) { %><p><%= c.dictamen.resumen %></p><% } %>
+      <% if (incluir.has('transcripcion')) { %>
+        <% c.qa.forEach((q) => { %><p><strong><%= q.pregunta %></strong> <%= q.transcripcion %></p><% }) %>
+      <% } %>
+      <% if (incluir.has('cv')) { %><p class="text-muted">CV adjunto en el PDF generado por el sistema.</p><% } %>
+    </section>
+  <% }) %>
+</main>
+<script src="/js/pages/imprimir.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Modal · Packs y Plan PRO</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#18181B}a:hover{color:#52525B}
+</style>
+</helmet>
+<div style="min-height: 960px; background: rgba(24,24,27,0.55); color: #18181B; font-family: Figtree, system-ui, sans-serif; font-size: 15px; line-height: 1.5; display: flex; align-items: center; justify-content: center; padding: 32px; box-sizing: border-box">
+<div role="dialog" aria-modal="true" aria-labelledby="t" style="width: 100%; max-width: 720px; background: #FFFFFF; border-radius: 16px; padding: 28px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px">
+<div style="display: flex; flex-direction: column"><h2 id="t" style="margin: 0; font-size: 22px; font-weight: 800">Recargar o mejorar plan</h2><span style="color: #52525B; font-size: 14px">Saldo actual: [N] TrabajaCoins · Plan Gratis</span></div>
+<a href="WC-Muro.dc.html" aria-label="Cerrar" style="width: 44px; height: 44px; border-radius: 50%; background: #F4F4F5; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 800">×</a>
+</div>
+<ol aria-label="Pasos" style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="3"><li style="{{s.s}}">{{s.t}}</li></sc-for>
+</ol>
+
+<sc-if value="{{s0}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; flex-direction: column; gap: 14px">
+<div role="tablist" aria-label="Opción" style="display: flex; gap: 4px; padding: 4px; background: #E4E4E7; border-radius: 10px; align-self: flex-start">
+<button type="button" role="tab" aria-selected="{{isCoins}}" onClick="{{pickCoins}}" style="{{tCoins}}">Monedas</button>
+<button type="button" role="tab" aria-selected="{{isPro}}" onClick="{{pickPro}}" style="{{tPro}}">Plan PRO</button>
+</div>
+<sc-if value="{{isCoins}}" hint-placeholder-val="{{true}}">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr)); gap: 10px">
+<sc-for list="{{packs}}" as="p" hint-placeholder-count="3"><label style="{{p.s}}"><input type="radio" name="pk" checked="{{p.on}}" style="width: 18px; height: 18px; accent-color: #18181B; margin: 0"><span style="font-weight: 800; font-size: 18px">[N] monedas</span><span style="color: #52525B; font-size: 14px">{{p.d}}</span><span style="font-weight: 800">[PRECIO]</span></label></sc-for>
+</div>
+</sc-if>
+<sc-if value="{{isPro}}" hint-placeholder-val="{{false}}">
+<div style="border: 2px solid #18181B; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px"><span style="font-weight: 800; font-size: 18px">Plan PRO</span><span style="font-weight: 800; font-size: 18px">[PRECIO]/mes</span></div>
+<sc-for list="{{pro}}" as="b" hint-placeholder-count="3"><span style="padding: 6px 0; border-top: 1px solid #E4E4E7">✓ {{b}}</span></sc-for>
+<span style="font-size: 13px; color: #52525B">Comparación Gratis vs PRO enlazada a la página Planes.</span>
+</div>
+</sc-if>
+<button type="button" onClick="{{next}}" style="min-height: 48px; border-radius: 8px; border: 0; background: #18181B; color: #FFFFFF; font: inherit; font-weight: 800; cursor: pointer">Continuar al pago</button>
+</div>
+</sc-if>
+
+<sc-if value="{{s1}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<div style="padding: 12px; border-radius: 10px; background: #F4F4F5; display: flex; justify-content: space-between"><span style="font-weight: 700">{{summary}}</span><span style="font-weight: 800">[PRECIO]</span></div>
+<div style="border: 2px dashed #A1A1AA; border-radius: 12px; min-height: 160px; display: flex; align-items: center; justify-content: center; color: #52525B; font-weight: 600; text-align: center; padding: 16px">[Formulario de la pasarela de pago: tarjeta / métodos disponibles]</div>
+<div style="display: flex; gap: 8px; justify-content: space-between; flex-wrap: wrap"><button type="button" onClick="{{prev}}" style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Atrás</button><button type="button" onClick="{{next}}" style="min-height: 44px; padding: 0 18px; border-radius: 8px; border: 0; background: #18181B; color: #FFFFFF; font: inherit; font-weight: 800; cursor: pointer">Pagar [PRECIO]</button></div>
+<span style="font-size: 13px; color: #52525B">Error de pago: mensaje en línea + reintentar; no se cobra.</span>
+</div>
+</sc-if>
+
+<sc-if value="{{s2}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 12px; align-items: center; text-align: center; padding: 12px 0">
+<span style="width: 64px; height: 64px; border-radius: 50%; border: 3px solid #18181B; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 800">✓</span>
+<span style="font-weight: 800; font-size: 20px">¡Listo! {{done}}</span>
+<span style="color: #52525B">Nuevo saldo: [N] monedas. Te enviamos el comprobante por correo.</span>
+<div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center"><a href="WC-Adaptar.dc.html" style="min-height: 44px; padding: 0 16px; border-radius: 8px; background: #18181B; color: #FFFFFF; display: flex; align-items: center; text-decoration: none; font-weight: 700">Volver a lo que hacía</a><button type="button" onClick="{{reset}}" style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Ver de nuevo</button></div>
+</div>
+</sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":960}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { step: 0, opt: 'coins' }; }
+renderVals() {
+const st = this.state.step, coins = this.state.opt === 'coins';
+const on = 'min-height: 40px; padding: 0 18px; border-radius: 8px; border: 0; background: #FFFFFF; font: inherit; font-weight: 800; cursor: pointer; color: #18181B';
+const off = 'min-height: 40px; padding: 0 18px; border-radius: 8px; border: 0; background: transparent; font: inherit; font-weight: 600; cursor: pointer; color: #3F3F46';
+const sb = 'padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 800; text-align: center; ';
+const pk = 'padding: 16px; border-radius: 12px; display: flex; flex-direction: column; gap: 4px; cursor: pointer; ';
+return {
+s0: st === 0, s1: st === 1, s2: st === 2,
+steps: ['1. Elegir', '2. Pagar', '3. Confirmación'].map((t, i) => ({ t, s: sb + (i === st ? 'background: #18181B; color: #FFFFFF' : i < st ? 'border: 2px solid #18181B' : 'background: #F4F4F5; color: #52525B') })),
+isCoins: coins, isPro: !coins, tCoins: coins ? on : off, tPro: coins ? off : on,
+pickCoins: () => this.setState({ opt: 'coins' }), pickPro: () => this.setState({ opt: 'pro' }),
+packs: [
+{ d: 'Básico', on: false, s: pk + 'border: 1px solid #D4D4D8' },
+{ d: 'Más popular', on: true, s: pk + 'border: 2px solid #18181B' },
+{ d: 'Mejor precio', on: false, s: pk + 'border: 1px solid #D4D4D8' }
+],
+pro: ['Uso ilimitado de todos los módulos', 'Soporte VIP en menos de 2 horas', 'Renovación mensual, cancelable'],
+summary: coins ? 'Pack de [N] monedas' : 'Plan PRO · mensual',
+done: coins ? 'Monedas acreditadas.' : 'Plan PRO activo.',
+next: () => this.setState({ step: Math.min(2, st + 1) }), prev: () => this.setState({ step: Math.max(0, st - 1) }), reset: () => this.setState({ step: 0 })
+};
+}
+}
+</script>
+</body>
+</html>

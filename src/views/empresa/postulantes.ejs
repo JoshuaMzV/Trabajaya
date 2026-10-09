@@ -1,0 +1,133 @@
+<%# disenos/app/WR-Postulantes.dc.html · tabla + drawer (?postulante=:id) + modal "Exportar terna" %>
+<%
+  const ini = (n) => n.split(/\s+/).slice(0, 2).map((p) => p[0]).join('').toUpperCase();
+  const conPostulante = (id) => `${baseUrl}&postulante=${id}`;
+  const enTerna = postulantes.filter((p) => p.enTerna).length;
+  const descartados = postulantes.filter((p) => p.estado === 'descartado').length;
+%>
+<div class="split">
+  <div class="split__main page">
+    <div class="page__header">
+      <div class="page__title">
+        <h1 class="title-app">Postulantes</h1>
+        <form class="inline-field" method="get" action="/empresa/postulantes" data-autosubmit>
+          <label class="field__label" for="post-vacante">Vacante</label>
+          <select class="select input--compact" id="post-vacante" name="vacante">
+            <% vacantes.forEach((x) => { %><option value="<%= x.id %>"<% if (x.id === vacante.id) { %> selected<% } %>><%= x.titulo %> · <%= x.total %> postulantes</option><% }) %>
+          </select>
+          <noscript><button type="submit" class="btn btn--soft btn--sm">Ver</button></noscript>
+        </form>
+      </div>
+      <button type="button" class="btn btn--ink btn--sm" data-modal-open="modal-terna" data-terna-boton<% if (!terna.length) { %> disabled<% } %>>
+        <span>Exportar terna (<span data-terna-count><%= terna.length %></span>/3)</span>
+      </button>
+    </div>
+
+    <% if (estado === 'error') { %>
+      <div class="empty-state" role="alert">
+        <span class="empty-state__icon empty-state__icon--danger"><%- icon('circle-alert') %></span>
+        <h2 class="empty-state__title">No pudimos cargar los postulantes</h2>
+        <p class="empty-state__text">Error de red o del servidor. Inténtalo de nuevo en unos segundos.</p>
+        <a class="btn btn--ink btn--sm" href="<%= baseUrl %>">Reintentar</a>
+      </div>
+    <% } else if (estado === 'vacio') { %>
+      <div class="empty-state">
+        <span class="empty-state__icon"><%- icon('users') %></span>
+        <h2 class="empty-state__title">Aún no hay postulantes</h2>
+        <p class="empty-state__text">Aparecerán cuando completen la entrevista IA.</p>
+        <a class="btn btn--soft btn--sm" href="/empresa/vacantes">Ver vacantes</a>
+      </div>
+    <% } else { %>
+      <div class="toolbar">
+        <div class="segmented segmented--light segmented--sm" role="tablist" aria-label="Filtro" data-filter-for="tabla-postulantes" data-filter-key="grupo">
+          <button type="button" role="tab" data-value="todos" aria-selected="true">Todos · <%= postulantes.length %></button>
+          <button type="button" role="tab" data-value="terna" aria-selected="false"><span>En terna · <span data-terna-count><%= enTerna %></span></span></button>
+          <button type="button" role="tab" data-value="descartado" aria-selected="false">Descartados · <%= descartados %></button>
+        </div>
+        <div class="toolbar__filters">
+          <label class="visually-hidden" for="post-q">Buscar candidato</label>
+          <input class="input input--compact toolbar__search" id="post-q" type="search" placeholder="Buscar" data-filter-for="tabla-postulantes" data-filter-key="q">
+          <label class="visually-hidden" for="post-score">Score mínimo de entrevista</label>
+          <select class="select input--compact" id="post-score" data-filter-for="tabla-postulantes" data-filter-key="entrevista" data-filter-min>
+            <option value="">Score: cualquiera</option><option value="60">Score ≥ 60</option><option value="70">Score ≥ 70</option><option value="80">Score ≥ 80</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <table class="data-table" data-sortable>
+          <thead>
+            <tr>
+              <th scope="col">Candidato</th>
+              <th scope="col" aria-sort="none"><button type="button" class="sort-btn" data-sort="ats">ATS<%- icon('arrow-up-down', { size: 14 }) %></button></th>
+              <th scope="col" aria-sort="none"><button type="button" class="sort-btn" data-sort="entrevista">Entrevista<%- icon('arrow-up-down', { size: 14 }) %></button></th>
+              <th scope="col">Estado</th>
+              <th scope="col">Fecha</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-postulantes" data-filter-list>
+            <% postulantes.forEach((p) => { const href = conPostulante(p.id); %>
+              <tr data-filter-item data-grupo="todos<%= p.enTerna ? ' terna' : '' %><%= p.estado === 'descartado' ? ' descartado' : '' %>" data-ats="<%= p.ats %>" data-entrevista="<%= p.entrevista ?? '' %>" data-postulante-row="<%= p.id %>"<% if (detalle && detalle.id === p.id) { %> aria-current="true"<% } %>>
+                <td>
+                  <a class="person-link" href="<%= href %>" data-drawer-open="drawer-postulante" data-drawer-src="/empresa/postulantes/<%= p.id %>/detalle" data-drawer-url="<%= href %>" data-drawer-current>
+                    <span class="avatar" aria-hidden="true"><%= ini(p.nombre) %><% if (p.avatarUrl) { %><img src="<%= p.avatarUrl %>" alt="" data-avatar-img><% } %></span>
+                    <span class="person-link__text"><strong><%= p.nombre %></strong><span class="text-muted text-small"><%= p.puesto %> · <%= p.anios %> <%= p.anios === 1 ? 'año' : 'años' %></span></span>
+                  </a>
+                </td>
+                <td class="num"><%= p.ats %></td>
+                <td class="num"><%= p.entrevista ?? '—' %></td>
+                <td data-estado-cell><%- include('../partials/badge', p.estadoVista) %></td>
+                <td class="text-muted"><%= p.fecha %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <div class="empty-state" data-filter-empty="tabla-postulantes" hidden>
+        <h2 class="empty-state__title">No hay postulantes con este filtro</h2>
+      </div>
+    <% } %>
+  </div>
+
+  <aside class="drawer" id="drawer-postulante" aria-labelledby="drawer-postulante-t" data-drawer-close-url="<%= baseUrl %>"<% if (!detalle) { %> hidden<% } %>>
+    <% if (detalle) { %><%- include('partials/postulante-detalle', { p: detalle, ternaLlena: terna.length >= 3 }) %><% } %>
+  </aside>
+</div>
+
+<dialog class="modal modal--lg" id="modal-terna" aria-labelledby="terna-t">
+  <form class="modal__content" method="get" action="/empresa/terna" target="_blank" data-terna-form>
+    <input type="hidden" name="vacante" value="<%= vacante.id %>">
+    <div class="modal__header">
+      <div class="modal__heading">
+        <h2 class="modal__title modal__title--sm" id="terna-t">Exportar terna · <%= vacante.titulo %></h2>
+        <span class="text-muted text-small">Ordena a los candidatos como quieres presentarlos a tu comité.</span>
+      </div>
+      <button type="button" class="btn-icon" data-modal-close aria-label="Cerrar"><%- icon('x', { size: 18, strokeWidth: 2.4 }) %></button>
+    </div>
+    <ol class="terna-list" role="list" data-terna-lista>
+      <% terna.forEach((p, i) => { %>
+        <li class="terna-item" data-terna-item="<%= p.id %>">
+          <span class="terna-item__pos" data-terna-pos><%= i + 1 %></span>
+          <span class="terna-item__body"><strong><%= p.nombre %></strong><span class="text-muted text-small">ATS <%= p.ats %> · Entrevista <%= p.entrevista ?? '—' %></span></span>
+          <input type="hidden" name="orden" value="<%= p.id %>">
+          <span class="terna-item__move">
+            <button type="button" class="btn-icon btn-icon--outline btn-icon--sm" data-terna-mover="-1" aria-label="Subir a <%= p.nombre %>"><%- icon('chevron-up', { size: 16 }) %></button>
+            <button type="button" class="btn-icon btn-icon--outline btn-icon--sm" data-terna-mover="1" aria-label="Bajar a <%= p.nombre %>"><%- icon('chevron-down', { size: 16 }) %></button>
+          </span>
+        </li>
+      <% }) %>
+    </ol>
+    <fieldset class="choice-group">
+      <legend>Incluir en el PDF</legend>
+      <div class="check-row">
+        <% [['resumen', 'Resumen', true], ['scores', 'Scores', true], ['dictamen', 'Dictamen IA', true], ['transcripcion', 'Transcripción', false], ['cv', 'CV', false]].forEach(([v, l, on]) => { %>
+          <label class="check"><input type="checkbox" name="incluir" value="<%= v %>"<% if (on) { %> checked<% } %>><span><%= l %></span></label>
+        <% }) %>
+      </div>
+    </fieldset>
+    <div class="modal__actions">
+      <button type="button" class="btn btn--soft" data-modal-close>Cancelar</button>
+      <button type="submit" class="btn btn--ink"><%- icon('download', { size: 18 }) %>Descargar PDF</button>
+    </div>
+  </form>
+</dialog>

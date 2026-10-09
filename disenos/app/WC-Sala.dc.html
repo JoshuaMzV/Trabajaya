@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Candidato · Sala de Entrevista IA</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#18181B}a:hover{color:#52525B}
+</style>
+</helmet>
+<div style="min-height: 1000px; background: #F4F4F5; color: #18181B; font-family: Figtree, system-ui, sans-serif; font-size: 15px; line-height: 1.5; display: flex; flex-wrap: wrap; align-items: stretch">
+<div style="flex: 1 1 240px; max-width: 100%; background: #FFFFFF; border-right: 1px solid #D4D4D8"><dc-import name="WFSide" role="cand" active="sala" hint-size="100%,900px"></dc-import></div>
+<main style="flex: 999 1 560px; min-width: 0; padding: 28px 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px"><h1 style="margin: 0; font-size: 26px; font-weight: 800">Sala de Entrevista IA</h1><span style="color: #52525B">[Puesto] · [Empresa]</span></div>
+<div role="tablist" aria-label="Modo" style="display: flex; gap: 4px; padding: 4px; background: #E4E4E7; border-radius: 10px">
+<sc-for list="{{modes}}" as="m" hint-placeholder-count="2"><button type="button" role="tab" aria-selected="{{m.on}}" onClick="{{m.pick}}" style="{{m.s}}">{{m.n}}</button></sc-for>
+</div>
+</div>
+
+<ol aria-label="Fases" style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{phases}}" as="p" hint-placeholder-count="3"><li style="display: flex"><button type="button" onClick="{{p.pick}}" aria-current="{{p.cur}}" style="{{p.s}}">{{p.n}}</button></li></sc-for>
+</ol>
+
+<sc-if value="{{p0}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+<section style="flex: 3 1 420px; background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+<div style="padding: 12px; border-radius: 10px; border: 2px dashed #A1A1AA; display: flex; flex-direction: column"><span style="font-weight: 800">{{modeTitle}}</span><span style="font-size: 14px; color: #52525B">{{modeDesc}}</span></div>
+<sc-if value="{{prac}}" hint-placeholder-val="{{true}}"><label style="display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 14px">Vacante para practicar<select style="min-height: 44px; padding: 0 10px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400; background: #FFFFFF"><option>[Puesto] · [Empresa]</option></select></label></sc-if>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr)); gap: 10px"><sc-for list="{{facts}}" as="f" hint-placeholder-count="3"><div style="padding: 12px; border-radius: 10px; background: #F4F4F5; display: flex; flex-direction: column"><span style="font-size: 13px; color: #52525B">{{f.l}}</span><span style="font-weight: 800">{{f.v}}</span></div></sc-for></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><span style="font-weight: 800">Instrucciones</span><span>1. Responde por voz o texto.</span><span>2. La IA puede repreguntar sobre lo que digas.</span><span>3. Usa STAR: situación, tarea, acción, resultado.</span></div>
+</section>
+<aside style="flex: 2 1 280px; background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+<span style="font-weight: 800">Prueba de micrófono</span>
+<div style="display: flex; gap: 3px; align-items: flex-end; height: 28px"><sc-for list="{{lvl}}" as="h" hint-placeholder-count="20"><span style="width: 6px; border-radius: 2px; background: #18181B; height: {{h}}px; display: block"></span></sc-for></div>
+<span style="font-size: 13px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: #E4E4E7; align-self: flex-start">Permiso concedido</span>
+<button type="button" onClick="{{toSession}}" style="min-height: 50px; border-radius: 8px; border: 0; background: #18181B; color: #FFFFFF; font: inherit; font-weight: 800; cursor: pointer">{{cta}}</button>
+<span style="font-size: 13px; color: #52525B">Sin saldo → se abre el modal de compra.</span>
+</aside>
+</div>
+</sc-if>
+
+<sc-if value="{{p1}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap"><span style="font-weight: 700">Pregunta 3 de [N] · [mm:ss]</span><button type="button" onClick="{{askEnd}}" style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Finalizar</button></div>
+<sc-if value="{{confirm}}" hint-placeholder-val="{{false}}">
+<div role="alertdialog" aria-labelledby="fin" style="background: #FFFFFF; border: 2px solid #18181B; border-radius: 12px; padding: 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between"><div style="display: flex; flex-direction: column"><span id="fin" style="font-weight: 800">¿Finalizar la entrevista?</span><span style="font-size: 14px; color: #52525B">Respondiste [N] de [N]. Se evaluará lo respondido.</span></div><div style="display: flex; gap: 8px"><button type="button" onClick="{{noEnd}}" style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Seguir</button><button type="button" onClick="{{toResult}}" style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 0; background: #18181B; color: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Finalizar</button></div></div>
+</sc-if>
+<section style="background: #FFFFFF; border: 2px solid #18181B; border-radius: 14px; padding: 22px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; gap: 8px; flex-wrap: wrap"><span style="font-size: 12px; font-weight: 800; padding: 3px 10px; border-radius: 999px; background: #18181B; color: #FFFFFF">REPREGUNTA</span><span style="font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: #E4E4E7">[Competencia]</span></div>
+<span style="font-size: 14px; color: #52525B">Sobre tu respuesta anterior: “[fragmento]”</span>
+<h2 style="margin: 0; font-size: 22px; font-weight: 800">[Pregunta generada a partir de la respuesta previa]</h2>
+</section>
+<section style="background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap">
+<button type="button" aria-label="Grabar / detener" style="width: 60px; height: 60px; border-radius: 50%; border: 0; background: #18181B; color: #FFFFFF; font: inherit; font-weight: 800; cursor: pointer">REC</button>
+<div style="flex: 1; min-width: 200px; display: flex; gap: 3px; align-items: center; height: 36px"><sc-for list="{{bars}}" as="b" hint-placeholder-count="36"><span style="width: 4px; border-radius: 2px; background: #71717A; height: {{b}}px; display: block"></span></sc-for></div>
+<button type="button" style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Escribir en su lugar</button>
+</div>
+<div style="padding: 12px; border-radius: 10px; background: #F4F4F5"><span style="font-size: 12px; font-weight: 800; color: #52525B">TRANSCRIPCIÓN EN VIVO</span><br><span style="color: #3F3F46">[Texto transcrito…]</span></div>
+<div style="display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap"><button type="button" style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Volver a responder</button><button type="button" style="min-height: 44px; padding: 0 18px; border-radius: 8px; border: 0; background: #18181B; color: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Enviar respuesta</button></div>
+</section>
+<span style="font-size: 14px; color: #52525B">Tras enviar: “Analizando tu respuesta…” → siguiente pregunta o repregunta en el mismo lugar.</span>
+</div>
+</sc-if>
+
+<sc-if value="{{p2prac}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: stretch">
+<section style="flex: 1 1 220px; background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px"><span style="width: 110px; height: 110px; border-radius: 50%; border: 12px solid #18181B; border-left-color: #E4E4E7; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 800">[N]</span><span style="font-weight: 800">Score general</span></section>
+<section style="flex: 2 1 380px; background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 10px"><span style="font-weight: 800">Desempeño por competencia</span><sc-for list="{{comps}}" as="c" hint-placeholder-count="3"><div style="display: flex; flex-direction: column; gap: 3px"><div style="display: flex; justify-content: space-between; font-size: 14px"><span>{{c.n}}</span><span style="font-weight: 800">[N]</span></div><span style="height: 8px; border-radius: 4px; background: #E4E4E7; display: block"><span style="{{c.b}}"></span></span></div></sc-for></section>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 14px"><sc-for list="{{cols}}" as="c" hint-placeholder-count="3"><section style="background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 6px"><span style="font-weight: 800">{{c}}</span><span>• [Punto]</span><span>• [Punto]</span></section></sc-for></div>
+<details style="background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 12px; padding: 14px 16px"><summary style="font-weight: 800; cursor: pointer; min-height: 28px">Respuesta por respuesta (transcripción resumida + comentario)</summary><span style="color: #52525B">[P1 · resumen · comentario] [P2 …]</span></details>
+<div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end"><button type="button" onClick="{{toPrep}}" style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Practicar de nuevo</button><a href="WC-Muro.dc.html" style="min-height: 44px; padding: 0 18px; border-radius: 8px; background: #18181B; color: #FFFFFF; display: flex; align-items: center; text-decoration: none; font-weight: 700">Postularme a esta vacante</a></div>
+</div>
+</sc-if>
+
+<sc-if value="{{p2post}}" hint-placeholder-val="{{false}}">
+<section style="background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 14px; padding: 32px; display: flex; flex-direction: column; gap: 14px; align-items: center; text-align: center">
+<span style="font-weight: 800; font-size: 20px">Dictamen generado y enviado a [Empresa]</span>
+<span style="color: #52525B; max-width: 520px">En modo postulación el dictamen lo recibe el reclutador. Tú verás el estado en Mis Postulaciones y te avisaremos por correo.</span>
+<a href="WC-Postulaciones.dc.html" style="min-height: 48px; padding: 0 20px; border-radius: 8px; background: #18181B; color: #FFFFFF; display: flex; align-items: center; text-decoration: none; font-weight: 800">Ir a Mis Postulaciones</a>
+<span style="font-size: 13px; color: #52525B">Al llegar se muestra el aviso (toast) “Postulación enviada”.</span>
+</section>
+</sc-if>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { p: 0, m: 'prac', confirm: false }; }
+renderVals() {
+const p = this.state.p, prac = this.state.m === 'prac';
+const on = 'min-height: 40px; padding: 0 16px; border-radius: 8px; border: 0; background: #FFFFFF; font: inherit; font-weight: 800; cursor: pointer; color: #18181B';
+const off = 'min-height: 40px; padding: 0 16px; border-radius: 8px; border: 0; background: transparent; font: inherit; font-weight: 600; cursor: pointer; color: #3F3F46';
+const ph = 'flex: 1; min-height: 48px; padding: 0 12px; border-radius: 10px; font: inherit; font-weight: 800; cursor: pointer; ';
+const bar = (w) => 'display: block; height: 8px; border-radius: 4px; background: #18181B; width: ' + w + '%';
+return {
+prac,
+modes: [['prac', 'Práctica'], ['post', 'Postulación']].map(([k, n]) => ({ n, on: this.state.m === k, s: this.state.m === k ? on : off, pick: () => this.setState({ m: k, p: 0 }) })),
+phases: ['1. Preparación', '2. Sesión', '3. Dictamen y feedback'].map((n, i) => ({ n, cur: i === p ? 'step' : 'false', s: ph + (i === p ? 'border: 0; background: #18181B; color: #FFFFFF' : i < p ? 'border: 2px solid #18181B; background: #FFFFFF; color: #18181B' : 'border: 1px solid #D4D4D8; background: #FFFFFF; color: #52525B'), pick: () => this.setState({ p: i, confirm: false }) })),
+p0: p === 0, p1: p === 1, p2prac: p === 2 && prac, p2post: p === 2 && !prac,
+confirm: this.state.confirm,
+modeTitle: prac ? 'Práctica: privada, con feedback detallado' : 'Postulación: filtro oficial de la empresa',
+modeDesc: prac ? 'Nadie más ve tus respuestas.' : 'El reclutador recibirá transcripción, score y dictamen. Un solo intento.',
+facts: [{ l: 'Preguntas', v: '[N] + repreguntas' }, { l: 'Duración', v: '[N] min' }, { l: 'Costo', v: prac ? '[N] monedas' : '[N] monedas' }],
+lvl: [6, 10, 16, 22, 14, 8, 18, 26, 20, 12, 8, 6, 4, 4, 4, 4, 4, 4, 4, 4],
+cta: prac ? 'Iniciar práctica' : 'Iniciar entrevista de postulación',
+bars: [8, 14, 22, 30, 18, 26, 34, 20, 12, 24, 32, 16, 28, 36, 22, 10, 18, 30, 24, 14, 26, 34, 18, 12, 22, 30, 16, 8, 14, 20, 10, 6, 6, 6, 6, 6],
+comps: [{ n: 'Adaptabilidad', b: bar(78) }, { n: 'Experiencia', b: bar(86) }, { n: 'Implementación técnica', b: bar(64) }],
+cols: ['Fortalezas', 'A mejorar', 'Recomendaciones'],
+toSession: () => this.setState({ p: 1 }), askEnd: () => this.setState({ confirm: true }), noEnd: () => this.setState({ confirm: false }),
+toResult: () => this.setState({ p: 2, confirm: false }), toPrep: () => this.setState({ p: 0 })
+};
+}
+}
+</script>
+</body>
+</html>

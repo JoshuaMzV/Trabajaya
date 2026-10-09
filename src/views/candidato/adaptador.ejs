@@ -1,0 +1,110 @@
+<%# disenos/app/WC-Adaptador.dc.html · estados de la vista previa: inicial | listo | error | sin-expediente | sin-saldo (+ cargando en el cliente) %>
+<%
+  const listo = estado === 'listo' && cv;
+  const mensajes = {
+    error: { icono: 'circle-alert', peligro: true, t: 'Algo falló al generar tu CV', d: 'Error del servidor o tiempo agotado. No se descontaron monedas.' },
+    'sin-expediente': { icono: 'file-user', t: 'Primero sube tu Expediente Maestro', d: 'El adaptador necesita tu información base.' },
+    'sin-saldo': { icono: 'coins', t: 'No tienes monedas suficientes', d: `Esta acción cuesta ${costo}. Tu saldo es ${usuario.saldo}.` },
+    inicial: { icono: 'wand-sparkles', t: 'Tu CV adaptado aparecerá aquí', d: 'Elige una vacante y un estilo, y pulsa Analizar y generar.' },
+  };
+  const msg = mensajes[estado];
+%>
+<div class="page">
+  <div class="page__header">
+    <div class="page__title">
+      <h1 class="title-app">Adaptador ATS</h1>
+      <p class="text-muted">Compara tu expediente con una vacante y genera tu CV adaptado.</p>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <section class="two-col__side" aria-label="Entrada">
+      <form class="card panel" id="form-adaptador" method="post" action="/candidato/adaptador" data-adaptador-form>
+        <div class="field">
+          <label class="field__label" for="ad-vacante">1. Vacante del muro</label>
+          <select class="select input--compact" id="ad-vacante" name="vacante">
+            <% vacantes.forEach((v) => { %><option value="<%= v.id %>"<% if (vacanteSel && v.id === vacanteSel.id) { %> selected<% } %>><%= v.puesto %> · <%= v.empresa %></option><% }) %>
+          </select>
+        </div>
+        <fieldset class="choice-group">
+          <legend>2. Estilo del CV</legend>
+          <div class="grid-2">
+            <% Object.entries(estilos).forEach(([k, s]) => { %>
+              <label class="style-card">
+                <input class="visually-hidden" type="radio" name="estilo" value="<%= k %>"<% if (k === estiloSel) { %> checked<% } %>>
+                <span class="style-card__title"><%= s.label %></span>
+                <span class="style-card__desc"><%= s.desc %></span>
+              </label>
+            <% }) %>
+          </div>
+        </fieldset>
+        <button type="submit" class="btn btn--accent btn--block" data-submit-label="Analizando…">
+          Analizar y generar · <%= esPro ? 'incluido en PRO' : `${costo} monedas` %>
+        </button>
+      </form>
+
+      <% if (listo) { %>
+        <section class="card panel" aria-labelledby="ad-match-t">
+          <div class="media">
+            <%- include('../partials/score-ring', { valor: cv.match, tamano: 'md', tema: 'light', label: `Compatibilidad ${cv.match}%` }) %>
+            <div class="media__body">
+              <h2 class="panel__title" id="ad-match-t">Compatibilidad ATS</h2>
+              <span class="text-muted text-small">Requisitos, palabras clave y experiencia</span>
+            </div>
+          </div>
+          <ul class="chip-group" role="list" aria-label="Palabras clave de la vacante">
+            <% cv.keywords.forEach((k) => { %>
+              <li class="tag <%= k.ok ? 'tag--ink' : 'tag--dashed' %>"><%= k.k %><span class="visually-hidden"><%= k.ok ? ' (en tu CV)' : ' (falta en tu CV)' %></span></li>
+            <% }) %>
+          </ul>
+          <details class="disclosure" open>
+            <summary>Fortalezas (<%= cv.fortalezas.length %>)</summary>
+            <ul class="bullets"><% cv.fortalezas.forEach((f) => { %><li><strong><%= f.t %></strong> — <%= f.evidencia %></li><% }) %></ul>
+          </details>
+          <details class="disclosure" open>
+            <summary>Brechas y recomendaciones (<%= cv.brechas.length %>)</summary>
+            <ul class="bullets"><% cv.brechas.forEach((b) => { %><li><strong><%= b.t %></strong> → <%= b.accion %></li><% }) %></ul>
+          </details>
+          <a class="btn btn--soft btn--block" href="/candidato/entrevista?modo=practica&amp;vacante=<%= cv.vacanteId %>">Practicar entrevista para esta vacante</a>
+        </section>
+      <% } %>
+    </section>
+
+    <section class="preview" aria-labelledby="ad-preview-t">
+      <div class="preview__bar">
+        <h2 class="panel__title" id="ad-preview-t">Vista previa A4</h2>
+        <div class="preview__actions">
+          <button type="button" class="btn btn--soft btn--sm" data-action="imprimir"<% if (!listo) { %> disabled<% } %>>Imprimir</button>
+          <% if (listo) { %>
+            <a class="btn btn--ink btn--sm" href="/candidato/cvs/<%= cv.id %>" target="_blank" rel="noopener">Descargar PDF</a>
+          <% } else { %>
+            <button type="button" class="btn btn--ink btn--sm" disabled>Descargar PDF</button>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="preview__state" data-preview-state>
+        <% if (listo) { %>
+          <%- include('partials/cv-hoja', { cv, vacante: vacanteSel, expediente, editable: true }) %>
+          <p class="preview__note">Texto editable sobre la hoja · cambios aplicados por la IA resaltados</p>
+        <% } else if (msg) { %>
+          <div class="preview__msg"<% if (estado === 'error') { %> role="alert"<% } %>>
+            <span class="empty-state__icon<%= msg.peligro ? ' empty-state__icon--danger' : '' %>"><%- icon(msg.icono) %></span>
+            <h3 class="empty-state__title"><%= msg.t %></h3>
+            <p class="empty-state__text"><%= msg.d %></p>
+            <% if (estado === 'error') { %><button type="submit" class="btn btn--ink btn--sm" form="form-adaptador">Reintentar</button><% } %>
+            <% if (estado === 'sin-expediente') { %><a class="btn btn--ink btn--sm" href="/candidato/expediente">Ir a Expediente</a><% } %>
+            <% if (estado === 'sin-saldo') { %><a class="btn btn--ink btn--sm" href="?packs=1" data-modal-open="modal-packs">Comprar monedas</a><% } %>
+          </div>
+        <% } %>
+      </div>
+
+      <div class="cv-sheet cv-sheet--loading" data-preview-loading role="status" hidden>
+        <strong>Analizando y redactando…</strong>
+        <% for (let i = 0; i < 4; i++) { %>
+          <div class="cv-sheet__sk"><span class="skeleton skeleton--title"></span><span class="skeleton"></span><span class="skeleton skeleton--90"></span></div>
+        <% } %>
+      </div>
+    </section>
+  </div>
+</div>

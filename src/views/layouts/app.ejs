@@ -1,0 +1,43 @@
+<%
+  // Requiere: role (cand | rec | admin), active (clave del ítem del menú) y usuario.
+  const homeHref = navApp[role].items[0].href;
+%><!doctype html>
+<html lang="es">
+<head>
+<%- include('../partials/head', { styles: ['/css/pages/app.css', ...styles] }) %>
+</head>
+<body>
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
+<div class="app-shell">
+  <header class="app-topbar">
+    <a class="logo logo--sm" href="<%= homeHref %>">
+      <span class="logo__mark" aria-hidden="true">t</span>
+      <span class="logo__text">Trabaja<span class="logo__ya">Ya</span></span>
+    </a>
+    <button type="button" class="btn-icon" data-nav-toggle aria-controls="app-sidebar" aria-expanded="false" aria-label="Abrir menú">
+      <%- icon('menu') %>
+    </button>
+  </header>
+
+  <%- include('../partials/sidebar', { role, active, usuario }) %>
+
+  <main id="contenido" class="app-main" tabindex="-1">
+    <% if (locals.aviso) { %>
+      <div class="app-aviso"><%- include('../partials/toast', { titulo: aviso.titulo, mensaje: aviso.mensaje, variante: aviso.variante }) %></div>
+    <% } %>
+<%- body %>
+  </main>
+</div>
+
+<%# Modales globales: compra de monedas/PRO (solo candidato) y mesa de ayuda (candidato y empresa). %>
+<% if (role === 'cand' && locals.packsModal) { %>
+  <%- include('../candidato/modal-packs', { m: packsModal, usuario }) %>
+<% } %>
+<% if (locals.soporteModal) { %>
+  <%- include('../partials/panel-soporte', { s: soporteModal, usuario }) %>
+<% } %>
+<%# Confirmación genérica: [data-confirm] en un botón la abre y fija la acción del formulario (ver ui.js). %>
+<%- include('../partials/modal-confirmar') %>
+<%- include('../partials/scripts') %>
+</body>
+</html>

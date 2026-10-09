@@ -1,0 +1,103 @@
+/* Reset y estilos base. Depende de tokens.css. */
+*,
+*::before,
+*::after{ box-sizing:border-box; }
+
+html{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:var(--color-bg);
+  color:var(--color-ink);
+  font-family:var(--font-body);
+  font-size:var(--fs-body);
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+
+img, svg, video{ display:block; max-width:100%; }
+img{ height:auto; }
+.icon{ flex-shrink:0; }
+
+h1, h2, h3, h4, p, figure, blockquote, dl, dd{ margin:0; }
+:where(ul, ol)[role="list"]{ list-style:none; margin:0; padding:0; }
+
+input, button, textarea, select{ font:inherit; color:inherit; }
+button{ cursor:pointer; }
+button:disabled{ cursor:not-allowed; }
+textarea{ resize:vertical; }
+
+a{ color:var(--color-link); }
+a:hover{ color:var(--color-link-hover); }
+
+/* Títulos display: Bricolage Grotesque, tracking negativo, interlineado corto. */
+.display-hero,
+.display-1,
+.display-2,
+.display-3{
+  font-family:var(--font-display);
+  font-weight:800;
+  text-wrap:balance;
+}
+.display-hero{ font-size:var(--fs-hero); line-height:.98; letter-spacing:-0.045em; }
+.display-1{ font-size:var(--fs-h1); line-height:1; letter-spacing:-0.04em; }
+.display-2{ font-size:var(--fs-h2); line-height:1.05; letter-spacing:-0.035em; }
+.display-3{ font-size:var(--fs-h3); line-height:1.1; letter-spacing:-0.02em; }
+.title-app{ font-family:var(--font-display); font-weight:800; font-size:30px; line-height:1.05; letter-spacing:-0.03em; }
+
+.lead{ font-size:21px; color:var(--color-muted); text-wrap:pretty; }
+.text-muted{ color:var(--color-muted); }
+.text-label{ font-size:13px; font-weight:700; color:var(--color-label); }
+.text-small{ font-size:var(--fs-small); }
+.text-accent{ color:var(--color-accent); }
+
+@media (max-width: 720px){
+  .lead{ font-size:18px; }
+  .title-app{ font-size:26px; }
+}
+
+/* Foco visible y consistente (el anillo sigue el radio de cada componente). */
+:focus-visible{
+  outline:none;
+  box-shadow:var(--focus-ring);
+}
+
+.container{
+  width:100%;
+  max-width:var(--container);
+  margin-inline:auto;
+  padding-inline:var(--gutter);
+}
+
+.visually-hidden{
+  position:absolute !important;
+  width:1px; height:1px;
+  margin:-1px; padding:0;
+  overflow:hidden;
+  clip:rect(0 0 0 0);
+  white-space:nowrap;
+  border:0;
+}
+
+.skip-link{
+  position:absolute;
+  left:16px; top:-100px;
+  z-index:100;
+  padding:12px 20px;
+  border-radius:var(--radius-pill);
+  background:var(--color-ink);
+  color:#FFFFFF;
+  font-weight:700;
+  text-decoration:none;
+}
+.skip-link:focus{ top:12px; color:#FFFFFF; }
+
+[hidden]{ display:none !important; }
+
+/* Con un modal abierto no se desplaza el fondo. */
+html:has(dialog[open]:modal){ overflow:hidden; }
+
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
+}

@@ -1,0 +1,41 @@
+<%
+  // Hoja A4 del CV adaptado (WC-Adaptador › vista previa). Los cambios de la IA van en <mark>.
+  // Parámetros: cv (adaptación: estilo, keywords) · vacante · expediente · editable (bool)
+  const e = expediente;
+  const editable = locals.editable ? ' contenteditable="true" spellcheck="true"' : '';
+  const claves = cv.keywords.filter((k) => k.ok).map((k) => k.k);
+%>
+<article class="cv-sheet cv-sheet--<%= cv.estilo %>" aria-label="CV adaptado para <%= vacante.puesto %>">
+  <header class="cv-sheet__head">
+    <h2 class="cv-sheet__name"<%- editable %>><%= e.personal.nombre %></h2>
+    <p class="cv-sheet__role"<%- editable %>><mark><%= vacante.puesto %></mark></p>
+    <p class="cv-sheet__contact"<%- editable %>><%= e.personal.correo %> · <%= e.personal.telefono %> · <%= e.personal.ciudad %></p>
+  </header>
+
+  <section class="cv-sheet__section">
+    <h3>Perfil</h3>
+    <p<%- editable %>><%= e.resumen %> <mark>Enfoque en <%= claves.slice(0, 3).join(', ') %> para <%= vacante.empresa %>.</mark></p>
+  </section>
+
+  <section class="cv-sheet__section">
+    <h3>Experiencia</h3>
+    <% e.experiencia.forEach((x, i) => { %>
+      <div class="cv-sheet__item">
+        <p class="cv-sheet__item-head"><strong><%= x.puesto %></strong> · <%= x.empresa %><span><%= x.desde %> – <%= x.hasta %></span></p>
+        <p<%- editable %>><%= x.descripcion %><% if (i === 0) { %> <mark>Relacionado con <%= claves[3] || claves[0] %>.</mark><% } %></p>
+      </div>
+    <% }) %>
+  </section>
+
+  <section class="cv-sheet__section">
+    <h3>Educación y certificaciones</h3>
+    <% e.educacion.forEach((x) => { %>
+      <p class="cv-sheet__item-head"><strong><%= x.titulo %></strong> · <%= x.institucion %><span><%= x.anio %></span></p>
+    <% }) %>
+  </section>
+
+  <section class="cv-sheet__section">
+    <h3>Habilidades e idiomas</h3>
+    <p<%- editable %>><% e.habilidades.forEach((h, i) => { %><%= i ? ' · ' : '' %><% if (claves.includes(h)) { %><mark><%= h %></mark><% } else { %><%= h %><% } %><% }) %></p>
+  </section>
+</article>

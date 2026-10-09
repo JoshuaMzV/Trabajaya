@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Reclutador · Gestión de Postulantes</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#18181B}a:hover{color:#52525B}
+</style>
+</helmet>
+<div style="min-height: 1000px; background: #F4F4F5; color: #18181B; font-family: Figtree, system-ui, sans-serif; font-size: 15px; line-height: 1.5; display: flex; flex-wrap: wrap; align-items: stretch">
+<div style="flex: 1 1 240px; max-width: 100%; background: #FFFFFF; border-right: 1px solid #D4D4D8"><dc-import name="WFSide" role="rec" active="postulantes" hint-size="100%,900px"></dc-import></div>
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-wrap: wrap; align-items: stretch">
+<main style="flex: 999 1 460px; min-width: 0; padding: 28px 28px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px"><h1 style="margin: 0; font-size: 26px; font-weight: 800">Postulantes</h1><label style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px">Vacante<select style="min-height: 36px; padding: 0 8px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400; background: #FFFFFF"><option>[Puesto] · [N] postulantes</option></select></label></div>
+<button type="button" onClick="{{openExport}}" style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 0; background: #18181B; color: #FFFFFF; font: inherit; font-weight: 800; cursor: pointer">Exportar terna ({{terna}}/3)</button>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; align-items: center">
+<div role="tablist" aria-label="Filtro" style="display: flex; gap: 4px; padding: 4px; background: #E4E4E7; border-radius: 10px">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="3"><button type="button" role="tab" aria-selected="{{t.on}}" onClick="{{t.pick}}" style="{{t.s}}">{{t.n}}</button></sc-for>
+</div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<label style="position: absolute; left: -9999px" for="q">Buscar candidato</label><input id="q" type="search" placeholder="Buscar" style="min-height: 40px; width: 180px; padding: 0 10px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; background: #FFFFFF">
+<label style="position: absolute; left: -9999px" for="sc">Score mínimo</label><select id="sc" style="min-height: 40px; padding: 0 8px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; background: #FFFFFF"><option>Score: cualquiera</option></select>
+</div>
+</div>
+<div role="tablist" aria-label="Estado de la lista (demo)" style="display: flex; gap: 4px; padding: 4px; border: 1px dashed #A1A1AA; border-radius: 10px; align-self: flex-start; flex-wrap: wrap">
+<sc-for list="{{states}}" as="s" hint-placeholder-count="4"><button type="button" role="tab" aria-selected="{{s.on}}" onClick="{{s.pick}}" style="{{s.s}}">{{s.n}}</button></sc-for>
+</div>
+
+<sc-if value="{{data}}" hint-placeholder-val="{{true}}">
+<div style="background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 12px; overflow-x: auto">
+<table style="width: 100%; min-width: 620px; border-collapse: collapse">
+<thead><tr style="text-align: left; font-size: 13px; color: #52525B"><th style="padding: 12px 14px; border-bottom: 1px solid #D4D4D8">Candidato</th><th style="padding: 12px 8px; border-bottom: 1px solid #D4D4D8">ATS ↕</th><th style="padding: 12px 8px; border-bottom: 1px solid #D4D4D8">Entrevista ↕</th><th style="padding: 12px 8px; border-bottom: 1px solid #D4D4D8">Estado</th><th style="padding: 12px 14px; border-bottom: 1px solid #D4D4D8">Fecha</th></tr></thead>
+<tbody>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+<tr style="{{r.bg}}">
+<td style="padding: 10px 14px; border-bottom: 1px solid #E4E4E7"><button type="button" onClick="{{r.pick}}" style="display: flex; gap: 10px; align-items: center; border: 0; background: transparent; font: inherit; color: #18181B; text-align: left; cursor: pointer; padding: 0; min-height: 40px"><span style="width: 32px; height: 32px; border-radius: 50%; background: #E4E4E7; display: block; flex-shrink: 0"></span><span style="display: flex; flex-direction: column"><span style="font-weight: 700; text-decoration: underline">[Candidato {{r.i}}]</span><span style="font-size: 13px; color: #52525B">[Puesto actual] · [N] años</span></span></button></td>
+<td style="padding: 10px 8px; border-bottom: 1px solid #E4E4E7; font-weight: 800">[N]</td>
+<td style="padding: 10px 8px; border-bottom: 1px solid #E4E4E7; font-weight: 800">{{r.ia}}</td>
+<td style="padding: 10px 8px; border-bottom: 1px solid #E4E4E7"><span style="{{r.badge}}">{{r.st}}</span></td>
+<td style="padding: 10px 14px; border-bottom: 1px solid #E4E4E7; color: #52525B">[dd/mm]</td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+</sc-if>
+<sc-if value="{{other}}" hint-placeholder-val="{{false}}">
+<div style="background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 12px; padding: 28px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start">
+<sc-if value="{{loading}}" hint-placeholder-val="{{false}}"><div style="width: 100%; display: flex; flex-direction: column; gap: 12px"><sc-for list="{{sk}}" as="k" hint-placeholder-count="4"><div style="display: flex; gap: 10px; align-items: center"><span style="width: 32px; height: 32px; border-radius: 50%; background: #E4E4E7; display: block"></span><span style="flex: 1; height: 12px; border-radius: 6px; background: #E4E4E7; display: block"></span></div></sc-for></div></sc-if>
+<sc-if value="{{msg}}" hint-placeholder-val="{{false}}"><span style="font-weight: 800; font-size: 18px">{{msgT}}</span><span style="color: #52525B">{{msgD}}</span><button type="button" onClick="{{toData}}" style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">{{msgCta}}</button></sc-if>
+</div>
+</sc-if>
+</main>
+
+<sc-if value="{{drawer}}" hint-placeholder-val="{{true}}">
+<aside role="dialog" aria-labelledby="dn" style="flex: 1 1 440px; max-width: 100%; background: #FFFFFF; border-left: 1px solid #D4D4D8; box-shadow: -10px 0 30px rgba(0,0,0,0.08); padding: 22px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; gap: 10px; align-items: flex-start">
+<div style="display: flex; gap: 12px; align-items: center"><span style="width: 48px; height: 48px; border-radius: 50%; background: #E4E4E7; display: block; flex-shrink: 0"></span><div style="display: flex; flex-direction: column"><h2 id="dn" style="margin: 0; font-size: 19px; font-weight: 800">[Candidato {{sel}}]</h2><span style="font-size: 13px; color: #52525B">[correo] · [teléfono] · [Ciudad]</span></div></div>
+<button type="button" onClick="{{close}}" aria-label="Cerrar" style="width: 40px; height: 40px; border-radius: 50%; border: 0; background: #F4F4F5; font: inherit; font-weight: 800; cursor: pointer; flex-shrink: 0">×</button>
+</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px"><div style="padding: 10px; border-radius: 10px; background: #F4F4F5; display: flex; flex-direction: column"><span style="font-size: 12px; color: #52525B; font-weight: 700">SCORE ATS</span><span style="font-size: 22px; font-weight: 800">[N]</span></div><div style="padding: 10px; border-radius: 10px; background: #F4F4F5; display: flex; flex-direction: column"><span style="font-size: 12px; color: #52525B; font-weight: 700">ENTREVISTA</span><span style="font-size: 22px; font-weight: 800">[N]</span></div></div>
+<div role="tablist" aria-label="Secciones" style="display: flex; gap: 4px; border-bottom: 1px solid #D4D4D8">
+<sc-for list="{{dtabs}}" as="t" hint-placeholder-count="3"><button type="button" role="tab" aria-selected="{{t.on}}" onClick="{{t.pick}}" style="{{t.s}}">{{t.n}}</button></sc-for>
+</div>
+<sc-if value="{{d0}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="border: 2px solid #18181B; border-radius: 10px; padding: 12px"><span style="font-size: 12px; font-weight: 800; color: #52525B">RECOMENDACIÓN</span><br><span style="font-weight: 800">[Recomendado / Con reservas / No recomendado]</span></div>
+<span style="color: #3F3F46">[Resumen ejecutivo y justificación del dictamen]</span>
+<sc-for list="{{comps}}" as="c" hint-placeholder-count="3"><div style="display: flex; flex-direction: column; gap: 2px"><div style="display: flex; justify-content: space-between; font-size: 14px"><span>{{c.n}}</span><span style="font-weight: 800">[N]</span></div><span style="height: 8px; border-radius: 4px; background: #E4E4E7; display: block"><span style="{{c.b}}"></span></span></div></sc-for>
+<span style="font-size: 14px"><strong>Fortalezas:</strong> [..] · <strong>Brechas:</strong> [..] · <strong>Validar en entrevista:</strong> [..]</span>
+</div>
+</sc-if>
+<sc-if value="{{d1}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{qa}}" as="q" hint-placeholder-count="3"><div style="border: 1px solid #D4D4D8; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 6px"><span style="font-weight: 800">{{q}} · [Pregunta]</span><div style="display: flex; gap: 8px; align-items: center; padding: 8px; border-radius: 8px; background: #F4F4F5"><button type="button" aria-label="Reproducir audio" style="width: 32px; height: 32px; border-radius: 50%; border: 0; background: #18181B; color: #FFFFFF; font: inherit; cursor: pointer">▶</button><span style="flex: 1; height: 6px; border-radius: 3px; background: #D4D4D8; display: block"></span><span style="font-size: 12px; font-weight: 700">[mm:ss]</span></div><span style="color: #3F3F46; font-size: 14px">[Resumen fiel] · <u>ver transcripción completa</u></span></div></sc-for>
+</div>
+</sc-if>
+<sc-if value="{{d2}}" hint-placeholder-val="{{false}}">
+<div style="aspect-ratio: 1 / 1.2; border: 1px solid #D4D4D8; border-radius: 8px; background: #FAFAFA; display: flex; align-items: center; justify-content: center; color: #52525B; font-weight: 600">[CV resumido del candidato] · Descargar</div>
+</sc-if>
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 1px solid #E4E4E7">
+<button type="button" onClick="{{toggleTerna}}" style="min-height: 42px; border-radius: 8px; border: 1px solid #18181B; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">{{ternaLabel}}</button>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px"><button type="button" style="min-height: 44px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Descartar</button><button type="button" style="min-height: 44px; border-radius: 8px; border: 0; background: #18181B; color: #FFFFFF; font: inherit; font-weight: 800; cursor: pointer">Aprobar 1ra entrevista</button></div>
+<span style="font-size: 12px; color: #52525B">El candidato recibe un correo con el nuevo estado.</span>
+</div>
+</aside>
+</sc-if>
+</div>
+
+<sc-if value="{{exp}}" hint-placeholder-val="{{false}}">
+<div style="position: fixed; inset: 0; background: rgba(24,24,27,0.55); display: flex; align-items: center; justify-content: center; padding: 24px; box-sizing: border-box">
+<div role="dialog" aria-modal="true" aria-labelledby="ex" style="width: 100%; max-width: 560px; background: #FFFFFF; border-radius: 16px; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px">
+<h2 id="ex" style="margin: 0; font-size: 20px; font-weight: 800">Exportar terna · [Puesto]</h2>
+<sc-for list="{{ternaList}}" as="c" hint-placeholder-count="3"><div style="display: flex; gap: 10px; align-items: center; padding: 10px; border: 1px solid #D4D4D8; border-radius: 10px"><span aria-hidden="true" style="color: #71717A; font-weight: 800">⋮⋮</span><span style="font-weight: 800">{{c}}</span><span style="flex: 1; font-weight: 700">[Candidato] · ATS [N] · Entrevista [N]</span></div></sc-for>
+<div style="display: flex; gap: 14px; flex-wrap: wrap; font-size: 14px"><label style="display: flex; gap: 6px; align-items: center"><input type="checkbox" checked style="accent-color: #18181B">Resumen</label><label style="display: flex; gap: 6px; align-items: center"><input type="checkbox" checked style="accent-color: #18181B">Scores</label><label style="display: flex; gap: 6px; align-items: center"><input type="checkbox" checked style="accent-color: #18181B">Dictamen IA</label><label style="display: flex; gap: 6px; align-items: center"><input type="checkbox" style="accent-color: #18181B">Transcripción</label><label style="display: flex; gap: 6px; align-items: center"><input type="checkbox" style="accent-color: #18181B">CV</label></div>
+<div style="display: flex; gap: 8px; justify-content: flex-end"><button type="button" onClick="{{closeExport}}" style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Cancelar</button><button type="button" onClick="{{closeExport}}" style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 0; background: #18181B; color: #FFFFFF; font: inherit; font-weight: 800; cursor: pointer">Descargar PDF</button></div>
+</div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { f: 0, st: 0, sel: 1, d: 0, exp: false, terna: [1, 2, 3], desc: [6] }; }
+renderVals() {
+const s = this.state;
+const on = 'min-height: 36px; padding: 0 14px; border-radius: 8px; border: 0; background: #FFFFFF; font: inherit; font-weight: 800; cursor: pointer; color: #18181B';
+const off = 'min-height: 36px; padding: 0 14px; border-radius: 8px; border: 0; background: transparent; font: inherit; font-weight: 600; cursor: pointer; color: #3F3F46';
+const dOn = 'min-height: 32px; padding: 0 10px; border-radius: 8px; border: 0; background: #18181B; color: #FFFFFF; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer';
+const dOff = 'min-height: 32px; padding: 0 10px; border-radius: 8px; border: 0; background: transparent; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; color: #3F3F46';
+const tb = 'min-height: 42px; padding: 0 12px; border: 0; background: transparent; font: inherit; cursor: pointer; margin-bottom: -1px; ';
+const bd = 'font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; ';
+const bar = (w) => 'display: block; height: 8px; border-radius: 4px; background: #18181B; width: ' + w + '%';
+const all = [1, 2, 3, 4, 5, 6, 7].map((i) => {
+const inT = s.terna.indexOf(i) >= 0, dsc = s.desc.indexOf(i) >= 0;
+const st = inT ? 'En terna' : dsc ? 'Descartado' : i === 5 ? 'Entrevista pendiente' : 'Sin revisar';
+return { i, inT, dsc, st, ia: i === 5 ? '—' : '[N]', badge: bd + (inT ? 'background: #18181B; color: #FFFFFF' : dsc ? 'border: 1px dashed #18181B' : 'background: #E4E4E7'), bg: i === s.sel ? 'background: #F4F4F5' : '', pick: () => this.setState({ sel: i, d: 0 }) };
+});
+const rows = all.filter((r) => s.f === 0 ? true : s.f === 1 ? r.inT : r.dsc);
+const msgs = { 2: ['Aún no hay postulantes', 'Aparecerán cuando completen la entrevista IA.', 'Ver vacantes'], 3: ['No pudimos cargar los postulantes', 'Error de red o base de datos.', 'Reintentar'] };
+const mm = msgs[s.st] || ['', '', ''];
+const inTerna = s.terna.indexOf(s.sel) >= 0;
+return {
+terna: s.terna.length,
+tabs: ['Todos · [N]', 'En terna · ' + s.terna.length, 'Descartados · ' + s.desc.length].map((n, i) => ({ n, on: i === s.f, s: i === s.f ? on : off, pick: () => this.setState({ f: i }) })),
+states: ['Con datos', 'Cargando', 'Vacía', 'Error'].map((n, i) => ({ n, on: i === s.st, s: i === s.st ? dOn : dOff, pick: () => this.setState({ st: i }) })),
+data: s.st === 0, other: s.st > 0, loading: s.st === 1, msg: s.st >= 2, msgT: mm[0], msgD: mm[1], msgCta: mm[2], toData: () => this.setState({ st: 0 }),
+sk: [1, 2, 3, 4], rows,
+drawer: s.sel > 0 && s.st === 0, sel: s.sel, close: () => this.setState({ sel: 0 }),
+dtabs: ['Dictamen IA', 'Transcripción', 'CV'].map((n, i) => ({ n, on: i === s.d, pick: () => this.setState({ d: i }), s: tb + (i === s.d ? 'border-bottom: 3px solid #18181B; font-weight: 800' : 'border-bottom: 3px solid transparent; font-weight: 600; color: #52525B') })),
+d0: s.d === 0, d1: s.d === 1, d2: s.d === 2,
+comps: [{ n: 'Adaptabilidad', b: bar(80) }, { n: 'Experiencia', b: bar(88) }, { n: 'Implementación técnica', b: bar(66) }],
+qa: ['P1 · voz', 'P1.1 · repregunta', 'P2 · texto'],
+ternaLabel: inTerna ? 'Quitar de la terna' : 'Agregar a la terna',
+toggleTerna: () => this.setState({ terna: inTerna ? s.terna.filter((x) => x !== s.sel) : s.terna.concat([s.sel]).slice(0, 3) }),
+exp: s.exp, openExport: () => this.setState({ exp: true }), closeExport: () => this.setState({ exp: false }),
+ternaList: s.terna.map((x, i) => String(i + 1))
+};
+}
+}
+</script>
+</body>
+</html>

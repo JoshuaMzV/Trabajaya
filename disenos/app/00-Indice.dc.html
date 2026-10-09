@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Índice de vistas</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#18181B}a:hover{color:#52525B}
+</style>
+</helmet>
+<div style="min-height: 1000px; background: #F4F4F5; color: #18181B; font-family: Figtree, system-ui, sans-serif; font-size: 15px; line-height: 1.5">
+<div style="max-width: 1240px; margin: 0 auto; padding: 48px 32px; display: flex; flex-direction: column; gap: 28px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #52525B">Wireframes simplificados · baja fidelidad</span>
+<h1 style="margin: 0; font-size: 40px; font-weight: 800; letter-spacing: -0.02em">TrabajaYa — vistas por rol</h1>
+<p style="margin: 0; color: #52525B; max-width: 760px">11 vistas principales más 3 modales. Los estados (vacío, cargando, error, fases) viven dentro de cada vista: cámbialos en modo reproducción.</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); gap: 18px; align-items: start">
+<sc-for list="{{groups}}" as="g" hint-placeholder-count="3">
+<section style="background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 14px; padding: 22px; display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0 0 6px; font-size: 20px; font-weight: 800">{{g.name}}</h2>
+<sc-for list="{{g.items}}" as="i" hint-placeholder-count="5">
+<a href="{{i.href}}" style="min-height: 48px; display: flex; flex-direction: column; justify-content: center; padding: 6px 12px; border-radius: 8px; border: 1px solid #E4E4E7; text-decoration: none; color: #18181B"><span style="font-weight: 700"><span style="color: #52525B; margin-right: 8px">{{i.id}}</span>{{i.t}}</span><span style="font-size: 13px; color: #52525B">{{i.d}}</span></a>
+</sc-for>
+</section>
+</sc-for>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+renderVals() {
+const m = (arr) => arr.map(([id, t, f, d]) => ({ id, t, d, href: f + '.dc.html' }));
+return {
+groups: [
+{ name: 'Candidato · 5 vistas', items: m([
+['C1', 'Muro de empleos', 'WC-Muro', 'Lista + drawer de detalle de vacante'],
+['C2', 'Expediente Maestro', 'WC-Expediente', 'Vacío → leyendo → datos y reemplazar'],
+['C3', 'Adaptador ATS', 'WC-Adaptador', 'Entrada a la izquierda, vista previa a la derecha'],
+['C4', 'Sala de Entrevista IA', 'WC-Sala', 'Preparación → Sesión → Dictamen'],
+['C5', 'Mis Postulaciones', 'WC-Postulaciones', 'Seguimiento con badges + aviso de envío'],
+['M', 'Comprar monedas / PRO', 'WC-Packs', 'Modal'],
+['M', 'Soporte', 'WC-Soporte', 'Widget lateral']
+]) },
+{ name: 'Reclutador · 3 vistas', items: m([
+['R1', 'Mis Vacantes & Muro', 'WR-Vacantes', 'Vacantes activas con métricas'],
+['M', 'Asistente único de vacante', 'WR-Asistente', 'Datos del puesto + ponderaciones IA'],
+['R2', 'Gestión de Postulantes', 'WR-Postulantes', 'Filtros, drawer con dictamen y terna'],
+['R3', 'Perfil de empresa', 'WR-Empresa', 'Sin monedas ni planes']
+]) },
+{ name: 'Administrador · 3 vistas', items: m([
+['A1', 'Métricas globales & Facturación', 'WA-Metricas', 'KPIs, gráficos y transacciones'],
+['A2', 'Gestión de cuentas', 'WA-Cuentas', 'Tabla + drawer de detalle'],
+['A3', 'Ajustes de plataforma & IA', 'WA-Ajustes', 'Precios · Soporte · IA en pestañas']
+]) }
+]
+};
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+/* Modales de auth: disenos/landing/TY-Entrar, TY-Registro-Rol, TY-Registro-Datos, TY-Recuperar. */
+
+.modal--sm{ width:min(100% - 32px, 460px); }
+.auth-modal .modal__content{ gap:18px; }
+.auth-modal__btn{ min-height:52px; }
+.auth-modal__btn--sm{ min-height:50px; }
+.auth-modal__submit{ min-height:54px; font-size:17px; }
+.auth-modal__foot{ text-align:center; color:var(--color-muted); }
+.auth-modal__foot--sm{ font-size:15px; }
+.auth-modal__heading{ display:flex; flex-direction:column; gap:6px; }
+.auth-modal__title-sm{ font-size:32px; }
+.auth-modal__bar{ align-items:center; }
+
+/* Registro: el ancho cambia con el paso. */
+.modal-registro[data-paso="1"]{ width:min(100% - 32px, 640px); }
+.modal-registro[data-paso="1"] .modal__content{ gap:22px; }
+.modal-registro[data-paso="1"] .modal__title{ font-size:36px; }
+.modal-registro[data-paso="2"]{ width:min(100% - 32px, 520px); padding:30px 34px; }
+.auth-modal__compact.modal__content{ gap:14px; }
+.auth-modal__compact .field{ gap:5px; }
+
+/* Indicador de pasos */
+.auth-steps{ display:flex; align-items:center; gap:10px; }
+.auth-steps__bar{ width:32px; height:6px; border-radius:3px; background:var(--color-border); }
+.auth-steps__bar--on{ background:var(--color-accent); }
+.auth-steps__label{ font-size:14px; font-weight:700; color:var(--color-subtle); }
+
+.auth-back{
+  min-height:44px;
+  display:inline-flex; align-items:center; gap:6px;
+  color:var(--color-muted); text-decoration:none;
+  font-weight:700; font-size:15px;
+  border-radius:var(--radius-sm);
+}
+.auth-back:hover{ color:var(--color-ink); }
+
+/* Tarjetas de rol (radios reales con apariencia de tarjeta) */
+.role-cards{
+  border:0; margin:0; padding:0; min-width:0;
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap:14px;
+}
+.role-card{
+  min-height:220px; padding:22px;
+  display:flex; flex-direction:column; align-items:flex-start; gap:10px;
+  border:1px solid var(--color-border); border-radius:var(--radius-card);
+  background:var(--color-surface); color:var(--color-ink);
+  cursor:pointer;
+  transition:border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+.role-card:hover{ border-color:var(--color-border-strong); }
+.role-card:has(input:checked){
+  border:2px solid var(--color-accent); padding:21px;
+  background:#FFF8F6; box-shadow:0 0 0 4px var(--color-accent-soft);
+}
+.role-card:has(input:focus-visible){ box-shadow:0 0 0 4px var(--color-accent-soft), var(--focus-ring); }
+.role-card__top{ display:flex; justify-content:space-between; align-items:center; width:100%; }
+.role-card__icon{ width:52px; height:52px; border-radius:16px; display:flex; align-items:center; justify-content:center; background:var(--color-lilac); }
+.role-card__icon--empresa{ background:var(--color-accent-soft); }
+.role-card__dot{ width:24px; height:24px; border-radius:50%; border:2px solid var(--color-border-strong); }
+.role-card:has(input:checked) .role-card__dot{ border:7px solid var(--color-accent); background:#FFFFFF; }
+.role-card__title{ font-family:var(--font-display); font-weight:800; font-size:24px; letter-spacing:-0.02em; line-height:1.15; }
+.role-card__desc{ color:var(--color-muted); font-size:15px; }
+
+/* Rol elegido en el paso 2 */
+.role-chip{
+  align-self:flex-start;
+  display:inline-flex; align-items:center; gap:8px;
+  padding:4px 6px 4px 12px; border-radius:var(--radius-pill);
+  background:var(--color-lilac); font-size:14px; font-weight:700;
+}
+.role-chip a{ padding:2px 10px; border-radius:var(--radius-pill); background:#FFFFFF; color:var(--color-ink); text-decoration:none; font-size:13px; }
+.role-chip a:hover{ color:var(--color-ink); background:var(--color-lilac-2); }
+
+/* Medidor de contraseña */
+.strength{ display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:4px; }
+.strength span{ height:5px; border-radius:3px; background:var(--color-border); transition:background-color .15s ease; }
+.strength span.is-on{ background:var(--color-ink); }
+
+/* Ícono grande (recuperar) */
+.auth-icon{ width:56px; height:56px; border-radius:18px; display:flex; align-items:center; justify-content:center; background:var(--color-lilac); color:var(--color-ink); }
+.auth-icon--success{ background:var(--color-success-bg); color:var(--color-success); }
+.auth-sent{ align-items:flex-start; }
+.auth-sent .btn--block{ align-self:stretch; }
+.auth-sent__resend{ align-self:center; }
+.auth-link-btn{ min-height:44px; padding:0 14px; color:var(--color-link); font-weight:700; }
+.auth-link-btn:hover{ color:var(--color-link-hover); }
+
+@media (max-width: 720px){
+  .modal-registro[data-paso="2"]{ padding:24px; }
+  .modal-registro[data-paso="1"] .modal__title{ font-size:30px; }
+  .auth-modal__title-sm{ font-size:28px; }
+  .role-card{ min-height:0; }
+}
+
+/* Acceso rápido demo (solo desarrollo · TY-Entrar) */
+.demo-access{
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+  padding:12px 16px; border-radius:18px;
+  border:2px dashed var(--color-border-strong); background:var(--color-bg);
+}
+.demo-access__title{ font-weight:700; }
+.demo-access__options{ display:flex; flex-wrap:wrap; justify-content:center; gap:6px; }
+.demo-access__btn{
+  min-height:44px; padding:0 14px;
+  border:0; border-radius:var(--radius-pill);
+  background:var(--color-accent-soft); color:var(--color-accent-ink);
+  font-size:14px; font-weight:700;
+}
+.demo-access__btn:hover{ background:var(--color-accent-line); }

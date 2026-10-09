@@ -1,0 +1,213 @@
+<%# disenos/app/WC-Sala.dc.html · 3 fases: Preparación → Sesión → Dictamen. ?modo=practica|postulacion&vacante=:id
+   La grabación real NO está implementada: los botones emiten eventos (data-action / ty:entrevista) para que otro módulo los conecte. %>
+<%
+  const practica = modo === 'practica';
+  const fases = ['1. Preparación', '2. Sesión', '3. Dictamen y feedback'];
+  const nivelMic = [6, 10, 16, 22, 14, 8, 18, 26, 20, 12, 8, 6, 4, 4, 4, 4, 4, 4, 4, 4];
+  const onda = [8, 14, 22, 30, 18, 26, 34, 20, 12, 24, 32, 16, 28, 36, 22, 10, 18, 30, 24, 14, 26, 34, 18, 12, 22, 30, 16, 8, 14, 20, 10, 6, 6, 6, 6, 6];
+  const s = locals.sesion;
+%>
+<div class="page">
+  <div class="page__header">
+    <div class="page__title">
+      <h1 class="title-app">Sala de Entrevista IA</h1>
+      <% if (vacante) { %><p class="text-muted"><%= vacante.puesto %> · <%= vacante.empresa %></p><% } %>
+    </div>
+    <% if (fase === 0) { %>
+      <nav class="segmented segmented--light segmented--sm" aria-label="Modo">
+        <a href="/candidato/entrevista?modo=practica<%= vacante ? `&vacante=${vacante.id}` : '' %>"<% if (practica) { %> aria-current="page"<% } %>>Práctica</a>
+        <a href="/candidato/entrevista?modo=postulacion<%= vacante ? `&vacante=${vacante.id}` : '' %>"<% if (!practica) { %> aria-current="page"<% } %>>Postulación</a>
+      </nav>
+    <% } else { %>
+      <span class="badge<%= practica ? '' : ' badge--ink' %>"><%= practica ? 'Práctica' : 'Postulación' %></span>
+    <% } %>
+  </div>
+
+  <ol class="stepper" aria-label="Fases">
+    <% fases.forEach((f, i) => { %>
+      <li class="stepper__step<%= i < fase ? ' is-done' : '' %>"<% if (i === fase) { %> aria-current="step"<% } %>>
+        <% if (i < fase) { %><%- icon('check', { size: 16, strokeWidth: 2.6 }) %><% } %><%= f %>
+      </li>
+    <% }) %>
+  </ol>
+
+  <% if (fase === 0) { %>
+    <%# ---------------------------------------------------------- Preparación %>
+    <% if (bloqueo) { %>
+      <div class="empty-state">
+        <% if (bloqueo === 'ya-postulado') { %>
+          <span class="empty-state__icon"><%- icon('circle-check') %></span>
+          <h2 class="empty-state__title">Ya te postulaste a esta vacante</h2>
+          <p class="empty-state__text">La entrevista de postulación tiene un solo intento. Sigue el estado en Mis Postulaciones o practica sin límite.</p>
+          <div class="chip-group"><a class="btn btn--ink btn--sm" href="/candidato/postulaciones">Ver Mis Postulaciones</a><a class="btn btn--soft btn--sm" href="/candidato/entrevista?modo=practica&amp;vacante=<%= vacante.id %>">Practicar</a></div>
+        <% } else if (bloqueo === 'sin-expediente') { %>
+          <span class="empty-state__icon"><%- icon('file-user') %></span>
+          <h2 class="empty-state__title">Primero sube tu Expediente Maestro</h2>
+          <p class="empty-state__text">La empresa recibe tu información junto con el dictamen de la entrevista.</p>
+          <a class="btn btn--ink btn--sm" href="/candidato/expediente">Ir a Expediente</a>
+        <% } else { %>
+          <span class="empty-state__icon"><%- icon('briefcase-business') %></span>
+          <h2 class="empty-state__title">Elige una vacante para postularte</h2>
+          <p class="empty-state__text">La entrevista de postulación se inicia desde el detalle de una vacante del muro.</p>
+          <a class="btn btn--ink btn--sm" href="/candidato/muro">Ir al Muro de empleos</a>
+        <% } %>
+      </div>
+    <% } else { %>
+      <div class="two-col two-col--3-2">
+        <section class="card panel" aria-labelledby="prep-t">
+          <h2 class="visually-hidden" id="prep-t">Preparación</h2>
+          <div class="mode-box">
+            <strong><%= practica ? 'Práctica: privada, con feedback detallado' : 'Postulación: filtro oficial de la empresa' %></strong>
+            <span class="text-muted text-small"><%= practica ? 'Nadie más ve tus respuestas.' : 'El reclutador recibirá transcripción, score y dictamen. Un solo intento.' %></span>
+          </div>
+          <% if (practica) { %>
+            <form method="get" action="/candidato/entrevista" data-autosubmit>
+              <input type="hidden" name="modo" value="practica">
+              <div class="field">
+                <label class="field__label" for="sala-vacante">Vacante para practicar</label>
+                <select class="select input--compact" id="sala-vacante" name="vacante">
+                  <% vacantes.forEach((v) => { %><option value="<%= v.id %>"<% if (v.id === vacante.id) { %> selected<% } %>><%= v.puesto %> · <%= v.empresa %></option><% }) %>
+                </select>
+              </div>
+              <noscript><button type="submit" class="btn btn--soft btn--sm">Cambiar vacante</button></noscript>
+            </form>
+          <% } %>
+          <dl class="facts">
+            <div><dt>Preguntas</dt><dd><%= vacante.preguntas %> + repreguntas</dd></div>
+            <div><dt>Duración</dt><dd><%= vacante.duracion %> min</dd></div>
+            <div><dt>Costo</dt><dd><%= esPro ? 'Incluido en PRO' : `${costo} monedas` %></dd></div>
+          </dl>
+          <div class="instructions">
+            <strong>Instrucciones</strong>
+            <ol>
+              <li>Responde por voz o texto.</li>
+              <li>La IA puede repreguntar sobre lo que digas.</li>
+              <li>Usa STAR: situación, tarea, acción, resultado.</li>
+            </ol>
+          </div>
+        </section>
+
+        <aside class="card panel" aria-labelledby="mic-t" data-mic-test>
+          <h2 class="panel__title" id="mic-t">Prueba de micrófono</h2>
+          <%- include('../partials/waveform', { alturas: nivelMic, alto: 28, ancho: 6, gap: 3, alinear: 'base', clase: 'waveform--mic', marca: 'mic-level' }) %>
+          <div class="chip-group">
+            <span class="badge" data-mic-status role="status">Sin probar</span>
+            <button type="button" class="btn btn--soft btn--sm" data-action="probar-microfono">Probar micrófono</button>
+          </div>
+          <% if (sinSaldo) { %>
+            <div class="alert alert--danger" role="alert">
+              <%- icon('circle-alert', { strokeWidth: 2.2 }) %>
+              <span>No tienes monedas suficientes. Esta entrevista cuesta <%= costo %> y tu saldo es <%= usuario.saldo %>. <a href="?packs=1" data-modal-open="modal-packs">Comprar monedas</a></span>
+            </div>
+          <% } %>
+          <form method="post" action="/candidato/entrevista">
+            <input type="hidden" name="modo" value="<%= modo %>">
+            <input type="hidden" name="vacante" value="<%= vacante.id %>">
+            <button type="submit" class="btn btn--accent btn--block btn--tall"><%= practica ? 'Iniciar práctica' : 'Iniciar entrevista de postulación' %></button>
+          </form>
+        </aside>
+      </div>
+    <% } %>
+
+  <% } else if (fase === 1) { %>
+    <%# --------------------------------------------------------------- Sesión %>
+    <div class="session-bar">
+      <span class="session-bar__info">Pregunta <%= s.indice + 1 %> de <%= s.preguntas.length %> · <span data-timer aria-label="Tiempo transcurrido">00:00</span></span>
+      <button type="button" class="btn btn--soft btn--sm" data-modal-open="modal-finalizar">Finalizar</button>
+    </div>
+
+    <section class="card question" aria-labelledby="pregunta-t">
+      <div class="chip-group">
+        <% if (pregunta.repregunta) { %><span class="badge badge--ink">REPREGUNTA</span><% } %>
+        <span class="badge"><%= pregunta.competencia %></span>
+      </div>
+      <% if (pregunta.repregunta && pregunta.fragmento) { %><p class="text-muted text-small">Sobre tu respuesta anterior: “<%= pregunta.fragmento %>”</p><% } %>
+      <h2 class="question__text" id="pregunta-t"><%= pregunta.texto %></h2>
+    </section>
+
+    <form class="card panel answer" method="post" action="/candidato/entrevista/<%= s.id %>/respuestas" data-respuesta-form data-sesion="<%= s.id %>">
+      <div class="answer__controls">
+        <button type="button" class="rec-btn" data-action="grabar" aria-pressed="false" aria-label="Grabar respuesta"><%- icon('mic', { size: 24 }) %></button>
+        <%- include('../partials/waveform', { alturas: onda, alto: 36, ancho: 4, gap: 3, clase: 'waveform--answer', marca: 'waveform' }) %>
+        <button type="button" class="btn btn--soft btn--sm" data-action="escribir" aria-expanded="false" aria-controls="respuesta-texto">Escribir en su lugar</button>
+      </div>
+      <div class="transcript">
+        <span class="transcript__label">TRANSCRIPCIÓN EN VIVO</span>
+        <p data-transcripcion aria-live="polite">La transcripción aparecerá aquí mientras hablas.</p>
+      </div>
+      <div class="field" id="respuesta-texto" hidden>
+        <label class="field__label" for="respuesta">Tu respuesta</label>
+        <textarea class="textarea" id="respuesta" name="respuesta" rows="5" placeholder="Escribe tu respuesta usando situación, tarea, acción y resultado."></textarea>
+      </div>
+      <p class="text-muted text-small" data-enviando role="status" hidden>Analizando tu respuesta…</p>
+      <div class="answer__actions">
+        <button type="button" class="btn btn--soft" data-action="reintentar">Volver a responder</button>
+        <button type="submit" class="btn btn--accent" data-action="enviar-respuesta">Enviar respuesta</button>
+      </div>
+    </form>
+
+    <dialog class="modal" id="modal-finalizar" aria-labelledby="modal-finalizar-t" role="alertdialog">
+      <form class="modal__content" method="post" action="/candidato/entrevista/<%= s.id %>/finalizar" data-action-form="finalizar">
+        <div class="modal__header">
+          <div class="modal__heading">
+            <h2 class="modal__title modal__title--sm" id="modal-finalizar-t">¿Finalizar la entrevista?</h2>
+            <span class="text-muted">Respondiste <%= s.respuestas.length %> de <%= s.preguntas.length %>. Se evaluará lo respondido.</span>
+          </div>
+          <button type="button" class="btn-icon" data-modal-close aria-label="Cerrar"><%- icon('x', { size: 18, strokeWidth: 2.4 }) %></button>
+        </div>
+        <div class="modal__actions">
+          <button type="button" class="btn btn--soft" data-modal-close autofocus>Seguir</button>
+          <button type="submit" class="btn btn--ink">Finalizar</button>
+        </div>
+      </form>
+    </dialog>
+
+  <% } else if (practica) { %>
+    <%# -------------------------------------------------- Dictamen (práctica) %>
+    <% const r = s.resultado; %>
+    <div class="result-top">
+      <section class="card panel result-score" aria-label="Score general">
+        <%- include('../partials/score-ring', { valor: r.score, tamano: 'xl', tema: 'light', label: `Score general ${r.score} de 100` }) %>
+        <strong>Score general</strong>
+      </section>
+      <section class="card panel result-comps" aria-labelledby="comp-t">
+        <h2 class="panel__title" id="comp-t">Desempeño por competencia</h2>
+        <% r.competencias.forEach((c) => { %>
+          <div class="meter-row">
+            <div class="meter-row__head"><span><%= c.nombre %></span><strong><%= c.valor %></strong></div>
+            <progress class="progress" max="100" value="<%= c.valor %>" aria-label="<%= c.nombre %>: <%= c.valor %> de 100"><%= c.valor %></progress>
+          </div>
+        <% }) %>
+      </section>
+    </div>
+    <div class="grid-auto-240">
+      <% [['Fortalezas', r.fortalezas], ['A mejorar', r.mejorar], ['Recomendaciones', r.recomendaciones]].forEach(([t, lista]) => { %>
+        <section class="card panel">
+          <h2 class="panel__title"><%= t %></h2>
+          <ul class="bullets"><% lista.forEach((x) => { %><li><%= x %></li><% }) %></ul>
+        </section>
+      <% }) %>
+    </div>
+    <details class="card panel disclosure disclosure--card">
+      <summary>Respuesta por respuesta (transcripción resumida + comentario)</summary>
+      <ol class="answers">
+        <% r.respuestas.forEach((x, i) => { %>
+          <li><strong>P<%= i + 1 %> · <%= x.pregunta %></strong><span><%= x.resumen %></span><span class="text-muted"><%= x.comentario %></span></li>
+        <% }) %>
+      </ol>
+    </details>
+    <div class="actions-end">
+      <a class="btn btn--soft" href="/candidato/entrevista?modo=practica&amp;vacante=<%= vacante.id %>">Practicar de nuevo</a>
+      <a class="btn btn--accent" href="/candidato/entrevista?modo=postulacion&amp;vacante=<%= vacante.id %>">Postularme a esta vacante</a>
+    </div>
+
+  <% } else { %>
+    <%# ------------------------------------------------ Dictamen (postulación) %>
+    <section class="empty-state empty-state--lg" aria-labelledby="enviado-t">
+      <span class="empty-state__icon empty-state__icon--success"><%- icon('send') %></span>
+      <h2 class="empty-state__title" id="enviado-t">Dictamen generado y enviado a <%= vacante.empresa %></h2>
+      <p class="empty-state__text">En modo postulación el dictamen lo recibe el reclutador. Tú verás el estado en Mis Postulaciones y te avisaremos por correo.</p>
+      <a class="btn btn--accent" href="/candidato/postulaciones?enviada=<%= s.postulacionId %>">Ir a Mis Postulaciones</a>
+    </section>
+  <% } %>
+</div>

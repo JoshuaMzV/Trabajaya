@@ -1,0 +1,84 @@
+<%# disenos/landing/TY-Landing-Empresas.dc.html · banda final ajustada según CLAUDE.md §9 (publicar es gratis) %>
+<section class="hero container">
+  <nav class="segmented" aria-label="Elige tu rol">
+    <a href="/">Busco empleo</a>
+    <a href="/empresas" aria-current="page">Contrato talento</a>
+  </nav>
+  <h1 class="display-hero hero__title hero__title--wide">Contrata a quien ya <span class="text-accent">demostró</span> que puede.</h1>
+  <p class="lead hero__lead hero__lead--wide">Publica tu vacante, define qué evalúa la IA y recibe a cada candidato con score, transcripción resumida y dictamen. Tú decides a quién entrevistar.</p>
+  <div class="hero__ctas">
+    <a class="btn btn--accent btn--lg" href="/registro?paso=2&amp;rol=empresa" data-modal-open="modal-registro" data-registro-rol="empresa">Publicar una vacante</a>
+    <a class="btn btn--outline btn--lg" href="/como-funciona#empresas">Ver cómo funciona</a>
+  </div>
+
+  <div class="hero-cards" aria-hidden="true">
+    <div class="float-card float-card--320 float-card--left">
+      <span class="text-label">Filtro de entrevista IA</span>
+      <div class="float-card__row"><strong>Número de preguntas</strong><span class="float-card__big">6</span></div>
+      <div class="chip-group">
+        <span class="tag tag--lg tag--ink">Adaptabilidad</span>
+        <span class="tag tag--lg tag--ink">Experiencia</span>
+        <span class="tag tag--lg">Implementación técnica</span>
+      </div>
+    </div>
+    <div class="float-card float-card--dark">
+      <div class="float-card__person">
+        <%- include('../partials/score-ring', { valor: 88, tamano: 'sm' }) %>
+        <div class="contact-card__body"><span class="float-card__person-name">Lucía Méndez</span><span class="float-card__person-sub">Analista BI · 6 años</span></div>
+      </div>
+      <span class="float-card__quote">“Recomendada para primera entrevista humana; validar Python.”</span>
+      <div class="float-card__actions"><span class="float-card__fake-btn">Aprobar</span><span class="float-card__fake-btn float-card__fake-btn--outline">Descartar</span></div>
+    </div>
+    <div class="float-card float-card--280 float-card--right">
+      <span class="text-label">Terna recomendada</span>
+      <div class="avatar-stack">
+        <span class="avatar avatar--peach">LM</span><span class="avatar avatar--lilac">DR</span><span class="avatar avatar--mint">AH</span>
+      </div>
+      <span class="float-card__note">Lista para compartir con tu comité.</span>
+    </div>
+  </div>
+</section>
+
+<section class="section container" aria-labelledby="pasos-t">
+  <div class="section-head">
+    <h2 class="display-2" id="pasos-t">De la vacante a la terna</h2>
+    <a class="link-strong" href="/como-funciona#empresas">Ver el detalle →</a>
+  </div>
+  <ol class="grid-auto" role="list">
+    <% pasos.forEach((s) => { %>
+      <li class="card">
+        <span class="card__number" aria-hidden="true"><%= s.n %></span>
+        <h3 class="card__title"><%= s.t %></h3>
+        <p class="card__text"><%= s.d %></p>
+      </li>
+    <% }) %>
+  </ol>
+</section>
+
+<section class="band-wrap" aria-labelledby="ficha-t">
+  <div class="band band--split band--lilac">
+    <div class="band__col">
+      <span class="band__eyebrow">La IA filtra, tú decides</span>
+      <h2 class="band__title" id="ficha-t">Cada postulante llega con su ficha lista.</h2>
+      <p class="band__text">Resumen ejecutivo, CV, fortalezas, brechas, transcripción de la entrevista y dictamen IA en un solo lugar. Apruebas para entrevista humana o descartas con un clic.</p>
+    </div>
+    <ul class="spec-list" role="list">
+      <% ficha.forEach((f) => { %>
+        <li class="spec-list__item"><span><%= f.t %></span><span><%= f.d %></span></li>
+      <% }) %>
+    </ul>
+  </div>
+</section>
+
+<section class="band-wrap" aria-labelledby="cta-t">
+  <div class="band band--row">
+    <div class="band__col band__col--md">
+      <h2 class="band__title-md" id="cta-t">Publica tu primera vacante hoy.</h2>
+      <span class="band__muted">Publicar vacantes y evaluar a tus postulantes con la entrevista IA es gratis para empresas.</span>
+    </div>
+    <div class="band__actions">
+      <a class="btn btn--on-dark-outline" href="/planes?para=empresa">Ver planes</a>
+      <a class="btn btn--accent" href="/registro?paso=2&amp;rol=empresa" data-modal-open="modal-registro" data-registro-rol="empresa">Crear cuenta de empresa</a>
+    </div>
+  </div>
+</section>

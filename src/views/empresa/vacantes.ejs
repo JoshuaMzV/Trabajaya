@@ -1,0 +1,90 @@
+<%# disenos/app/WR-Vacantes.dc.html · el asistente (WR-Asistente) es un modal sobre esta vista %>
+<%
+  const fecha = (iso) => iso ? iso.split('-').reverse().join('/') : '';
+  const meta = (v) => v.estado === 'publicada' ? `Publicada el ${v.publicada}${v.cierre ? ` · cierra el ${fecha(v.cierre)}` : ''}`
+    : v.estado === 'cerrada' ? `Cerrada el ${v.cerradaEl || v.editada}` : `Editada el ${v.editada}`;
+  const tabs = [['todas', 'Todas', conteo.todas], ['publicada', 'Publicadas', conteo.publicada], ['borrador', 'Borradores', conteo.borrador], ['cerrada', 'Cerradas', conteo.cerrada]];
+  const nuevaEnModal = !asistente.abrir;
+%>
+<div class="page">
+  <div class="page__header">
+    <div class="page__title">
+      <h1 class="title-app">Mis Vacantes</h1>
+      <p class="text-muted"><%= empresa.nombre %></p>
+    </div>
+    <a class="btn btn--accent btn--sm" href="/empresa/vacantes/nueva"<% if (nuevaEnModal) { %> data-modal-open="modal-asistente"<% } %>><%- icon('plus', { size: 18 }) %>Nueva vacante</a>
+  </div>
+
+  <% if (kpis) { %>
+    <ul class="stat-grid" role="list" aria-label="Resumen">
+      <li><a class="stat-tile" href="/empresa/postulantes"><span class="stat-tile__label">Vacantes activas</span><span class="stat-tile__value"><%= kpis.activas %></span></a></li>
+      <li><a class="stat-tile" href="/empresa/postulantes"><span class="stat-tile__label">Postulantes nuevos (7 días)</span><span class="stat-tile__value"><%= kpis.nuevos %></span></a></li>
+      <li><a class="stat-tile" href="/empresa/postulantes"><span class="stat-tile__label">Pendientes de revisión</span><span class="stat-tile__value"><%= kpis.pendientes %></span></a></li>
+      <li><a class="stat-tile" href="/empresa/postulantes"><span class="stat-tile__label">En terna</span><span class="stat-tile__value"><%= kpis.terna %></span></a></li>
+    </ul>
+  <% } %>
+
+  <% if (!vacantes.length) { %>
+    <div class="empty-state empty-state--lg">
+      <span class="empty-state__icon"><%- icon('briefcase-business') %></span>
+      <h2 class="empty-state__title">Aún no tienes vacantes</h2>
+      <p class="empty-state__text">Publica tu primera vacante y configura qué evalúa la entrevista IA. Es gratis para empresas.</p>
+      <a class="btn btn--ink btn--sm" href="/empresa/vacantes/nueva" data-modal-open="modal-asistente">Crear la primera</a>
+    </div>
+  <% } else { %>
+    <div class="toolbar">
+      <div class="segmented segmented--light segmented--sm" role="tablist" aria-label="Estado" data-filter-for="lista-vacantes" data-filter-key="estado">
+        <% tabs.forEach(([k, label, n], i) => { %>
+          <button type="button" role="tab" data-value="<%= k %>" aria-selected="<%= i === 0 %>"><%= label %> · <%= n %></button>
+        <% }) %>
+      </div>
+      <label class="visually-hidden" for="vac-q">Buscar vacante</label>
+      <input class="input input--compact toolbar__search" id="vac-q" type="search" placeholder="Buscar vacante" data-filter-for="lista-vacantes" data-filter-key="q">
+    </div>
+
+    <ul class="vac-list" id="lista-vacantes" role="list" data-filter-list>
+      <% vacantes.forEach((v) => { const m = v.metricas; const borrador = v.estado === 'borrador'; %>
+        <li class="card vac-row" data-filter-item data-estado="<%= v.estado %>">
+          <div class="vac-row__head">
+            <div class="vac-row__title"><h2><%= v.titulo || 'Vacante sin título' %></h2><%- include('../partials/badge', estados[v.estado]) %></div>
+            <span class="text-muted text-small"><%= meta(v) %></span>
+          </div>
+          <dl class="mini-stats">
+            <div><dt>Postulantes</dt><dd><%= borrador ? '—' : m.postulantes %></dd></div>
+            <div><dt>Entrevistas</dt><dd><%= borrador ? '—' : m.entrevistas %></dd></div>
+            <div><dt>Sin revisar</dt><dd><%= borrador ? '—' : m.sinRevisar %></dd></div>
+            <div><dt>En terna</dt><dd><%= borrador ? '—' : m.enTerna %></dd></div>
+          </dl>
+          <div class="vac-row__actions">
+            <% if (!borrador) { %><a class="btn btn--ink btn--sm" href="/empresa/postulantes?vacante=<%= v.id %>">Postulantes</a><% } %>
+            <a class="btn btn--soft btn--sm" href="/empresa/vacantes/<%= v.id %>/editar">Editar</a>
+            <div class="dropdown" data-dropdown>
+              <button type="button" class="btn-icon btn-icon--outline" data-dropdown-toggle aria-expanded="false" aria-haspopup="menu" aria-controls="menu-vac-<%= v.id %>" aria-label="Más acciones de <%= v.titulo || 'la vacante' %>"><%- icon('ellipsis', { size: 20 }) %></button>
+              <div class="dropdown__menu dropdown__menu--end" id="menu-vac-<%= v.id %>" role="menu" aria-label="Acciones" data-dropdown-menu hidden>
+                <form method="post" action="/empresa/vacantes/<%= v.id %>/duplicar"><button type="submit" class="menu-item" role="menuitem"><%- icon('copy', { size: 18 }) %>Duplicar</button></form>
+                <% if (v.estado !== 'publicada') { %>
+                  <form method="post" action="/empresa/vacantes/<%= v.id %>/publicar"><button type="submit" class="menu-item" role="menuitem"><%- icon('send', { size: 18 }) %>Publicar</button></form>
+                <% } else { %>
+                  <form method="post" action="/empresa/vacantes/<%= v.id %>/cerrar">
+                    <button type="submit" class="menu-item" role="menuitem" data-confirm data-confirm-title="¿Cerrar esta vacante?" data-confirm-text="Dejará de recibir postulaciones. Los postulantes actuales se conservan." data-confirm-label="Cerrar vacante"><%- icon('circle-x', { size: 18 }) %>Cerrar</button>
+                  </form>
+                <% } %>
+                <% if (borrador) { %>
+                  <div class="menu-sep" role="separator"></div>
+                  <form method="post" action="/empresa/vacantes/<%= v.id %>/eliminar">
+                    <button type="submit" class="menu-item menu-item--danger" role="menuitem" data-confirm data-confirm-title="¿Eliminar este borrador?" data-confirm-text="Esta acción no se puede deshacer." data-confirm-label="Eliminar borrador" data-confirm-variante="danger"><%- icon('trash-2', { size: 18 }) %>Eliminar borrador</button>
+                  </form>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </li>
+      <% }) %>
+    </ul>
+    <div class="empty-state" data-filter-empty="lista-vacantes" hidden>
+      <h2 class="empty-state__title">No hay vacantes con este filtro</h2>
+    </div>
+  <% } %>
+</div>
+
+<%- include('partials/asistente', { a: asistente, opciones, limites, catalogo }) %>

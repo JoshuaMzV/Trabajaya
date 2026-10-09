@@ -1,0 +1,13 @@
+<%
+  // Barras de audio en SVG (sin estilos en línea). El módulo de grabación puede animarlas vía data-*.
+  // Parámetros: alturas (array de px) · alto (px del contenedor) · ancho (px de cada barra) · gap · alinear = 'centro' | 'base'
+  // Opcionales: clase (CSS) · marca (atributo data-<marca> para que JS la encuentre)
+  const h = locals.alto || 36;
+  const w = locals.ancho || 4;
+  const g = locals.gap ?? 3;
+  const base = locals.alinear === 'base';
+  const total = alturas.length * (w + g) - g;
+%>
+<svg class="waveform<%= locals.clase ? ` ${clase}` : '' %>" viewBox="0 0 <%= total %> <%= h %>" width="<%= total %>" height="<%= h %>" preserveAspectRatio="none" aria-hidden="true" focusable="false"<% if (locals.marca) { %> data-<%= marca %><% } %>>
+  <% alturas.forEach((a, i) => { const y = base ? h - a : (h - a) / 2; %><rect x="<%= i * (w + g) %>" y="<%= y %>" width="<%= w %>" height="<%= a %>" rx="<%= Math.min(2, w / 2) %>"></rect><% }) %>
+</svg>

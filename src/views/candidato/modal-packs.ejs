@@ -1,0 +1,80 @@
+<%
+  // disenos/app/WC-Packs.dc.html · modal global del candidato (menú de usuario y falta de saldo).
+  // Pasos 1 → 2 en el cliente; el pago lo confirma el backend y vuelve con ?packs=confirmado (paso 3).
+  // Parámetros: m = { abrir, paso, compra, packs, precioPro, volver } · usuario
+  const destacado = m.packs.find((p) => p.destacado) || m.packs[0];
+  const pasos = ['1. Elegir', '2. Pagar', '3. Confirmación'];
+  const beneficiosPro = ['Uso ilimitado de todos los módulos', 'Soporte VIP en menos de 2 horas', 'Renovación mensual, cancelable'];
+%>
+<dialog class="modal modal--xl packs" id="modal-packs" aria-labelledby="packs-t" data-paso="<%= m.paso %>"<% if (m.abrir) { %> data-modal-autoopen data-modal-return="<%= m.volver %>"<% } %>>
+  <div class="modal__content">
+    <div class="modal__header">
+      <div class="modal__heading">
+        <h2 class="modal__title modal__title--sm" id="packs-t">Recargar o mejorar plan</h2>
+        <span class="text-muted text-small">Saldo actual: <%= usuario.saldo %> TrabajaCoins · Plan <%= usuario.plan %></span>
+      </div>
+      <button type="button" class="btn-icon" data-modal-close aria-label="Cerrar"><%- icon('x', { size: 18, strokeWidth: 2.4 }) %></button>
+    </div>
+
+    <ol class="stepper stepper--sm" aria-label="Pasos" data-packs-stepper>
+      <% pasos.forEach((p, i) => { %><li class="stepper__step<%= i + 1 < m.paso ? ' is-done' : '' %>"<% if (i + 1 === m.paso) { %> aria-current="step"<% } %>><%= p %></li><% }) %>
+    </ol>
+
+    <% if (m.paso === 3) { %>
+      <div class="packs__done" role="status">
+        <span class="empty-state__icon empty-state__icon--success"><%- icon('check', { size: 28, strokeWidth: 2.4 }) %></span>
+        <strong class="packs__done-title">¡Listo! <%= m.compra === 'pro' ? 'Plan PRO activo.' : 'Monedas acreditadas.' %></strong>
+        <p class="text-muted"><%= m.compra === 'pro' ? 'Ya puedes usar todos los módulos sin límite.' : `Nuevo saldo: ${usuario.saldo} monedas.` %> Te enviamos el comprobante por correo.</p>
+        <button type="button" class="btn btn--ink" data-modal-close>Volver a lo que hacía</button>
+      </div>
+    <% } else { %>
+      <form class="modal__content" method="post" action="/candidato/pagos" data-packs-form>
+        <input type="hidden" name="volver" value="<%= m.volver %>">
+        <input type="hidden" name="tipo" value="pack" data-packs-tipo>
+
+        <div class="modal__content" data-packs-paso="1">
+          <div class="segmented segmented--light segmented--sm" role="tablist" aria-label="Opción">
+            <button type="button" role="tab" id="packs-tab-monedas" aria-controls="packs-monedas" aria-selected="true" data-value="pack">Monedas</button>
+            <button type="button" role="tab" id="packs-tab-pro" aria-controls="packs-pro" aria-selected="false" data-value="pro">Plan PRO</button>
+          </div>
+          <div role="tabpanel" id="packs-monedas" aria-labelledby="packs-tab-monedas">
+            <fieldset class="choice-group">
+              <legend class="visually-hidden">Elige un pack</legend>
+              <div class="pack-grid">
+                <% m.packs.forEach((p) => { %>
+                  <label class="pack-card">
+                    <input type="radio" name="pack" value="<%= p.id %>" data-resumen="Pack de <%= p.monedas %> monedas" data-precio="<%= p.precio %>"<% if (p.id === destacado.id) { %> checked<% } %>>
+                    <span class="pack-card__n"><%= p.monedas %> monedas</span>
+                    <span class="text-muted text-small"><%= p.desc %></span>
+                    <span class="pack-card__price"><%= p.precio %></span>
+                  </label>
+                <% }) %>
+              </div>
+            </fieldset>
+          </div>
+          <div role="tabpanel" id="packs-pro" aria-labelledby="packs-tab-pro" hidden data-resumen="Plan PRO · mensual" data-precio="<%= m.precioPro %>">
+            <div class="pro-box">
+              <div class="pro-box__head"><strong>Plan PRO</strong><strong><%= m.precioPro %>/mes</strong></div>
+              <ul class="pro-box__list" role="list"><% beneficiosPro.forEach((b) => { %><li><%- icon('check', { size: 18, strokeWidth: 2.4 }) %><%= b %></li><% }) %></ul>
+              <a class="link-strong text-small" href="/planes" target="_blank" rel="noopener">Comparar Gratis vs PRO →</a>
+            </div>
+          </div>
+          <button type="button" class="btn btn--accent btn--block" data-packs-next>Continuar al pago</button>
+        </div>
+
+        <div class="modal__content" data-packs-paso="2" hidden>
+          <div class="pay-summary"><span data-packs-resumen>Pack de <%= destacado.monedas %> monedas</span><strong data-packs-precio><%= destacado.precio %></strong></div>
+          <div class="pay-slot" data-pasarela>
+            <%- icon('lock', { size: 22 }) %>
+            <strong>Pago seguro</strong>
+            <span class="text-muted text-small">Cargando métodos de pago…</span>
+          </div>
+          <div class="modal__actions modal__actions--between">
+            <button type="button" class="btn btn--soft" data-packs-prev>Atrás</button>
+            <button type="submit" class="btn btn--accent">Pagar <span data-packs-precio><%= destacado.precio %></span></button>
+          </div>
+        </div>
+      </form>
+    <% } %>
+  </div>
+</dialog>

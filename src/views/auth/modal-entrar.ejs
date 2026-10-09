@@ -1,0 +1,59 @@
+<%
+  // disenos/landing/TY-Entrar · Parámetro: auth (ver authState en routes/public.js)
+  const abierto = auth.abrir === 'entrar';
+  const e = abierto ? auth.errores : {};
+  const v = abierto ? auth.valores : {};
+  const passInvalido = Boolean(e.password || e.credenciales);
+%>
+<dialog class="modal auth-modal" id="modal-entrar" aria-labelledby="entrar-t"<% if (abierto) { %> data-modal-autoopen data-modal-return="/"<% } %>>
+  <form class="modal__content" method="post" action="/auth/login" novalidate>
+    <div class="modal__header">
+      <div class="modal__heading">
+        <h2 class="modal__title" id="entrar-t">Hola de nuevo</h2>
+        <span class="text-muted">Entra a tu cuenta de TrabajaYa.</span>
+      </div>
+      <a class="btn-icon" href="/" data-modal-close aria-label="Cerrar"><%- icon('x', { size: 18, strokeWidth: 2.4 }) %></a>
+    </div>
+
+    <% if (e.credenciales) { %>
+      <div class="alert alert--danger" role="alert">
+        <%- icon('circle-alert', { strokeWidth: 2.2 }) %>
+        <span>El correo o la contraseña no coinciden. Revísalos o <a href="/recuperar" data-modal-open="modal-recuperar">recupera tu contraseña</a>.</span>
+      </div>
+    <% } %>
+
+    <a class="btn btn--soft auth-modal__btn" href="/auth/google"><%- include('../partials/google-logo') %>Continuar con Google</a>
+
+    <div class="divider-text">o con tu correo</div>
+
+    <%- include('../partials/form-field', { id: 'entrar-correo', name: 'correo', label: 'Correo', type: 'email', value: v.correo, error: e.correo, autocomplete: 'email', required: true }) %>
+
+    <div class="field">
+      <div class="field__row">
+        <label class="field__label" for="entrar-password">Contraseña</label>
+        <a href="/recuperar" data-modal-open="modal-recuperar">¿Olvidaste tu contraseña?</a>
+      </div>
+      <div class="input-group">
+        <input class="input-group__control" id="entrar-password" name="password" type="password" autocomplete="current-password" required<% if (passInvalido) { %> aria-invalid="true"<% } %><% if (e.password) { %> aria-describedby="entrar-password-error"<% } %>>
+        <button type="button" class="input-group__btn" data-password-toggle aria-controls="entrar-password" aria-pressed="false">Mostrar</button>
+      </div>
+      <% if (e.password) { %><span class="field__error" id="entrar-password-error"><%= e.password %></span><% } %>
+    </div>
+
+    <button type="submit" class="btn btn--ink btn--block auth-modal__submit">Entrar</button>
+
+    <% if (isDev && plataforma.demo.mostrar) { %>
+      <%# Solo en desarrollo y si Admin › Ajustes lo permite: entra con la cuenta de ejemplo de cada rol. %>
+      <div class="demo-access" role="group" aria-labelledby="demo-access-t">
+        <span class="demo-access__title" id="demo-access-t">Acceso rápido demo</span>
+        <div class="demo-access__options">
+          <button type="submit" class="demo-access__btn" formaction="/auth/demo" formnovalidate name="rol" value="cand">Candidato</button>
+          <button type="submit" class="demo-access__btn" formaction="/auth/demo" formnovalidate name="rol" value="rec">Empresa</button>
+          <button type="submit" class="demo-access__btn" formaction="/auth/demo" formnovalidate name="rol" value="admin">Admin</button>
+        </div>
+      </div>
+    <% } %>
+
+    <p class="auth-modal__foot">¿No tienes cuenta? <a class="link-strong" href="/registro" data-modal-open="modal-registro">Crea una gratis</a></p>
+  </form>
+</dialog>

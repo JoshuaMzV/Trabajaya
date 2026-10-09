@@ -1,0 +1,72 @@
+<%
+  // Columnas apiladas por día (2 series) en SVG. Specs: columnas ≤ 24 px, extremo de dato redondeado 4 px,
+  // 2 px de separación entre segmentos, rejilla en línea fina sólida, leyenda + vista de tabla.
+  // Parámetros: id · titulo · fechas [{ corta }] · series [{ key, label, valores }] (máx. 2) · unidad (texto para la tabla)
+  const W = 420, H = 240, L = 34, R = 6, T = 12, B = 26;
+  const pw = W - L - R, ph = H - T - B;
+  const n = fechas.length;
+  const totales = fechas.map((_, i) => series.reduce((s, x) => s + x.valores[i], 0));
+  const pasos = [1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000];
+  const crudo = Math.max(...totales, 1) / 4;
+  const paso = pasos.find((p) => p >= crudo) || Math.ceil(crudo / 1000) * 1000;
+  const max = paso * 4;
+  const y = (v) => T + ph - (v / max) * ph;
+  const banda = pw / n;
+  const ancho = Math.min(24, banda * 0.62);
+  const GAP = 2, RAD = 4;
+  const cada = Math.ceil(n / 5);
+  const fmt = (v) => Number(v).toLocaleString('en-US');
+  // Rectángulo con las esquinas superiores redondeadas (extremo del dato) y base recta.
+  const barra = (x, yTop, w, h, redondo) => {
+    if (h <= 0) return '';
+    const r = redondo ? Math.min(RAD, h, w / 2) : 0;
+    return `M${x},${yTop + h}V${yTop + r}${r ? `Q${x},${yTop} ${x + r},${yTop}` : ''}H${x + w - r}${r ? `Q${x + w},${yTop} ${x + w},${yTop + r}` : ''}V${yTop + h}Z`;
+  };
+%>
+<figure class="chart" data-chart="columnas" data-chart-id="<%= id %>">
+  <figcaption class="chart__head">
+    <h2 class="panel__title" id="<%= id %>-t"><%= titulo %></h2>
+    <ul class="chart__legend" role="list">
+      <% series.forEach((s, k) => { %><li><span class="chart__key chart__key--bar chart__key--<%= k + 1 %>" aria-hidden="true"></span><%= s.label %></li><% }) %>
+    </ul>
+  </figcaption>
+  <div class="chart__plot">
+    <svg viewBox="0 0 <%= W %> <%= H %>" class="chart__svg" role="img" aria-labelledby="<%= id %>-t" aria-describedby="<%= id %>-tabla-t" tabindex="0" data-chart-svg>
+      <g class="chart__grid" aria-hidden="true">
+        <% for (let t = 0; t <= 4; t++) { const v = paso * t; %>
+          <line x1="<%= L %>" x2="<%= W - R %>" y1="<%= y(v) %>" y2="<%= y(v) %>"<% if (t === 0) { %> class="chart__baseline"<% } %>></line>
+          <text x="<%= L - 8 %>" y="<%= y(v) + 4 %>" text-anchor="end"><%= fmt(v) %></text>
+        <% } %>
+        <% fechas.forEach((f, i) => { if (i % cada === 0 || i === n - 1) { %><text x="<%= L + i * banda + banda / 2 %>" y="<%= H - 8 %>" text-anchor="middle"><%= f.corta %></text><% } }) %>
+      </g>
+      <g aria-hidden="true">
+        <% fechas.forEach((f, i) => {
+          const x = L + i * banda + (banda - ancho) / 2;
+          const v0 = series[0].valores[i], v1 = series[1] ? series[1].valores[i] : 0;
+          const h0 = (v0 / max) * ph, h1 = (v1 / max) * ph;
+          const base0 = T + ph - h0;
+        %>
+          <g class="chart__col" data-i="<%= i %>">
+            <path class="chart__s1" d="<%= barra(x, base0, ancho, h0, !h1) %>"></path>
+            <% if (h1) { %><path class="chart__s2" d="<%= barra(x, base0 - GAP - h1, ancho, h1, true) %>"></path><% } %>
+          </g>
+        <% }) %>
+      </g>
+      <g class="chart__hits" aria-hidden="true">
+        <% fechas.forEach((f, i) => { %><rect x="<%= L + i * banda %>" y="<%= T %>" width="<%= banda %>" height="<%= ph %>" data-i="<%= i %>" data-cx="<%= L + i * banda + banda / 2 %>"></rect><% }) %>
+      </g>
+    </svg>
+    <div class="chart__tip" role="status" aria-live="polite" hidden data-chart-tip></div>
+  </div>
+  <details class="disclosure disclosure--plain chart__table">
+    <summary id="<%= id %>-tabla-t">Ver como tabla</summary>
+    <div class="table-card">
+      <table class="data-table data-table--compact" data-chart-table>
+        <thead><tr><th scope="col">Día</th><% series.forEach((s) => { %><th scope="col"><%= s.label %></th><% }) %><th scope="col">Total</th></tr></thead>
+        <tbody>
+          <% fechas.forEach((f, i) => { %><tr data-i="<%= i %>"><th scope="row"><%= f.corta %></th><% series.forEach((s) => { %><td class="num"><%= fmt(s.valores[i]) %></td><% }) %><td class="num"><%= fmt(totales[i]) %></td></tr><% }) %>
+        </tbody>
+      </table>
+    </div>
+  </details>
+</figure>

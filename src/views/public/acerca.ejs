@@ -1,0 +1,44 @@
+<%# disenos/landing/TY-Acerca.dc.html %>
+<section class="about-hero container">
+  <div class="about-hero__head">
+    <span class="eyebrow">Acerca de TrabajaYa</span>
+    <h1 class="about-title">Acercamos a quien busca empleo y a quien lo <span class="text-accent">ofrece</span>.</h1>
+  </div>
+  <p class="lead-sm">Preparar una postulación y filtrar cientos de CVs son dos caras del mismo problema. TrabajaYa ayuda a los candidatos a llegar mejor preparados y a las empresas a encontrar más rápido a quien vale la pena entrevistar.</p>
+</section>
+
+<section class="values grid-auto grid-auto--320 container" aria-label="Lo que nos guía">
+  <article class="card card--dark">
+    <h2 class="values__title">La IA filtra, las personas deciden</h2>
+    <p class="card__text">La IA evalúa y resume; la decisión de entrevistar o descartar siempre es de un reclutador.</p>
+  </article>
+  <article class="card">
+    <h2 class="values__title">Feedback que se puede usar</h2>
+    <p class="card__text">Cada entrevista termina con fortalezas, brechas y recomendaciones concretas, no con un número suelto.</p>
+  </article>
+  <article class="card card--lilac">
+    <h2 class="values__title">Tu información es tuya</h2>
+    <p class="card__text">Tu Expediente Maestro se puede editar, reemplazar o eliminar de forma permanente cuando quieras.</p>
+  </article>
+</section>
+
+<section class="story container" aria-labelledby="historia-t">
+  <div class="story__text">
+    <h2 class="story__title" id="historia-t">Nuestra historia</h2>
+    <% historia.forEach((parrafo) => { %><p><%= parrafo %></p><% }) %>
+  </div>
+  <div class="story__photo">
+    <% if (fotoEquipo) { %>
+      <img src="<%= fotoEquipo %>" alt="<%= fotoEquipoAlt %>" loading="lazy">
+    <% } else { %>
+      <span class="logo__mark" aria-hidden="true">t</span>
+    <% } %>
+  </div>
+</section>
+
+<section class="band-wrap" aria-labelledby="cta-t">
+  <div class="band band--accent band--row band--row-md">
+    <h2 class="band__title-34" id="cta-t">¿Quieres hablar con nosotros?</h2>
+    <a class="btn btn--light" href="/contacto">Ir a contacto</a>
+  </div>
+</section>

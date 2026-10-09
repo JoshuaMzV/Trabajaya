@@ -1,0 +1,84 @@
+<%# disenos/app/WC-Postulaciones.dc.html · pestañas + toast "Postulación enviada" (?enviada=:id) %>
+<%
+  const iniciales = (t) => t.split(/\s+/).slice(0, 2).map((p) => p[0]).join('').toUpperCase();
+  const metaPostulacion = (p) => p.estado === 'enviada' ? `Enviada el ${p.fecha}` : p.estado === 'revision' ? `Enviada el ${p.fecha}` : `Actualizada el ${p.actualizada}`;
+  const tabsDef = [
+    { key: 'postulaciones', label: 'Postulaciones', n: postulaciones.length },
+    { key: 'practicas', label: 'Prácticas', n: practicas.length },
+    { key: 'cvs', label: 'CVs adaptados', n: cvs.length },
+  ];
+  const vacios = {
+    postulaciones: { t: 'Aún no te has postulado', d: 'Encuentra una vacante en el muro y postúlate con la entrevista IA.', cta: 'Ir al Muro', href: '/candidato/muro', icono: 'briefcase-business' },
+    practicas: { t: 'Aún no has practicado', d: 'Ensaya una entrevista y recibe feedback privado.', cta: 'Ir a la Sala de Entrevista', href: '/candidato/entrevista', icono: 'mic' },
+    cvs: { t: 'Aún no has adaptado tu CV', d: 'Genera un CV a la medida de una vacante en el Adaptador ATS.', cta: 'Ir al Adaptador', href: '/candidato/adaptador', icono: 'wand-sparkles' },
+  };
+  const tarjeta = (v) => `<div class="post-card__head"><span class="avatar avatar--square" aria-hidden="true">${iniciales(v.empresa)}</span>`;
+%>
+<div class="page">
+  <% if (enviada) { %>
+    <%- include('../partials/toast', { titulo: '¡Postulación enviada!', mensaje: `Tu entrevista para ${enviada.vacante.puesto} llegó a ${enviada.vacante.empresa}. Te avisaremos por correo.`, variante: 'success' }) %>
+  <% } %>
+
+  <div class="page__header">
+    <h1 class="title-app">Mis Postulaciones</h1>
+    <a class="btn btn--accent btn--sm" href="/candidato/muro">Buscar vacantes</a>
+  </div>
+
+  <div class="tabs-row">
+    <div class="segmented segmented--light segmented--sm" role="tablist" aria-label="Tipo" data-tabs-param="tab">
+      <% tabsDef.forEach((t) => { %>
+        <button type="button" role="tab" id="tab-<%= t.key %>" data-value="<%= t.key %>" aria-controls="panel-<%= t.key %>" aria-selected="<%= tab === t.key %>"><%= t.label %> · <%= t.n %></button>
+      <% }) %>
+    </div>
+    <div class="chip-group" role="group" aria-label="Filtrar por estado" data-chip-group data-post-filtros<% if (tab !== 'postulaciones' || !postulaciones.length) { %> hidden<% } %>>
+      <button type="button" class="chip" aria-pressed="true" data-value="todas">Todas</button>
+      <button type="button" class="chip" aria-pressed="false" data-value="revision">En revisión</button>
+      <button type="button" class="chip" aria-pressed="false" data-value="aprobado">Aprobado</button>
+      <button type="button" class="chip" aria-pressed="false" data-value="descartado">Descartado</button>
+    </div>
+  </div>
+
+  <% tabsDef.forEach((t) => { const lista = t.key === 'postulaciones' ? postulaciones : t.key === 'practicas' ? practicas : cvs; %>
+    <div role="tabpanel" id="panel-<%= t.key %>" aria-labelledby="tab-<%= t.key %>"<% if (tab !== t.key) { %> hidden<% } %>>
+      <% if (!lista.length) { const x = vacios[t.key]; %>
+        <div class="empty-state">
+          <span class="empty-state__icon"><%- icon(x.icono) %></span>
+          <h2 class="empty-state__title"><%= x.t %></h2>
+          <p class="empty-state__text"><%= x.d %></p>
+          <a class="btn btn--ink btn--sm" href="<%= x.href %>"><%= x.cta %></a>
+        </div>
+      <% } else { %>
+        <ul class="post-grid" role="list"<% if (t.key === 'postulaciones') { %> data-post-lista<% } %>>
+          <% lista.forEach((item) => { const v = item.vacante; %>
+            <li class="card post-card"<% if (t.key === 'postulaciones') { %> data-estado="<%= item.estado %>"<% } %>>
+              <%- tarjeta(v) %>
+                <div class="post-card__title">
+                  <strong><%= v.puesto %> · <%= v.empresa %></strong>
+                  <span class="text-muted text-small">
+                    <% if (t.key === 'postulaciones') { %><%= metaPostulacion(item) %><% } else if (t.key === 'practicas') { %>Práctica del <%= item.fecha %><% } else { %>Match <%= item.match %>% · <%= item.fecha %><% } %>
+                  </span>
+                </div>
+              </div>
+              <% if (t.key === 'postulaciones') { %>
+                <%- include('../partials/badge', estados[item.estado]) %>
+                <a class="btn btn--soft btn--sm btn--block" href="/candidato/muro?vacante=<%= v.id %>">Ver vacante</a>
+              <% } else if (t.key === 'practicas') { %>
+                <%- include('../partials/badge', { label: `Score ${item.score}`, variante: 'neutral' }) %>
+                <a class="btn btn--soft btn--sm btn--block" href="/candidato/entrevista/<%= item.id %>">Ver feedback</a>
+              <% } else { %>
+                <%- include('../partials/badge', { label: estilos[item.estilo].label, variante: 'outline' }) %>
+                <a class="btn btn--soft btn--sm btn--block" href="/candidato/adaptador?cv=<%= item.id %>">Abrir / descargar</a>
+              <% } %>
+            </li>
+          <% }) %>
+        </ul>
+        <% if (t.key === 'postulaciones') { %>
+          <div class="empty-state" data-post-vacio hidden>
+            <h2 class="empty-state__title">No tienes postulaciones con este estado</h2>
+            <button type="button" class="btn btn--soft btn--sm" data-post-todas>Ver todas</button>
+          </div>
+        <% } %>
+      <% } %>
+    </div>
+  <% }) %>
+</div>

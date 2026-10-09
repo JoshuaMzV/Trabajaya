@@ -1,0 +1,44 @@
+<%# disenos/landing/TY-FAQ.dc.html · categorías + acordeón (<details> exclusivos). Sin JS, las categorías son enlaces ?cat= %>
+<section class="hero hero--page container">
+  <h1 class="display-1">Preguntas frecuentes</h1>
+  <label class="visually-hidden" for="faq-q">Buscar en preguntas frecuentes</label>
+  <div class="search-pill faq-search">
+    <%- icon('search') %>
+    <input id="faq-q" type="search" placeholder="Busca: monedas, voz, expediente…" autocomplete="off" value="<%= busqueda %>" data-faq-search aria-controls="faq-list">
+  </div>
+</section>
+
+<section class="faq container" aria-label="Preguntas por categoría">
+  <nav class="faq-cats" aria-label="Categorías" data-faq-cats>
+    <% categorias.forEach((c) => { %>
+      <a href="/faq?cat=<%= c.key %>" data-faq-cat="<%= c.key %>"<% if (c.key === categoriaActiva) { %> aria-current="true"<% } %>><%= c.nombre %></a>
+    <% }) %>
+  </nav>
+
+  <div class="faq-list" id="faq-list">
+    <% categorias.forEach((c) => { %>
+      <div class="faq-group" data-faq-group="<%= c.key %>"<% if (c.key !== categoriaActiva) { %> hidden<% } %>>
+        <% c.preguntas.forEach((p, i) => { %>
+          <details class="faq-item" name="faq-<%= c.key %>"<% if (i === 0) { %> open<% } %>>
+            <summary><%= p.q %><span class="faq-item__icon" aria-hidden="true"><%- icon('plus', { size: 18, strokeWidth: 2.4 }) %></span></summary>
+            <p><%= p.a %></p>
+          </details>
+        <% }) %>
+      </div>
+    <% }) %>
+    <div class="card faq-empty" data-faq-empty role="status" hidden>
+      <strong>No encontramos preguntas con esa búsqueda.</strong>
+      <span class="card__text">Prueba con otras palabras o escríbenos.</span>
+    </div>
+  </div>
+</section>
+
+<section class="band-wrap" aria-labelledby="cta-t">
+  <div class="band band--row band--row-sm">
+    <div class="band__col band__col--sm">
+      <h2 class="band__title-sm" id="cta-t">¿No encontraste tu respuesta?</h2>
+      <span class="band__muted">Escríbenos y te respondemos. Si tienes PRO, en menos de 2 horas.</span>
+    </div>
+    <a class="btn btn--accent" href="/contacto">Contactar</a>
+  </div>
+</section>

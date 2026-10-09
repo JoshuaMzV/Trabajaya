@@ -1,0 +1,413 @@
+<div class="container dev">
+  <header class="dev-intro">
+    <span class="badge badge--accent">Fase 1 · solo desarrollo</span>
+    <h1 class="display-1">Componentes</h1>
+    <p class="lead">Página de revisión de tokens, componentes y comportamientos de <code>ui.js</code>. No forma parte del sitio.</p>
+    <nav class="dev-toc" aria-label="Secciones">
+      <a href="#tokens">Tokens</a><a href="#tipografia">Tipografía</a><a href="#botones">Botones</a><a href="#formularios">Formularios</a>
+      <a href="#tarjetas">Tarjetas</a><a href="#badges">Badges y chips</a><a href="#tabs">Tabs</a><a href="#modal">Modal</a>
+      <a href="#drawer">Drawer</a><a href="#dropdown">Dropdown</a><a href="#toast">Toast</a><a href="#sidebar">Menú lateral</a>
+    </nav>
+  </header>
+
+  <!-- Tokens -->
+  <section class="dev-section" id="tokens" aria-labelledby="tokens-t">
+    <h2 class="display-3" id="tokens-t">Tokens de color</h2>
+    <ul class="dev-swatches" role="list">
+      <% colores.forEach(([nombre, hex]) => { %>
+        <li class="dev-swatch">
+          <span class="dev-swatch__color dev-swatch--<%= nombre %>"></span>
+          <span class="dev-swatch__name">--color-<%= nombre %></span>
+          <span class="dev-swatch__hex"><%= hex %></span>
+        </li>
+      <% }) %>
+    </ul>
+  </section>
+
+  <!-- Tipografía -->
+  <section class="dev-section" id="tipografia" aria-labelledby="tipo-t">
+    <h2 class="display-3" id="tipo-t">Tipografía</h2>
+    <div class="dev-stack">
+      <p class="dev-note">.display-hero · Bricolage Grotesque 800 · var(--fs-hero)</p>
+      <p class="display-hero">Practica la entrevista hasta que salga <span class="text-accent">natural</span>.</p>
+      <p class="dev-note">.display-1 · var(--fs-h1)</p>
+      <p class="display-1">Paga lo que uses o <span class="text-accent">no pienses</span> en eso.</p>
+      <p class="dev-note">.display-2 · var(--fs-h2)</p>
+      <p class="display-2">Cuatro pasos, a tu ritmo</p>
+      <p class="dev-note">.display-3 · var(--fs-h3)</p>
+      <p class="display-3">TrabajaCoins</p>
+      <p class="dev-note">.title-app · título de las vistas internas</p>
+      <p class="title-app">Muro de empleos</p>
+      <p class="dev-note">.lead · Figtree 21px</p>
+      <p class="lead">Sube tu CV una vez, adáptalo a cada vacante y ensaya con una IA que te repregunta y te dice en qué mejorar.</p>
+      <p class="dev-note">Cuerpo · Figtree 17px · enlaces</p>
+      <p>Te avisamos antes de cada acción y puedes recargar en el momento, sin perder tu trabajo. <a href="#tipografia">Ver preguntas frecuentes →</a></p>
+      <p class="text-label">IA entrevistadora</p>
+    </div>
+  </section>
+
+  <!-- Botones -->
+  <section class="dev-section" id="botones" aria-labelledby="botones-t">
+    <h2 class="display-3" id="botones-t">Botones</h2>
+    <p class="dev-note">Un solo CTA coral (.btn--accent) por vista. El resto de primarios en .btn--ink; los secundarios, con borde.</p>
+    <div class="dev-row">
+      <a class="btn btn--accent btn--lg" href="#botones">Empezar gratis</a>
+      <a class="btn btn--outline btn--lg" href="#botones">Ver cómo funciona</a>
+    </div>
+    <div class="dev-row">
+      <button type="button" class="btn btn--ink">Entrar</button>
+      <button type="button" class="btn btn--soft">Continuar con Google</button>
+      <button type="button" class="btn btn--ghost">Entrar</button>
+      <button type="button" class="btn btn--danger">Eliminar expediente</button>
+      <button type="button" class="btn btn--ink" disabled>Deshabilitado</button>
+    </div>
+    <div class="dev-row">
+      <button type="button" class="btn btn--ink btn--sm">Buscar vacantes</button>
+      <button type="button" class="btn btn--soft btn--sm">Adaptar mi CV</button>
+      <button type="button" class="btn btn--outline btn--sm">Practicar entrevista</button>
+      <button type="button" class="btn-icon" aria-label="Cerrar"><%- icon('x', { size: 18, strokeWidth: 2.4 }) %></button>
+      <a class="link-strong" href="#botones">Ver el detalle →</a>
+    </div>
+    <div class="dev-row dev-row--dark">
+      <a class="btn btn--light" href="#botones">Conocer TrabajaYa para empresas</a>
+      <a class="btn btn--accent" href="#botones">Contactar</a>
+    </div>
+    <div class="dev-row">
+      <button type="button" class="btn btn--accent btn--lg btn--block">Crear cuenta</button>
+    </div>
+  </section>
+
+  <!-- Formularios -->
+  <section class="dev-section" id="formularios" aria-labelledby="form-t">
+    <h2 class="display-3" id="form-t">Formularios</h2>
+    <div class="dev-grid dev-grid--2">
+      <form class="card card--lg dev-form" action="#formularios" method="post" novalidate>
+        <%- include('../partials/form-field', { id: 'f-nombre', name: 'nombre', label: 'Nombre', placeholder: 'Tu nombre' }) %>
+        <%- include('../partials/form-field', { id: 'f-correo', name: 'correo', label: 'Correo', type: 'email', value: 'maria.lopez@correo.com', error: 'Este correo ya tiene una cuenta.', errorLink: { href: '/entrar', label: '¿Quieres entrar?' } }) %>
+        <%- include('../partials/form-field', { id: 'f-pass', name: 'password', label: 'Contraseña', type: 'password', value: 'Trabaja2026', autocomplete: 'new-password', ayuda: 'Buena. Agrega un símbolo para hacerla más segura.' }) %>
+        <%- include('../partials/form-field', { id: 'f-asunto', name: 'asunto', label: 'Asunto', type: 'select', opciones: [{ value: 'cuenta', label: 'Problema con mi cuenta' }, { value: 'pagos', label: 'Pagos y TrabajaCoins' }, { value: 'empresa', label: 'Quiero TrabajaYa para mi empresa' }, { value: 'otro', label: 'Otro' }] }) %>
+        <%- include('../partials/form-field', { id: 'f-mensaje', name: 'mensaje', label: 'Mensaje', type: 'textarea', placeholder: 'Cuéntanos con detalle' }) %>
+        <label class="check"><input type="checkbox" name="terminos" checked><span>Acepto los <a class="link-strong" href="/terminos">Términos</a> y la <a class="link-strong" href="/privacidad">Política de privacidad</a>.</span></label>
+      </form>
+
+      <div class="dev-stack">
+        <div class="alert alert--danger" role="alert">
+          <%- icon('circle-alert', { strokeWidth: 2.2 }) %>
+          <span>El correo o la contraseña no coinciden. Revísalos o <a href="/recuperar">recupera tu contraseña</a>.</span>
+        </div>
+        <div class="alert alert--success" role="status"><%- icon('circle-check') %><span>Te enviamos un enlace para restablecer tu contraseña.</span></div>
+        <div class="alert alert--info"><%- icon('info') %><span>Te avisamos antes de cada acción y puedes recargar en el momento.</span></div>
+
+        <div class="field">
+          <div class="field__row"><label class="field__label" for="f-pass-err">Contraseña</label><a href="/recuperar">¿Olvidaste tu contraseña?</a></div>
+          <div class="input-group">
+            <input class="input-group__control" id="f-pass-err" type="password" value="contraseña" aria-invalid="true" autocomplete="current-password">
+            <button type="button" class="input-group__btn" data-password-toggle aria-controls="f-pass-err" aria-pressed="false">Mostrar</button>
+          </div>
+        </div>
+
+        <div class="divider-text">o con tu correo</div>
+
+        <label class="visually-hidden" for="f-buscar">Buscar en preguntas frecuentes</label>
+        <div class="search-pill">
+          <%- icon('search') %>
+          <input id="f-buscar" type="search" placeholder="Busca: monedas, voz, expediente…">
+        </div>
+
+        <fieldset class="choice-group">
+          <legend>Escribo como</legend>
+          <div class="choice-group__options">
+            <label class="choice-chip"><input type="radio" name="tipo" value="candidato" checked>Candidato</label>
+            <label class="choice-chip"><input type="radio" name="tipo" value="empresa">Empresa</label>
+            <label class="choice-chip"><input type="radio" name="tipo" value="otro">Otro</label>
+          </div>
+        </fieldset>
+
+        <fieldset class="choice-group">
+          <legend class="visually-hidden">Elige un pack</legend>
+          <% packs.forEach((p) => { %>
+            <label class="option-card">
+              <input type="radio" name="pack" value="<%= p.id %>"<% if (p.elegido) { %> checked<% } %>>
+              <span class="option-card__body"><span class="option-card__title"><%= p.titulo %></span><span class="option-card__desc"><%= p.desc %></span></span>
+              <span class="option-card__price"><%= p.precio %></span>
+            </label>
+          <% }) %>
+        </fieldset>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tarjetas -->
+  <section class="dev-section" id="tarjetas" aria-labelledby="tarjetas-t">
+    <h2 class="display-3" id="tarjetas-t">Tarjetas</h2>
+    <div class="dev-grid">
+      <% pasos.forEach((s) => { %>
+        <article class="card">
+          <span class="card__number"><%= s.n %></span>
+          <h3 class="card__title"><%= s.t %></h3>
+          <p class="card__text"><%= s.d %></p>
+        </article>
+      <% }) %>
+      <article class="card card--raised">
+        <span class="text-label">Tu CV adaptado</span>
+        <div class="chip-group"><span class="tag tag--ink">Estándar ATS</span><span class="tag">Formal Ejecutivo</span></div>
+        <p class="card__text">.card--raised · sin borde, con --shadow-card.</p>
+      </article>
+      <article class="card card--dark">
+        <span class="text-label">Match con la vacante</span>
+        <h3 class="card__title">Analista de Datos Sr.</h3>
+        <p class="card__text">2 brechas por cubrir</p>
+      </article>
+      <article class="card">
+        <h3 class="card__title card__title--strong">TrabajaCoins</h3>
+        <p class="card__text">Recarga monedas y úsalas en análisis, CVs y entrevistas.</p>
+        <span class="card__price">desde US$ 5</span>
+        <a class="link-strong" href="#tarjetas">Ver packs →</a>
+      </article>
+      <article class="card card--accent">
+        <div class="dev-between"><h3 class="card__title card__title--strong">Plan PRO</h3><span class="badge badge--light">Recomendado</span></div>
+        <p class="card__text">Todo ilimitado y soporte VIP con respuesta en menos de 2 horas.</p>
+        <span class="card__price">US$ 15/mes</span>
+        <a class="link-strong" href="#tarjetas">Comparar planes →</a>
+      </article>
+      <article class="card card--soft">
+        <h3 class="dev-card-q">¿Qué pasa si me quedo sin monedas?</h3>
+        <p class="card__text">Te avisamos antes de cada acción y puedes recargar en el momento, sin perder tu trabajo.</p>
+      </article>
+      <article class="card card--compact">
+        <div class="dev-media">
+          <span class="card__icon"><%- icon('mail') %></span>
+          <div class="dev-media__body"><h3 class="dev-card-q">Correo</h3><span class="card__text">contacto@trabajaya.com</span></div>
+        </div>
+      </article>
+    </div>
+    <div class="band dev-band">
+      <span class="band__eyebrow">¿Contratas personal?</span>
+      <p class="display-2">Recibe candidatos que ya pasaron el primer filtro.</p>
+      <a class="btn btn--light" href="#tarjetas">Conocer TrabajaYa para empresas</a>
+    </div>
+  </section>
+
+  <!-- Badges y chips -->
+  <section class="dev-section" id="badges" aria-labelledby="badges-t">
+    <h2 class="display-3" id="badges-t">Badges y chips</h2>
+    <p class="dev-note">Badges de estado (partial <code>badge</code>)</p>
+    <div class="dev-row">
+      <% estadosPostulacion.forEach((b) => { %><%- include('../partials/badge', { label: b.label, variante: b.variante }) %><% }) %>
+    </div>
+    <p class="dev-note">Chips de filtro: selección única con <code>data-chip-group</code> y <code>aria-pressed</code></p>
+    <div class="chip-group" data-chip-group role="group" aria-label="Filtrar por estado">
+      <% filtros.forEach((f, i) => { %><button type="button" class="chip" aria-pressed="<%= i === 0 %>"><%= f %></button><% }) %>
+    </div>
+    <p class="dev-note">Etiquetas estáticas</p>
+    <div class="chip-group">
+      <% etiquetasVacante.forEach((t) => { %><span class="tag"><%= t %></span><% }) %>
+      <span class="tag tag--match">Match 82%</span>
+      <span class="tag tag--outline">Adaptabilidad</span>
+    </div>
+  </section>
+
+  <!-- Tabs -->
+  <section class="dev-section" id="tabs" aria-labelledby="tabs-t">
+    <h2 class="display-3" id="tabs-t">Tabs</h2>
+    <p class="dev-note">Flechas ← →, Inicio y Fin para moverse. La segunda sincroniza <code>?tab=</code> en la URL (<code>data-tabs-param</code>).</p>
+    <div class="dev-grid dev-grid--2">
+      <div class="dev-stack">
+        <div class="segmented" role="tablist" aria-label="Planes para">
+          <button type="button" role="tab" id="tab-cand" aria-controls="panel-cand" aria-selected="true">Busco empleo</button>
+          <button type="button" role="tab" id="tab-emp" aria-controls="panel-emp" aria-selected="false">Contrato talento</button>
+        </div>
+        <div class="card" role="tabpanel" id="panel-cand" aria-labelledby="tab-cand" tabindex="0"><p class="card__text">Prepárate para todas las vacantes que quieras.</p></div>
+        <div class="card" role="tabpanel" id="panel-emp" aria-labelledby="tab-emp" tabindex="0" hidden><p class="card__text">Gratis para empresas.</p></div>
+
+        <p class="dev-note">Selector de rol de la landing (enlaces con <code>aria-current</code>)</p>
+        <nav class="segmented segmented--light" aria-label="Elige tu rol">
+          <a href="#tabs" aria-current="page">Busco empleo</a>
+          <a href="#tabs">Contrato talento</a>
+        </nav>
+      </div>
+
+      <div class="dev-stack">
+        <div class="segmented segmented--light segmented--sm" role="tablist" aria-label="Tipo" data-tabs-param="tab">
+          <button type="button" role="tab" id="tab-post" data-value="postulaciones" aria-controls="panel-post" aria-selected="true">Postulaciones · 5</button>
+          <button type="button" role="tab" id="tab-prac" data-value="practicas" aria-controls="panel-prac" aria-selected="false">Prácticas · 2</button>
+          <button type="button" role="tab" id="tab-cvs" data-value="cvs" aria-controls="panel-cvs" aria-selected="false">CVs adaptados · 2</button>
+        </div>
+        <div role="tabpanel" id="panel-post" aria-labelledby="tab-post" tabindex="0" class="card card--compact"><span class="badge">En revisión</span><span class="card__text">Analista de Datos Sr. · Andina Logística</span></div>
+        <div role="tabpanel" id="panel-prac" aria-labelledby="tab-prac" tabindex="0" class="card card--compact" hidden><span class="badge">Score 78</span><span class="card__text">Práctica del 12/09</span></div>
+        <div role="tabpanel" id="panel-cvs" aria-labelledby="tab-cvs" tabindex="0" class="card card--compact" hidden><span class="badge badge--outline">Estándar ATS</span><span class="card__text">Match 82% · 10/09</span></div>
+
+        <div class="tabs-underline" role="tablist" aria-label="Secciones">
+          <button type="button" role="tab" id="tab-dic" aria-controls="panel-dic" aria-selected="true">Dictamen IA</button>
+          <button type="button" role="tab" id="tab-tra" aria-controls="panel-tra" aria-selected="false">Transcripción</button>
+          <button type="button" role="tab" id="tab-cv" aria-controls="panel-cv" aria-selected="false">CV</button>
+        </div>
+        <div role="tabpanel" id="panel-dic" aria-labelledby="tab-dic" tabindex="0"><p class="card__text">Resumen ejecutivo y justificación del dictamen.</p></div>
+        <div role="tabpanel" id="panel-tra" aria-labelledby="tab-tra" tabindex="0" hidden><p class="card__text">P1 · voz — Resumen fiel de la respuesta.</p></div>
+        <div role="tabpanel" id="panel-cv" aria-labelledby="tab-cv" tabindex="0" hidden><p class="card__text">CV resumido del candidato.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal -->
+  <section class="dev-section" id="modal" aria-labelledby="modal-t">
+    <h2 class="display-3" id="modal-t">Modal (&lt;dialog&gt;)</h2>
+    <p class="dev-note">Se cierra con Esc, con × o con clic en el fondo. El foco queda atrapado y vuelve al botón que lo abrió.</p>
+    <div class="dev-row">
+      <button type="button" class="btn btn--ink" data-modal-open="demo-confirmar">Abrir confirmación</button>
+      <button type="button" class="btn btn--soft" data-modal-open="demo-form">Abrir formulario</button>
+      <button type="button" class="btn btn--soft" data-modal-open="demo-panel">Abrir panel lateral</button>
+    </div>
+  </section>
+
+  <!-- Drawer -->
+  <section class="dev-section" id="drawer" aria-labelledby="drawer-t">
+    <h2 class="display-3" id="drawer-t">Drawer</h2>
+    <p class="dev-note">Escritorio: columna a la derecha del listado. ≤ 1100px: pantalla completa. Esc o × para cerrar.</p>
+    <div class="dev-frame">
+      <div class="split">
+        <div class="split__main dev-frame__main">
+          <ul class="dev-list" role="list">
+            <% vacantes.forEach((v) => { %>
+              <li>
+                <button type="button" class="dev-job" data-drawer-open="demo-drawer" aria-pressed="false" aria-controls="demo-drawer"
+                  data-puesto="<%= v.puesto %>" data-empresa="<%= v.empresa %> · <%= v.ciudad %>" data-match="<%= v.match %>">
+                  <span class="avatar avatar--lg avatar--square" aria-hidden="true"><%= v.empresa.slice(0, 2).toUpperCase() %></span>
+                  <span class="dev-job__body">
+                    <span class="dev-job__title"><%= v.puesto %></span>
+                    <span class="dev-job__meta"><%= v.empresa %> · <%= v.ciudad %> · <%= v.modalidad %> · hace <%= v.dias %> días</span>
+                  </span>
+                  <span class="tag tag--match">Match <%= v.match %>%</span>
+                </button>
+              </li>
+            <% }) %>
+          </ul>
+        </div>
+        <aside class="drawer" id="demo-drawer" aria-labelledby="demo-drawer-t" hidden>
+          <div class="drawer__header">
+            <div class="dev-media">
+              <span class="avatar avatar--lg avatar--square" aria-hidden="true"><%- icon('building-2') %></span>
+              <div class="dev-media__body">
+                <h2 class="drawer__title" id="demo-drawer-t" data-drawer-focus data-demo="puesto">Vacante</h2>
+                <span class="card__text" data-demo="empresa"></span>
+              </div>
+            </div>
+            <button type="button" class="btn-icon" data-drawer-close aria-label="Cerrar detalle"><%- icon('x', { size: 18 }) %></button>
+          </div>
+          <div class="chip-group"><% etiquetasVacante.forEach((t) => { %><span class="tag"><%= t %></span><% }) %><span class="tag tag--match" data-demo="match"></span></div>
+          <a class="btn btn--accent btn--block" href="#drawer">Postularme · inicia entrevista IA</a>
+          <div class="dev-grid dev-grid--2 dev-grid--tight">
+            <a class="btn btn--soft btn--sm" href="#drawer">Adaptar mi CV</a>
+            <a class="btn btn--soft btn--sm" href="#drawer">Practicar entrevista</a>
+          </div>
+          <section class="drawer__section"><h3>Descripción</h3><p class="card__text">Buscamos una persona que convierta datos operativos en decisiones de negocio.</p></section>
+          <section class="drawer__section"><h3>La entrevista IA evaluará</h3><div class="chip-group"><span class="tag tag--outline">Adaptabilidad</span><span class="tag tag--outline">Experiencia</span><span class="tag tag--outline">Implementación técnica</span></div></section>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- Dropdown -->
+  <section class="dev-section" id="dropdown" aria-labelledby="dropdown-t">
+    <h2 class="display-3" id="dropdown-t">Dropdown</h2>
+    <p class="dev-note">Con <code>role="menu"</code> se navega con flechas. Esc y clic fuera lo cierran. El menú de usuario del menú lateral usa la misma base.</p>
+    <div class="dropdown dev-inline" data-dropdown>
+      <button type="button" class="btn btn--soft btn--sm" data-dropdown-toggle aria-expanded="false" aria-controls="demo-menu" aria-haspopup="menu">
+        Acciones de la vacante <%- icon('chevron-up', { size: 16, className: 'dev-rotate' }) %>
+      </button>
+      <div class="dropdown__menu" id="demo-menu" role="menu" aria-label="Acciones de la vacante" data-dropdown-menu hidden>
+        <a class="menu-item" role="menuitem" href="#dropdown"><%- icon('settings', { size: 18 }) %>Editar</a>
+        <a class="menu-item" role="menuitem" href="#dropdown"><%- icon('users', { size: 18 }) %>Ver postulantes</a>
+        <div class="menu-sep" role="separator"></div>
+        <button type="button" class="menu-item" role="menuitem"><%- icon('x', { size: 18 }) %>Cerrar vacante</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Toast -->
+  <section class="dev-section" id="toast" aria-labelledby="toast-t">
+    <h2 class="display-3" id="toast-t">Toast</h2>
+    <p class="dev-note">Renderizado por el servidor (partial <code>toast</code>):</p>
+    <%- include('../partials/toast', { titulo: '¡Postulación enviada!', mensaje: 'Tu entrevista para Analista de Datos Sr. llegó a Andina Logística. Te avisaremos por correo.', variante: 'success' }) %>
+    <p class="dev-note">Creado desde JS con <code>TY.toast()</code> (se cierra solo a los 6 s):</p>
+    <div class="dev-row">
+      <button type="button" class="btn btn--soft btn--sm" data-toast-trigger data-toast-variant="info" data-toast-message="Guardamos tu borrador.">Toast info</button>
+      <button type="button" class="btn btn--soft btn--sm" data-toast-trigger data-toast-variant="success" data-toast-title="¡Listo!" data-toast-message="Monedas acreditadas.">Toast éxito</button>
+      <button type="button" class="btn btn--soft btn--sm" data-toast-trigger data-toast-variant="error" data-toast-message="No pudimos cargar los postulantes.">Toast error</button>
+    </div>
+  </section>
+
+  <!-- Sidebar -->
+  <section class="dev-section" id="sidebar" aria-labelledby="sidebar-t">
+    <h2 class="display-3" id="sidebar-t">Menú lateral (partial sidebar)</h2>
+    <p class="dev-note">Parámetros <code>role</code> y <code>active</code>. Abre el menú de usuario con el botón inferior. Solo el candidato ve el saldo.</p>
+    <div class="dev-row">
+      <a class="btn btn--ink btn--sm" href="/dev/componentes/app?role=cand&amp;active=muro">Layout app · Candidato</a>
+      <a class="btn btn--soft btn--sm" href="/dev/componentes/app?role=rec&amp;active=postulantes">Layout app · Empresa</a>
+      <a class="btn btn--soft btn--sm" href="/dev/componentes/app?role=admin&amp;active=cuentas">Layout app · Admin</a>
+    </div>
+    <div class="dev-sidebars">
+      <%- include('../partials/sidebar', { role: 'cand', active: 'muro', usuario: usuarios.cand, sidebarId: 'sb-cand' }) %>
+      <%- include('../partials/sidebar', { role: 'rec', active: 'postulantes', usuario: usuarios.rec, sidebarId: 'sb-rec' }) %>
+      <%- include('../partials/sidebar', { role: 'admin', active: 'ajustes', usuario: usuarios.admin, sidebarId: 'sb-admin' }) %>
+    </div>
+  </section>
+</div>
+
+<!-- Modales de demostración -->
+<dialog class="modal" id="demo-confirmar" aria-labelledby="demo-confirmar-t">
+  <div class="modal__content">
+    <div class="modal__header">
+      <div class="modal__heading">
+        <h2 class="modal__title" id="demo-confirmar-t">¿Finalizar la entrevista?</h2>
+        <span class="text-muted">Tus respuestas se enviarán a la empresa y no podrás repetir este intento.</span>
+      </div>
+      <button type="button" class="btn-icon" data-modal-close aria-label="Cerrar"><%- icon('x', { size: 18, strokeWidth: 2.4 }) %></button>
+    </div>
+    <div class="modal__actions">
+      <button type="button" class="btn btn--soft" data-modal-close>Seguir respondiendo</button>
+      <button type="button" class="btn btn--ink" data-modal-close>Finalizar</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog class="modal" id="demo-form" aria-labelledby="demo-form-t">
+  <form class="modal__content" method="dialog">
+    <div class="modal__header">
+      <div class="modal__heading">
+        <h2 class="modal__title" id="demo-form-t">Hola de nuevo</h2>
+        <span class="text-muted">Entra a tu cuenta de TrabajaYa.</span>
+      </div>
+      <button type="button" class="btn-icon" data-modal-close aria-label="Cerrar"><%- icon('x', { size: 18, strokeWidth: 2.4 }) %></button>
+    </div>
+    <%- include('../partials/form-field', { id: 'm-correo', name: 'correo', label: 'Correo', type: 'email', autocomplete: 'email' }) %>
+    <%- include('../partials/form-field', { id: 'm-pass', name: 'password', label: 'Contraseña', type: 'password' }) %>
+    <button type="submit" class="btn btn--ink btn--lg btn--block">Entrar</button>
+  </form>
+</dialog>
+
+<dialog class="modal modal--side" id="demo-panel" aria-labelledby="demo-panel-t">
+  <div class="modal__content">
+    <div class="modal__header">
+      <h2 class="modal__title" id="demo-panel-t">Mesa de ayuda</h2>
+      <button type="button" class="btn-icon" data-modal-close aria-label="Cerrar"><%- icon('x', { size: 18, strokeWidth: 2.4 }) %></button>
+    </div>
+    <div class="card card--compact card--dark">
+      <strong>Soporte VIP · respuesta en menos de 2 horas</strong>
+      <span class="card__text">Incluido en tu Plan PRO</span>
+    </div>
+    <div class="tabs-underline" role="tablist" aria-label="Sección">
+      <button type="button" role="tab" id="tab-nuevo" aria-controls="panel-nuevo" aria-selected="true">Nuevo ticket</button>
+      <button type="button" role="tab" id="tab-mis" aria-controls="panel-mis" aria-selected="false">Mis tickets</button>
+    </div>
+    <div role="tabpanel" id="panel-nuevo" aria-labelledby="tab-nuevo" class="dev-stack">
+      <%- include('../partials/form-field', { id: 'p-asunto', name: 'asunto', label: 'Asunto', compact: true }) %>
+      <%- include('../partials/form-field', { id: 'p-mensaje', name: 'mensaje', label: 'Mensaje', type: 'textarea' }) %>
+      <button type="button" class="btn btn--ink btn--block">Enviar ticket</button>
+    </div>
+    <div role="tabpanel" id="panel-mis" aria-labelledby="tab-mis" class="dev-stack" hidden>
+      <div class="card card--compact dev-between"><span><strong>#1042 · No puedo subir mi CV</strong><br><span class="text-small text-muted">Actualizado 12/09</span></span><span class="badge">Abierto</span></div>
+      <div class="card card--compact dev-between"><span><strong>#1017 · Cobro duplicado</strong><br><span class="text-small text-muted">Actualizado 02/09</span></span><span class="badge badge--outline">Cerrado</span></div>
+    </div>
+  </div>
+</dialog>

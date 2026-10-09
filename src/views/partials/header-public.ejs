@@ -1,0 +1,27 @@
+<%
+  // Parámetros: navActive = clave de la página actual (como-funciona | empresas | planes | faq | contacto).
+  const actual = locals.navActive;
+%>
+<header class="site-header container">
+  <a class="logo" href="/">
+    <span class="logo__mark" aria-hidden="true">t</span>
+    <span class="logo__text">Trabaja<span class="logo__ya">Ya</span></span>
+  </a>
+
+  <button type="button" class="btn-icon site-header__toggle" data-nav-toggle aria-controls="site-header-panel" aria-expanded="false" aria-label="Abrir menú">
+    <%- icon('menu') %>
+  </button>
+
+  <div class="site-header__panel" id="site-header-panel">
+    <nav class="site-nav" aria-label="Principal">
+      <% navPublica.forEach((item) => { %>
+        <a href="<%= item.href %>"<% if (item.key === actual) { %> aria-current="page"<% } %>><%= item.label %></a>
+      <% }) %>
+    </nav>
+    <div class="site-header__actions">
+      <%# Los modales de auth se abren sin recargar si están en la página; si no, se navega a la ruta. %>
+      <a class="btn btn--ghost site-header__login" href="/entrar" data-modal-open="modal-entrar">Entrar</a>
+      <a class="btn btn--ink site-header__signup" href="/registro" data-modal-open="modal-registro">Crear cuenta</a>
+    </div>
+  </div>
+</header>

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Candidato · Adaptador ATS</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#18181B}a:hover{color:#52525B}
+</style>
+</helmet>
+<div style="min-height: 1100px; background: #F4F4F5; color: #18181B; font-family: Figtree, system-ui, sans-serif; font-size: 15px; line-height: 1.5; display: flex; flex-wrap: wrap; align-items: stretch">
+<div style="flex: 1 1 240px; max-width: 100%; background: #FFFFFF; border-right: 1px solid #D4D4D8"><dc-import name="WFSide" role="cand" active="adaptador" hint-size="100%,900px"></dc-import></div>
+<main style="flex: 999 1 560px; min-width: 0; padding: 28px 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px"><h1 style="margin: 0; font-size: 26px; font-weight: 800">Adaptador ATS</h1><span style="color: #52525B">Compara tu expediente con una vacante y genera tu CV adaptado.</span></div>
+<div role="tablist" aria-label="Estado de la vista previa (demo)" style="display: flex; gap: 4px; padding: 4px; border: 1px dashed #A1A1AA; border-radius: 10px; flex-wrap: wrap">
+<sc-for list="{{modes}}" as="m" hint-placeholder-count="5"><button type="button" role="tab" aria-selected="{{m.on}}" onClick="{{m.pick}}" style="{{m.s}}">{{m.n}}</button></sc-for>
+</div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+<section aria-label="Entrada" style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+<div style="background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+<label style="display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 14px">1. Vacante del muro<select style="min-height: 44px; padding: 0 10px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400; background: #FFFFFF"><option>[Puesto] · [Empresa]</option></select></label>
+<fieldset style="border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px">
+<legend style="font-weight: 700; font-size: 14px; margin-bottom: 6px">2. Estilo del CV</legend>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{styles}}" as="s" hint-placeholder-count="2"><button type="button" role="radio" aria-checked="{{s.on}}" onClick="{{s.pick}}" style="{{s.st}}"><span style="font-weight: 800">{{s.n}}</span><span style="font-size: 12px; color: #52525B; font-weight: 400">{{s.d}}</span></button></sc-for>
+</div>
+</fieldset>
+<button type="button" onClick="{{run}}" style="min-height: 48px; border-radius: 8px; border: 0; background: #18181B; color: #FFFFFF; font: inherit; font-weight: 800; cursor: pointer">Analizar y generar · [N] monedas</button>
+</div>
+
+<div style="background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; gap: 14px; align-items: center"><span style="width: 84px; height: 84px; border-radius: 50%; border: 10px solid #18181B; border-right-color: #E4E4E7; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0">[%]</span><div style="display: flex; flex-direction: column"><span style="font-weight: 800">Compatibilidad ATS</span><span style="font-size: 13px; color: #52525B">Requisitos, palabras clave y experiencia</span></div></div>
+<div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{kw}}" as="k" hint-placeholder-count="6"><span style="{{k}}">[Keyword]</span></sc-for></div>
+<details open="{{true}}" style="border-top: 1px solid #E4E4E7; padding-top: 10px"><summary style="font-weight: 800; cursor: pointer; min-height: 28px">Fortalezas (3)</summary><div style="display: flex; flex-direction: column; gap: 4px; padding-top: 6px; color: #3F3F46"><span>• [Fortaleza] — [evidencia]</span><span>• [Fortaleza] — [evidencia]</span><span>• [Fortaleza] — [evidencia]</span></div></details>
+<details open="{{true}}" style="border-top: 1px solid #E4E4E7; padding-top: 10px"><summary style="font-weight: 800; cursor: pointer; min-height: 28px">Brechas y recomendaciones (2)</summary><div style="display: flex; flex-direction: column; gap: 4px; padding-top: 6px; color: #3F3F46"><span>• [Brecha] → [acción recomendada]</span><span>• [Brecha] → [acción recomendada]</span></div></details>
+<a href="WC-Sala.dc.html" style="min-height: 44px; border-radius: 8px; border: 1px solid #A1A1AA; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 700">Practicar entrevista para esta vacante</a>
+</div>
+</section>
+
+<section aria-label="Vista previa" style="flex: 1 1 420px; min-width: 0; background: #E4E4E7; border-radius: 12px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px; align-items: center">
+<div style="width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap"><span style="font-weight: 800">Vista previa A4</span><div style="display: flex; gap: 8px"><button type="button" style="{{btn2}}">Imprimir</button><button type="button" style="{{btn1}}">Descargar PDF</button></div></div>
+
+<sc-if value="{{ready}}" hint-placeholder-val="{{true}}">
+<div style="width: 100%; max-width: 480px; aspect-ratio: 1 / 1.414; background: #FFFFFF; box-shadow: 0 6px 20px rgba(0,0,0,0.12); padding: 36px; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px">
+<span style="height: 16px; width: 55%; background: #18181B; border-radius: 3px; display: block"></span><span style="height: 9px; width: 40%; background: #A1A1AA; border-radius: 3px; display: block"></span>
+<sc-for list="{{blocks}}" as="b" hint-placeholder-count="4"><div style="display: flex; flex-direction: column; gap: 5px; margin-top: 8px"><span style="height: 10px; width: 30%; background: #52525B; border-radius: 3px; display: block"></span><span style="height: 7px; width: 100%; background: #E4E4E7; border-radius: 3px; display: block"></span><span style="height: 7px; width: 90%; background: #E4E4E7; border-radius: 3px; display: block"></span><span style="height: 7px; width: 76%; background: #E4E4E7; border-radius: 3px; display: block"></span></div></sc-for>
+</div>
+<span style="font-size: 13px; color: #3F3F46">Texto editable sobre la hoja · cambios aplicados por la IA resaltados</span>
+</sc-if>
+
+<sc-if value="{{loading}}" hint-placeholder-val="{{false}}">
+<div style="width: 100%; max-width: 480px; aspect-ratio: 1 / 1.414; background: #FFFFFF; padding: 36px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px">
+<span style="font-weight: 800">Analizando y redactando…</span>
+<sc-for list="{{blocks}}" as="b" hint-placeholder-count="4"><div style="display: flex; flex-direction: column; gap: 6px"><span style="height: 10px; width: 35%; background: #E4E4E7; border-radius: 3px; display: block"></span><span style="height: 7px; width: 100%; background: #F4F4F5; border-radius: 3px; display: block"></span><span style="height: 7px; width: 85%; background: #F4F4F5; border-radius: 3px; display: block"></span></div></sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{msg}}" hint-placeholder-val="{{false}}">
+<div style="width: 100%; max-width: 480px; min-height: 420px; background: #FFFFFF; border-radius: 10px; padding: 28px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; align-items: center; justify-content: center; text-align: center">
+<span style="width: 56px; height: 56px; border-radius: 14px; background: #E4E4E7; display: block"></span>
+<span style="font-weight: 800; font-size: 18px">{{msgT}}</span>
+<span style="color: #52525B">{{msgD}}</span>
+<a href="{{msgHref}}" style="min-height: 44px; padding: 0 18px; border-radius: 8px; background: #18181B; color: #FFFFFF; display: flex; align-items: center; text-decoration: none; font-weight: 700">{{msgCta}}</a>
+</div>
+</sc-if>
+</section>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { m: 0, s: 0 }; }
+renderVals() {
+const m = this.state.m, s = this.state.s;
+const on = 'min-height: 36px; padding: 0 10px; border-radius: 8px; border: 0; background: #18181B; color: #FFFFFF; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer';
+const off = 'min-height: 36px; padding: 0 10px; border-radius: 8px; border: 0; background: transparent; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; color: #3F3F46';
+const sb = 'padding: 10px 12px; border-radius: 10px; font: inherit; color: #18181B; text-align: left; display: flex; flex-direction: column; gap: 2px; cursor: pointer; background: #FFFFFF; ';
+const kOn = 'font-size: 13px; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: #18181B; color: #FFFFFF';
+const kOff = 'font-size: 13px; font-weight: 600; padding: 3px 10px; border-radius: 999px; border: 2px dashed #A1A1AA';
+const msgs = {
+2: ['Algo falló al generar tu CV', 'Error del servidor o tiempo agotado. No se descontaron monedas.', 'Reintentar', 'WC-Adaptador.dc.html'],
+3: ['Primero sube tu Expediente Maestro', 'El adaptador necesita tu información base.', 'Ir a Expediente', 'WC-Expediente.dc.html'],
+4: ['No tienes monedas suficientes', 'Esta acción cuesta [N]. Tu saldo es [N].', 'Comprar monedas', 'WC-Packs.dc.html']
+};
+const mm = msgs[m] || ['', '', '', '#'];
+return {
+modes: ['Listo', 'Cargando', 'Error', 'Sin expediente', 'Sin saldo'].map((n, i) => ({ n, on: i === m, s: i === m ? on : off, pick: () => this.setState({ m: i }) })),
+ready: m === 0, loading: m === 1, msg: m >= 2,
+msgT: mm[0], msgD: mm[1], msgCta: mm[2], msgHref: mm[3],
+run: () => this.setState({ m: 1 }),
+styles: [['Estándar ATS', 'Una columna, sin gráficos'], ['Formal Ejecutivo', 'Jerarquía visual sobria']].map(([n, d], i) => ({ n, d, on: i === s, st: sb + (i === s ? 'border: 2px solid #18181B' : 'border: 1px solid #D4D4D8'), pick: () => this.setState({ s: i }) })),
+kw: [kOn, kOn, kOn, kOn, kOff, kOff],
+blocks: [1, 2, 3, 4],
+btn1: 'min-height: 40px; padding: 0 14px; border-radius: 8px; border: 0; background: #18181B; color: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer',
+btn2: 'min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer'
+};
+}
+}
+</script>
+</body>
+</html>

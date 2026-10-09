@@ -1,0 +1,63 @@
+<%
+  // disenos/app/WC-Soporte.dc.html · panel lateral global (enlace "Ayuda" del menú lateral).
+  // Parámetros: s = { abrir, tickets, estados, categorias, sla, volver, accion, plan } · usuario
+  // accion: URL del POST del ticket (candidato o empresa). plan: 'PRO' | 'Gratis' | null (empresas: sin planes).
+  const plan = s.plan === undefined ? usuario.plan : s.plan;
+  const pro = plan === 'PRO';
+%>
+<dialog class="modal modal--side" id="panel-soporte" aria-labelledby="soporte-t"<% if (s.abrir) { %> data-modal-autoopen data-modal-return="<%= s.volver %>"<% } %>>
+  <div class="modal__content">
+    <div class="modal__header">
+      <h2 class="modal__title" id="soporte-t">Mesa de ayuda</h2>
+      <button type="button" class="btn-icon" data-modal-close aria-label="Cerrar"><%- icon('x', { size: 18, strokeWidth: 2.4 }) %></button>
+    </div>
+
+    <div class="sla-box<%= pro ? ' sla-box--pro' : '' %>">
+      <% if (plan === null) { %>
+        <strong>Soporte para empresas · respuesta en <%= s.sla.estandar %></strong>
+        <span class="text-small">Sin costo para tu cuenta de empresa</span>
+      <% } else { %>
+        <strong><%= pro ? `Soporte VIP · respuesta en ${s.sla.vip}` : `Soporte estándar · respuesta en ${s.sla.estandar}` %></strong>
+        <span class="text-small"><%= pro ? 'Incluido en tu Plan PRO' : `Con Plan PRO tendrías respuesta en ${s.sla.vip}` %></span>
+      <% } %>
+    </div>
+
+    <div class="tabs-underline" role="tablist" aria-label="Sección">
+      <button type="button" role="tab" id="sop-tab-nuevo" aria-controls="sop-nuevo" aria-selected="true">Nuevo ticket</button>
+      <button type="button" role="tab" id="sop-tab-mis" aria-controls="sop-mis" aria-selected="false">Mis tickets · <%= s.tickets.length %></button>
+    </div>
+
+    <div role="tabpanel" id="sop-nuevo" aria-labelledby="sop-tab-nuevo" class="modal__content">
+      <form class="field" method="get" action="/faq" target="_blank" role="search">
+        <label class="field__label" for="sop-faq">Busca en preguntas frecuentes</label>
+        <div class="search-pill search-pill--sm">
+          <%- icon('search', { size: 18 }) %>
+          <input id="sop-faq" type="search" name="q" placeholder="Ej. monedas, micrófono…">
+        </div>
+      </form>
+
+      <form class="modal__content" method="post" action="<%= s.accion || '/candidato/soporte/tickets' %>" enctype="multipart/form-data">
+        <input type="hidden" name="volver" value="<%= s.volver %>">
+        <%- include('form-field', { id: 'sop-categoria', name: 'categoria', label: 'Categoría', type: 'select', compact: true, opciones: s.categorias.map((c) => ({ value: c, label: c })) }) %>
+        <%- include('form-field', { id: 'sop-asunto', name: 'asunto', label: 'Asunto', required: true, compact: true }) %>
+        <%- include('form-field', { id: 'sop-mensaje', name: 'mensaje', label: 'Mensaje', type: 'textarea', required: true }) %>
+        <label class="attach" for="sop-captura">
+          <%- icon('paperclip', { size: 18 }) %><span data-attach-label>Adjuntar captura</span>
+          <input class="visually-hidden" id="sop-captura" type="file" name="captura" accept="image/*" data-attach-input>
+        </label>
+        <button type="submit" class="btn btn--ink btn--block">Enviar ticket</button>
+      </form>
+    </div>
+
+    <div role="tabpanel" id="sop-mis" aria-labelledby="sop-tab-mis" hidden>
+      <ul class="ticket-list" role="list">
+        <% s.tickets.forEach((t) => { %>
+          <li class="ticket-row">
+            <span class="ticket-row__body"><strong>#<%= t.id %> · <%= t.asunto %></strong><span class="text-muted text-small">Actualizado <%= t.actualizado %></span></span>
+            <%- include('badge', s.estados[t.estado]) %>
+          </li>
+        <% }) %>
+      </ul>
+    </div>
+  </div>
+</dialog>

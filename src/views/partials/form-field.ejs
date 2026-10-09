@@ -1,0 +1,34 @@
+<%
+  // Campo de formulario con etiqueta, ayuda y error en línea.
+  // Parámetros: id · name · label · type (text | email | password | search | textarea | select)
+  // Opcionales: value · placeholder · ayuda · error · errorLink ({ href, label, modal }) · required · autocomplete
+  //             opciones (select: [{ value, label }]) · compact
+  const tipo = locals.type || 'text';
+  const ayudaId = locals.ayuda ? `${id}-ayuda` : '';
+  const errorId = locals.error ? `${id}-error` : '';
+  const describedBy = [errorId, ayudaId].filter(Boolean).join(' ');
+  const aria = `${locals.error ? ' aria-invalid="true"' : ''}${describedBy ? ` aria-describedby="${describedBy}"` : ''}`;
+  const compact = locals.compact ? ' input--compact' : '';
+  const valor = locals.value ?? '';
+%>
+<div class="field">
+  <label class="field__label" for="<%= id %>"><%= label %></label>
+  <% if (tipo === 'textarea') { %>
+    <textarea class="textarea" id="<%= id %>" name="<%= name %>" rows="5"<% if (locals.placeholder) { %> placeholder="<%= placeholder %>"<% } %><% if (locals.required) { %> required<% } %><%- aria %>><%= valor %></textarea>
+  <% } else if (tipo === 'select') { %>
+    <select class="select<%= compact %>" id="<%= id %>" name="<%= name %>"<% if (locals.required) { %> required<% } %><%- aria %>>
+      <% (locals.opciones || []).forEach((op) => { %>
+        <option value="<%= op.value %>"<% if (String(op.value) === String(valor)) { %> selected<% } %>><%= op.label %></option>
+      <% }) %>
+    </select>
+  <% } else if (tipo === 'password') { %>
+    <div class="input-group<%= compact %>">
+      <input class="input-group__control" id="<%= id %>" name="<%= name %>" type="password" value="<%= valor %>" autocomplete="<%= locals.autocomplete || 'current-password' %>"<% if (locals.required) { %> required<% } %><%- aria %>>
+      <button type="button" class="input-group__btn" data-password-toggle aria-controls="<%= id %>" aria-pressed="false">Mostrar</button>
+    </div>
+  <% } else { %>
+    <input class="input<%= compact %>" id="<%= id %>" name="<%= name %>" type="<%= tipo %>" value="<%= valor %>"<% if (locals.placeholder) { %> placeholder="<%= placeholder %>"<% } %><% if (locals.autocomplete) { %> autocomplete="<%= autocomplete %>"<% } %><% if (locals.required) { %> required<% } %><%- aria %>>
+  <% } %>
+  <% if (locals.error) { %><span class="field__error" id="<%= errorId %>"><%= error %><% if (locals.errorLink) { %> <a href="<%= errorLink.href %>"<% if (errorLink.modal) { %> data-modal-open="<%= errorLink.modal %>"<% } %>><%= errorLink.label %></a><% } %></span><% } %>
+  <% if (locals.ayuda) { %><span class="field__help" id="<%= ayudaId %>"><%= ayuda %></span><% } %>
+</div>

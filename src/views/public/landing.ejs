@@ -1,0 +1,79 @@
+<%# disenos/landing/TY-Landing.dc.html %>
+<section class="hero container">
+  <nav class="segmented segmented--light" aria-label="Elige tu rol">
+    <a href="/" aria-current="page">Busco empleo</a>
+    <a href="/empresas">Contrato talento</a>
+  </nav>
+  <h1 class="display-hero hero__title">Practica la entrevista hasta que salga <span class="text-accent">natural</span>.</h1>
+  <p class="lead hero__lead">Sube tu CV una vez, adáptalo a cada vacante y ensaya con una IA que te repregunta y te dice en qué mejorar.</p>
+  <div class="hero__ctas">
+    <a class="btn btn--accent btn--lg" href="/registro" data-modal-open="modal-registro">Empezar gratis</a>
+    <a class="btn btn--outline btn--lg" href="/como-funciona">Ver cómo funciona</a>
+  </div>
+
+  <div class="hero-cards" aria-hidden="true">
+    <div class="float-card float-card--340 float-card--left">
+      <span class="text-label">IA entrevistadora</span>
+      <span class="bubble">¿Qué obstáculo encontraste en esa migración y cómo lo resolviste?</span>
+      <span class="bubble--me"><%- icon('mic', { size: 16 }) %>Nota de voz · 1:24</span>
+    </div>
+    <div class="float-card float-card--260 float-card--dark">
+      <span class="text-label">Match con la vacante</span>
+      <div class="float-card__match">
+        <%- include('../partials/score-ring', { valor: 82, tamano: 'md' }) %>
+        <span class="float-card__match-text">Analista de Datos Sr.<br>2 brechas por cubrir</span>
+      </div>
+    </div>
+    <div class="float-card float-card--right float-card__gap10">
+      <span class="text-label">Tu CV adaptado</span>
+      <div class="chip-group"><span class="tag tag--lg tag--ink">Estándar ATS</span><span class="tag tag--lg">Formal Ejecutivo</span></div>
+      <div class="lines"><span class="line line--90"></span><span class="line line--70"></span><span class="line line--82"></span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section container" aria-labelledby="pasos-t">
+  <div class="section-head">
+    <h2 class="display-2" id="pasos-t">Cuatro pasos, a tu ritmo</h2>
+    <a class="link-strong" href="/como-funciona">Ver el detalle →</a>
+  </div>
+  <ol class="grid-auto" role="list">
+    <% pasos.forEach((s) => { %>
+      <li class="card">
+        <span class="card__number" aria-hidden="true"><%= s.n %></span>
+        <h3 class="card__title"><%= s.t %></h3>
+        <p class="card__text"><%= s.d %></p>
+      </li>
+    <% }) %>
+  </ol>
+</section>
+
+<section class="band-wrap" aria-labelledby="empresas-t">
+  <div class="band band--split">
+    <div class="band__col">
+      <span class="band__eyebrow">¿Contratas personal?</span>
+      <h2 class="band__title" id="empresas-t">Recibe candidatos que ya pasaron el primer filtro.</h2>
+      <a class="btn btn--light band__start" href="/empresas">Conocer TrabajaYa para empresas</a>
+    </div>
+    <ul class="check-list" role="list">
+      <% beneficiosEmpresa.forEach((b) => { %>
+        <li class="check-list__item"><%- icon('check', { size: 22, strokeWidth: 2.2 }) %><span><%= b %></span></li>
+      <% }) %>
+    </ul>
+  </div>
+</section>
+
+<section class="price-cards container" aria-label="Precios">
+  <article class="card">
+    <h2 class="card__title--strong">TrabajaCoins</h2>
+    <p class="card__text">Recarga monedas y úsalas en análisis, CVs y entrevistas.</p>
+    <span class="card__price">desde <%= precios.packDesde %></span>
+    <a class="link-strong" href="/planes">Ver packs →</a>
+  </article>
+  <article class="card card--accent">
+    <h2 class="card__title--strong">Plan PRO</h2>
+    <p class="card__text">Todo ilimitado y soporte VIP con respuesta en menos de 2 horas.</p>
+    <span class="card__price"><%= precios.proMensual %>/mes</span>
+    <a class="link-strong" href="/planes">Comparar planes →</a>
+  </article>
+</section>

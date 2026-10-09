@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Candidato · Mis Postulaciones</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#18181B}a:hover{color:#52525B}
+</style>
+</helmet>
+<div style="min-height: 960px; background: #F4F4F5; color: #18181B; font-family: Figtree, system-ui, sans-serif; font-size: 15px; line-height: 1.5; display: flex; flex-wrap: wrap; align-items: stretch">
+<div style="flex: 1 1 240px; max-width: 100%; background: #FFFFFF; border-right: 1px solid #D4D4D8"><dc-import name="WFSide" role="cand" active="postulaciones" menu="true" hint-size="100%,900px"></dc-import></div>
+<main style="flex: 999 1 560px; min-width: 0; padding: 28px 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; position: relative">
+<sc-if value="{{toast}}" hint-placeholder-val="{{true}}">
+<div role="status" style="display: flex; gap: 12px; align-items: center; justify-content: space-between; padding: 14px 16px; border-radius: 12px; background: #18181B; color: #FFFFFF; flex-wrap: wrap">
+<span><strong>¡Postulación enviada!</strong> Tu entrevista para [Puesto] llegó a [Empresa]. Te avisaremos por correo.</span>
+<button type="button" onClick="{{hide}}" aria-label="Cerrar aviso" style="width: 36px; height: 36px; border-radius: 50%; border: 0; background: #3F3F46; color: #FFFFFF; font: inherit; font-weight: 800; cursor: pointer">×</button>
+</div>
+</sc-if>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px">
+<h1 style="margin: 0; font-size: 26px; font-weight: 800">Mis Postulaciones</h1>
+<a href="WC-Muro.dc.html" style="min-height: 44px; padding: 0 16px; border-radius: 8px; background: #18181B; color: #FFFFFF; display: flex; align-items: center; text-decoration: none; font-weight: 700">Buscar vacantes</a>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; align-items: center">
+<div role="tablist" aria-label="Tipo" style="display: flex; gap: 4px; padding: 4px; background: #E4E4E7; border-radius: 10px; flex-wrap: wrap">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="3"><button type="button" role="tab" aria-selected="{{t.on}}" onClick="{{t.pick}}" style="{{t.s}}">{{t.n}}</button></sc-for>
+</div>
+<div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{chips}}" as="c" hint-placeholder-count="4"><span style="{{c.s}}">{{c.n}}</span></sc-for></div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 12px">
+<sc-for list="{{cards}}" as="c" hint-placeholder-count="6">
+<article style="background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; gap: 10px; align-items: flex-start"><span style="width: 40px; height: 40px; border-radius: 8px; background: #E4E4E7; display: block; flex-shrink: 0"></span><div style="flex: 1; display: flex; flex-direction: column"><span style="font-weight: 800">[Puesto] · [Empresa]</span><span style="font-size: 13px; color: #52525B">{{c.meta}}</span></div></div>
+<span style="{{c.badge}}">{{c.st}}</span>
+<a href="{{c.href}}" style="min-height: 40px; border-radius: 8px; border: 1px solid #A1A1AA; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 700">{{c.cta}}</a>
+</article>
+</sc-for>
+</div>
+<span style="font-size: 14px; color: #52525B">Vacío por pestaña: mensaje + acceso al Muro, a la Sala o al Adaptador.</span>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":960}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { t: 0, toast: true }; }
+renderVals() {
+const t = this.state.t;
+const on = 'min-height: 40px; padding: 0 16px; border-radius: 8px; border: 0; background: #FFFFFF; font: inherit; font-weight: 800; cursor: pointer; color: #18181B';
+const off = 'min-height: 40px; padding: 0 16px; border-radius: 8px; border: 0; background: transparent; font: inherit; font-weight: 600; cursor: pointer; color: #3F3F46';
+const bd = 'align-self: flex-start; font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 999px; ';
+const sty = { 'Enviada': 'border: 1px solid #A1A1AA', 'En revisión': 'background: #E4E4E7', 'Aprobado para entrevista': 'background: #18181B; color: #FFFFFF', 'Descartado': 'border: 1px dashed #18181B', 'Score [N]': 'background: #E4E4E7', 'Estándar ATS': 'border: 1px solid #A1A1AA', 'Formal Ejecutivo': 'border: 1px solid #A1A1AA' };
+const data = [
+[['Enviada', 'Enviada hoy'], ['En revisión', 'Enviada el [fecha]'], ['Aprobado para entrevista', 'Actualizada el [fecha]'], ['Descartado', 'Actualizada el [fecha]'], ['En revisión', 'Enviada el [fecha]']],
+[['Score [N]', 'Práctica del [fecha]'], ['Score [N]', 'Práctica del [fecha]']],
+[['Estándar ATS', 'Match [%] · [fecha]'], ['Formal Ejecutivo', 'Match [%] · [fecha]']]
+];
+const cta = [['Ver vacante', 'WC-Muro.dc.html'], ['Ver feedback', 'WC-Sala.dc.html'], ['Abrir / descargar', 'WC-Adaptador.dc.html']][t];
+const chips = t === 0 ? ['Todas', 'En revisión', 'Aprobado', 'Descartado'] : ['Todas'];
+return {
+toast: this.state.toast, hide: () => this.setState({ toast: false }),
+tabs: ['Postulaciones · [N]', 'Prácticas · [N]', 'CVs adaptados · [N]'].map((n, i) => ({ n, on: i === t, s: i === t ? on : off, pick: () => this.setState({ t: i }) })),
+chips: chips.map((n, i) => ({ n, s: 'min-height: 32px; padding: 0 12px; border-radius: 999px; display: flex; align-items: center; font-size: 14px; ' + (i === 0 ? 'background: #18181B; color: #FFFFFF; font-weight: 700' : 'border: 1px solid #A1A1AA; font-weight: 600') })),
+cards: data[t].map(([st, meta]) => ({ st, meta, badge: bd + sty[st], cta: cta[0], href: cta[1] }))
+};
+}
+}
+</script>
+</body>
+</html>

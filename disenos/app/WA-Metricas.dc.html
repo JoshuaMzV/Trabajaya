@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Admin · Métricas y facturación</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#18181B}a:hover{color:#52525B}
+</style>
+</helmet>
+<div style="min-height: 1200px; background: #F4F4F5; color: #18181B; font-family: Figtree, system-ui, sans-serif; font-size: 15px; line-height: 1.5; display: flex; flex-wrap: wrap; align-items: stretch">
+<div style="flex: 1 1 240px; max-width: 100%; background: #FFFFFF; border-right: 1px solid #D4D4D8"><dc-import name="WFSide" role="admin" active="metricas" hint-size="100%,900px"></dc-import></div>
+<main style="flex: 999 1 560px; min-width: 0; padding: 28px 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px">
+<h1 style="margin: 0; font-size: 26px; font-weight: 800">Métricas globales y facturación</h1>
+<div style="display: flex; gap: 8px; flex-wrap: wrap"><label style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px">Periodo<select style="min-height: 40px; padding: 0 10px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400; background: #FFFFFF"><option>Últimos 30 días</option></select></label><button type="button" style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Exportar CSV</button></div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr)); gap: 12px">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="8"><div style="background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column"><span style="color: #52525B; font-size: 13px">{{k}}</span><span style="font-size: 24px; font-weight: 800">[N]</span><span style="font-size: 12px; color: #52525B">[±%] vs anterior</span></div></sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch">
+<section style="flex: 1 1 340px; background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 10px"><h2 style="margin: 0; font-size: 16px; font-weight: 800">Registros por día (candidatos vs empresas)</h2><div style="height: 170px; display: flex; align-items: flex-end; gap: 5px; border-bottom: 1px solid #A1A1AA"><sc-for list="{{bars}}" as="b" hint-placeholder-count="20"><span style="flex: 1; background: #A1A1AA; border-radius: 3px 3px 0 0; height: {{b}}px; display: block"></span></sc-for></div></section>
+<section style="flex: 1 1 340px; background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 10px"><h2 style="margin: 0; font-size: 16px; font-weight: 800">Ingresos (packs vs PRO)</h2><div style="height: 170px; border-bottom: 1px solid #A1A1AA; border-left: 1px solid #A1A1AA; display: flex; align-items: center; justify-content: center; color: #52525B; font-weight: 600">[Gráfico de líneas]</div></section>
+<section style="flex: 1 1 300px; background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 8px"><h2 style="margin: 0; font-size: 16px; font-weight: 800">Uso de IA por módulo</h2><sc-for list="{{mods}}" as="m" hint-placeholder-count="4"><div style="display: flex; flex-direction: column; gap: 3px"><div style="display: flex; justify-content: space-between; font-size: 13px"><span>{{m.n}}</span><span style="font-weight: 800">[N] · [costo]</span></div><span style="height: 8px; border-radius: 4px; background: #E4E4E7; display: block"><span style="{{m.b}}"></span></span></div></sc-for></section>
+</div>
+
+<section style="background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; align-items: flex-end">
+<h2 style="margin: 0; font-size: 17px; font-weight: 800">Facturación · transacciones de candidatos</h2>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<label style="position: absolute; left: -9999px" for="q">Buscar transacción</label><input id="q" type="search" placeholder="Usuario o #ID" style="min-height: 40px; width: 200px; padding: 0 10px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit">
+<sc-for list="{{filters}}" as="f" hint-placeholder-count="2"><label style="position: absolute; left: -9999px">{{f}}</label><select aria-label="{{f}}" style="min-height: 40px; padding: 0 8px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; background: #FFFFFF"><option>{{f}}: todos</option></select></sc-for>
+</div>
+</div>
+<div style="overflow-x: auto"><table style="width: 100%; min-width: 860px; border-collapse: collapse">
+<thead><tr style="text-align: left; font-size: 13px; color: #52525B"><sc-for list="{{cols}}" as="c" hint-placeholder-count="7"><th style="padding: 10px 12px; border-bottom: 1px solid #D4D4D8">{{c}}</th></sc-for></tr></thead>
+<tbody><sc-for list="{{rows}}" as="r" hint-placeholder-count="5"><tr>
+<td style="padding: 10px 12px; border-bottom: 1px solid #E4E4E7; color: #52525B">#[ID]</td><td style="padding: 10px 12px; border-bottom: 1px solid #E4E4E7; color: #52525B">[dd/mm hh:mm]</td><td style="padding: 10px 12px; border-bottom: 1px solid #E4E4E7"><a href="WA-Cuentas.dc.html" style="font-weight: 700">[Candidato]</a></td><td style="padding: 10px 12px; border-bottom: 1px solid #E4E4E7">{{r.t}}</td><td style="padding: 10px 12px; border-bottom: 1px solid #E4E4E7; font-weight: 800">[PRECIO]</td><td style="padding: 10px 12px; border-bottom: 1px solid #E4E4E7"><span style="{{r.badge}}">{{r.s}}</span></td><td style="padding: 10px 12px; border-bottom: 1px solid #E4E4E7"><button type="button" style="min-height: 34px; padding: 0 10px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer">{{r.a}}</button></td>
+</tr></sc-for></tbody>
+</table></div>
+</section>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1200}}'>
+class Component extends DCLogic {
+renderVals() {
+const bar = (w) => 'display: block; height: 8px; border-radius: 4px; background: #18181B; width: ' + w + '%';
+const bd = 'font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; ';
+const st = { 'Pagado': bd + 'background: #E4E4E7', 'Fallido': bd + 'background: #18181B; color: #FFFFFF', 'Reembolsado': bd + 'border: 1px dashed #18181B' };
+const data = [['Pack [N] monedas', 'Pagado', 'Ver'], ['Plan PRO · mensual', 'Pagado', 'Reembolsar'], ['Pack [N] monedas', 'Fallido', 'Ver'], ['Plan PRO · alta', 'Reembolsado', 'Ver'], ['Pack [N] monedas', 'Pagado', 'Reembolsar']];
+return {
+kpis: ['Candidatos', 'Empresas', 'Vacantes activas', 'Entrevistas IA', 'Ingresos', 'Suscriptores PRO', 'Pagos fallidos', 'Tickets abiertos'],
+bars: [50, 70, 64, 96, 80, 112, 104, 90, 120, 130, 110, 140, 126, 150, 136, 156, 144, 152, 165, 160],
+mods: [{ n: 'Lectura de CV (OCR)', b: bar(70) }, { n: 'Adaptador ATS', b: bar(55) }, { n: 'Entrevistas de práctica', b: bar(62) }, { n: 'Entrevistas de postulación', b: bar(85) }],
+filters: ['Tipo', 'Estado'],
+cols: ['ID', 'Fecha', 'Usuario', 'Concepto', 'Importe', 'Estado', ''],
+rows: data.map(([t, s, a]) => ({ t, s, a, badge: st[s] }))
+};
+}
+}
+</script>
+</body>
+</html>

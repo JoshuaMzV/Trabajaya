@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Candidato · Expediente Maestro</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#18181B}a:hover{color:#52525B}
+</style>
+</helmet>
+<div style="min-height: 1100px; background: #F4F4F5; color: #18181B; font-family: Figtree, system-ui, sans-serif; font-size: 15px; line-height: 1.5; display: flex; flex-wrap: wrap; align-items: stretch">
+<div style="flex: 1 1 240px; max-width: 100%; background: #FFFFFF; border-right: 1px solid #D4D4D8"><dc-import name="WFSide" role="cand" active="expediente" hint-size="100%,900px"></dc-import></div>
+<main style="flex: 999 1 560px; min-width: 0; padding: 28px 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px"><h1 style="margin: 0; font-size: 26px; font-weight: 800">Expediente Maestro</h1><span style="color: #52525B">Tu CV una sola vez, base de todas tus postulaciones.</span></div>
+<div role="tablist" aria-label="Estado de la vista (demo)" style="display: flex; gap: 4px; padding: 4px; border: 1px dashed #A1A1AA; border-radius: 10px">
+<sc-for list="{{modes}}" as="m" hint-placeholder-count="3"><button type="button" role="tab" aria-selected="{{m.on}}" onClick="{{m.pick}}" style="{{m.s}}">{{m.n}}</button></sc-for>
+</div>
+</div>
+
+<sc-if value="{{empty}}" hint-placeholder-val="{{false}}">
+<label style="min-height: 360px; border: 2px dashed #A1A1AA; border-radius: 14px; background: #FFFFFF; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 24px; cursor: pointer">
+<span style="width: 64px; height: 64px; border-radius: 14px; background: #E4E4E7; display: block"></span>
+<span style="font-weight: 800; font-size: 20px">Arrastra tu CV aquí</span>
+<span style="color: #52525B">PDF · máx. [N] MB · Leemos experiencia, estudios, habilidades e idiomas</span>
+<span style="min-height: 44px; padding: 0 18px; border-radius: 8px; background: #18181B; color: #FFFFFF; display: flex; align-items: center; font-weight: 700">Seleccionar archivo</span>
+<input type="file" accept="application/pdf" onChange="{{goRead}}" style="position: absolute; left: -9999px">
+</label>
+<button type="button" onClick="{{goRead}}" style="align-self: center; min-height: 36px; border: 0; background: transparent; font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer">Simular subida</button>
+</sc-if>
+
+<sc-if value="{{reading}}" hint-placeholder-val="{{false}}">
+<div style="background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: center; gap: 12px"><span style="width: 40px; height: 48px; border-radius: 6px; background: #E4E4E7; display: block"></span><div style="flex: 1; display: flex; flex-direction: column; gap: 6px"><span style="font-weight: 700">[mi-cv.pdf] · leyendo con OCR…</span><span style="height: 8px; border-radius: 4px; background: #E4E4E7; display: block"><span style="display: block; height: 8px; width: 60%; border-radius: 4px; background: #18181B"></span></span></div><button type="button" onClick="{{goEmpty}}" style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Cancelar</button></div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr)); gap: 12px">
+<sc-for list="{{sk}}" as="s" hint-placeholder-count="4"><div style="border: 1px solid #E4E4E7; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 8px"><span style="height: 10px; width: 50%; background: #D4D4D8; border-radius: 4px; display: block"></span><span style="height: 8px; width: 90%; background: #E4E4E7; border-radius: 4px; display: block"></span><span style="height: 8px; width: 70%; background: #E4E4E7; border-radius: 4px; display: block"></span></div></sc-for>
+</div>
+<span style="font-size: 14px; color: #52525B">Error: “No pudimos leer el archivo” + Reintentar, en esta misma tarjeta.</span>
+<button type="button" onClick="{{goLoaded}}" style="align-self: flex-start; min-height: 36px; border: 0; background: transparent; font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer">Simular fin de lectura</button>
+</div>
+</sc-if>
+
+<sc-if value="{{loaded}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<div style="background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 12px; padding: 14px 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between">
+<div style="display: flex; gap: 12px; align-items: center"><span style="width: 36px; height: 44px; border-radius: 6px; background: #E4E4E7; display: block"></span><div style="display: flex; flex-direction: column"><span style="font-weight: 700">[mi-cv.pdf]</span><span style="font-size: 13px; color: #52525B">Actualizado el [fecha] · revisa y corrige los datos</span></div></div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<button type="button" onClick="{{goEmpty}}" style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Reemplazar CV</button>
+<button type="button" onClick="{{askDel}}" style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Eliminar</button>
+<button type="button" style="min-height: 40px; padding: 0 16px; border-radius: 8px; border: 0; background: #18181B; color: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Guardar cambios</button>
+</div>
+</div>
+<sc-if value="{{del}}" hint-placeholder-val="{{false}}">
+<div role="alertdialog" aria-labelledby="dl" style="background: #FFFFFF; border: 2px solid #18181B; border-radius: 12px; padding: 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between">
+<div style="display: flex; flex-direction: column"><span id="dl" style="font-weight: 800">¿Eliminar tu Expediente Maestro de forma permanente?</span><span style="font-size: 14px; color: #52525B">No podrás adaptar CVs ni postularte hasta subir uno nuevo.</span></div>
+<div style="display: flex; gap: 8px"><button type="button" onClick="{{noDel}}" style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Cancelar</button><button type="button" onClick="{{goEmpty}}" style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 0; background: #18181B; color: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Eliminar</button></div>
+</div>
+</sc-if>
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+<div style="flex: 3 1 460px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+<section style="background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-size: 16px; font-weight: 800">Datos personales y resumen</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); gap: 10px">
+<sc-for list="{{personal}}" as="p" hint-placeholder-count="4"><label style="display: flex; flex-direction: column; gap: 4px; font-weight: 700; font-size: 13px">{{p}}<input type="text" placeholder="[{{p}}]" style="min-height: 40px; padding: 0 10px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400"></label></sc-for>
+</div>
+<label style="display: flex; flex-direction: column; gap: 4px; font-weight: 700; font-size: 13px">Resumen profesional<textarea rows="2" placeholder="[Resumen extraído]" style="padding: 8px 10px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400; resize: vertical"></textarea></label>
+</section>
+<sc-for list="{{lists}}" as="l" hint-placeholder-count="2">
+<section style="background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; justify-content: space-between; align-items: center"><h2 style="margin: 0; font-size: 16px; font-weight: 800">{{l.t}}</h2><button type="button" style="min-height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">+ Agregar</button></div>
+<sc-for list="{{l.items}}" as="i" hint-placeholder-count="2"><div style="display: flex; gap: 10px; align-items: center; padding: 10px 12px; border: 1px solid #E4E4E7; border-radius: 10px"><span style="flex: 1; display: flex; flex-direction: column"><span style="font-weight: 700">{{i.a}}</span><span style="font-size: 13px; color: #52525B">{{i.b}}</span></span><button type="button" style="min-height: 34px; padding: 0 10px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Editar</button></div></sc-for>
+</section>
+</sc-for>
+<section style="background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 16px; font-weight: 800">Habilidades e idiomas</h2>
+<div style="display: flex; flex-wrap: wrap; gap: 8px"><sc-for list="{{skills}}" as="s" hint-placeholder-count="5"><span style="min-height: 34px; padding: 0 12px; border-radius: 999px; border: 1px solid #A1A1AA; display: flex; align-items: center; font-weight: 600">{{s}} ×</span></sc-for><input type="text" aria-label="Añadir habilidad" placeholder="+ Añadir" style="min-height: 34px; padding: 0 12px; border: 1px dashed #A1A1AA; border-radius: 999px; font: inherit"></div>
+</section>
+</div>
+<aside style="flex: 2 1 260px; background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 16px; font-weight: 800">CV original</h2>
+<div style="aspect-ratio: 1 / 1.414; border: 1px solid #D4D4D8; border-radius: 6px; background: #FAFAFA; display: flex; align-items: center; justify-content: center; color: #52525B; font-weight: 600">[Vista previa PDF]</div>
+<a href="WC-Adaptador.dc.html" style="min-height: 44px; border-radius: 8px; background: #18181B; color: #FFFFFF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 700">Adaptar a una vacante</a>
+</aside>
+</div>
+</div>
+</sc-if>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { m: 2, del: false }; }
+renderVals() {
+const m = this.state.m;
+const on = 'min-height: 36px; padding: 0 12px; border-radius: 8px; border: 0; background: #18181B; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer';
+const off = 'min-height: 36px; padding: 0 12px; border-radius: 8px; border: 0; background: transparent; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; color: #3F3F46';
+return {
+empty: m === 0, reading: m === 1, loaded: m === 2, del: this.state.del,
+modes: ['Sin archivo', 'Leyendo', 'Cargado'].map((n, i) => ({ n, on: i === m, s: i === m ? on : off, pick: () => this.setState({ m: i, del: false }) })),
+goEmpty: () => this.setState({ m: 0, del: false }), goRead: () => this.setState({ m: 1 }), goLoaded: () => this.setState({ m: 2 }),
+askDel: () => this.setState({ del: true }), noDel: () => this.setState({ del: false }),
+sk: [1, 2, 3, 4],
+personal: ['Nombre completo', 'Correo', 'Teléfono', 'Ciudad'],
+lists: [
+{ t: 'Experiencia laboral', items: [{ a: '[Puesto] · [Empresa]', b: '[Mes año] – [Mes año]' }, { a: '[Puesto] · [Empresa]', b: '[Mes año] – [Mes año]' }] },
+{ t: 'Educación y certificaciones', items: [{ a: '[Título] · [Institución]', b: '[Año]' }] }
+],
+skills: ['[Habilidad]', '[Habilidad]', '[Herramienta]', '[Idioma · nivel]', '[Idioma · nivel]']
+};
+}
+}
+</script>
+</body>
+</html>

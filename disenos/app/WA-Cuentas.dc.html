@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Admin · Gestión de cuentas</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#18181B}a:hover{color:#52525B}
+</style>
+</helmet>
+<div style="min-height: 1000px; background: #F4F4F5; color: #18181B; font-family: Figtree, system-ui, sans-serif; font-size: 15px; line-height: 1.5; display: flex; flex-wrap: wrap; align-items: stretch">
+<div style="flex: 1 1 240px; max-width: 100%; background: #FFFFFF; border-right: 1px solid #D4D4D8"><dc-import name="WFSide" role="admin" active="cuentas" hint-size="100%,900px"></dc-import></div>
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-wrap: wrap; align-items: stretch">
+<main style="flex: 999 1 460px; min-width: 0; padding: 28px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px"><h1 style="margin: 0; font-size: 26px; font-weight: 800">Gestión de cuentas</h1><button type="button" style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Exportar CSV</button></div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; align-items: center">
+<div role="tablist" aria-label="Tipo" style="display: flex; gap: 4px; padding: 4px; background: #E4E4E7; border-radius: 10px"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="2"><button type="button" role="tab" aria-selected="{{t.on}}" onClick="{{t.pick}}" style="{{t.s}}">{{t.n}}</button></sc-for></div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap"><label style="position: absolute; left: -9999px" for="q">Buscar cuenta</label><input id="q" type="search" placeholder="Nombre, correo o ID" style="min-height: 40px; width: 200px; padding: 0 10px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; background: #FFFFFF"><select aria-label="Estado" style="min-height: 40px; padding: 0 8px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; background: #FFFFFF"><option>Estado: todos</option></select><select aria-label="Filtro secundario" style="min-height: 40px; padding: 0 8px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; background: #FFFFFF"><option>{{f2}}: todos</option></select></div>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 12px; overflow-x: auto">
+<table style="width: 100%; min-width: 560px; border-collapse: collapse">
+<thead><tr style="text-align: left; font-size: 13px; color: #52525B"><sc-for list="{{cols}}" as="c" hint-placeholder-count="4"><th style="padding: 12px 14px; border-bottom: 1px solid #D4D4D8">{{c}}</th></sc-for></tr></thead>
+<tbody><sc-for list="{{rows}}" as="r" hint-placeholder-count="6"><tr style="{{r.bg}}">
+<td style="padding: 10px 14px; border-bottom: 1px solid #E4E4E7"><button type="button" onClick="{{r.pick}}" style="display: flex; gap: 10px; align-items: center; border: 0; background: transparent; font: inherit; color: #18181B; text-align: left; cursor: pointer; padding: 0; min-height: 40px"><span style="width: 32px; height: 32px; border-radius: 8px; background: #E4E4E7; display: block; flex-shrink: 0"></span><span style="display: flex; flex-direction: column"><span style="font-weight: 700; text-decoration: underline">{{r.n}}</span><span style="font-size: 13px; color: #52525B">[correo]</span></span></button></td>
+<td style="padding: 10px 14px; border-bottom: 1px solid #E4E4E7">{{r.x}}</td>
+<td style="padding: 10px 14px; border-bottom: 1px solid #E4E4E7"><span style="{{r.badge}}">{{r.st}}</span></td>
+<td style="padding: 10px 14px; border-bottom: 1px solid #E4E4E7; color: #52525B">[dd/mm/aa]</td>
+</tr></sc-for></tbody>
+</table>
+</div>
+</main>
+
+<sc-if value="{{drawer}}" hint-placeholder-val="{{true}}">
+<aside role="dialog" aria-labelledby="an" style="flex: 1 1 420px; max-width: 100%; background: #FFFFFF; border-left: 1px solid #D4D4D8; box-shadow: -10px 0 30px rgba(0,0,0,0.08); padding: 22px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; gap: 10px; align-items: flex-start">
+<div style="display: flex; flex-direction: column; gap: 4px"><h2 id="an" style="margin: 0; font-size: 19px; font-weight: 800">{{name}}</h2><span style="font-size: 13px; color: #52525B">ID [ID] · [correo] · alta [fecha] · último acceso [fecha]</span><span style="{{selBadge}}">{{selSt}}</span></div>
+<button type="button" onClick="{{close}}" aria-label="Cerrar" style="width: 40px; height: 40px; border-radius: 50%; border: 0; background: #F4F4F5; font: inherit; font-weight: 800; cursor: pointer; flex-shrink: 0">×</button>
+</div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<button type="button" style="min-height: 38px; padding: 0 12px; border-radius: 8px; border: 0; background: #18181B; color: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Suspender</button>
+<button type="button" style="min-height: 38px; padding: 0 12px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Restablecer contraseña</button>
+<sc-if value="{{isEmp}}" hint-placeholder-val="{{false}}"><button type="button" style="min-height: 38px; padding: 0 12px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Verificar empresa</button></sc-if>
+</div>
+<sc-if value="{{isCand}}" hint-placeholder-val="{{true}}">
+<section style="border: 2px solid #18181B; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; gap: 10px"><span><strong>Plan:</strong> Gratis</span><span><strong>Saldo:</strong> [N] monedas</span></div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end"><label style="flex: 1 1 90px; display: flex; flex-direction: column; gap: 4px; font-weight: 700; font-size: 13px">Monedas ±<input type="number" placeholder="0" style="min-height: 40px; padding: 0 10px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400"></label><label style="flex: 2 1 160px; display: flex; flex-direction: column; gap: 4px; font-weight: 700; font-size: 13px">Motivo *<input type="text" placeholder="Ej. ticket #[ID]" style="min-height: 40px; padding: 0 10px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400"></label></div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap"><button type="button" style="min-height: 38px; padding: 0 12px; border-radius: 8px; border: 0; background: #18181B; color: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Aplicar ajuste</button><button type="button" style="min-height: 38px; padding: 0 12px; border-radius: 8px; border: 1px solid #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Cambiar plan</button></div>
+</section>
+</sc-if>
+<div role="tablist" aria-label="Detalle" style="display: flex; gap: 4px; border-bottom: 1px solid #D4D4D8"><sc-for list="{{dtabs}}" as="t" hint-placeholder-count="3"><button type="button" role="tab" aria-selected="{{t.on}}" onClick="{{t.pick}}" style="{{t.s}}">{{t.n}}</button></sc-for></div>
+<sc-for list="{{items}}" as="i" hint-placeholder-count="3"><div style="display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid #E4E4E7; flex-wrap: wrap; font-size: 14px"><span style="font-weight: 600">{{i.a}}</span><span style="color: #52525B">{{i.b}}</span></div></sc-for>
+<button type="button" style="margin-top: auto; align-self: flex-start; min-height: 38px; padding: 0 12px; border-radius: 8px; border: 1px dashed #18181B; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Eliminar cuenta (confirmar con correo)</button>
+</aside>
+</sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { t: 0, sel: 1, d: 0 }; }
+renderVals() {
+const s = this.state, cand = s.t === 0;
+const on = 'min-height: 36px; padding: 0 14px; border-radius: 8px; border: 0; background: #FFFFFF; font: inherit; font-weight: 800; cursor: pointer; color: #18181B';
+const off = 'min-height: 36px; padding: 0 14px; border-radius: 8px; border: 0; background: transparent; font: inherit; font-weight: 600; cursor: pointer; color: #3F3F46';
+const tb = 'min-height: 40px; padding: 0 12px; border: 0; background: transparent; font: inherit; cursor: pointer; margin-bottom: -1px; ';
+const bd = 'align-self: flex-start; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; ';
+const sty = { 'Activo': 'background: #E4E4E7', 'Suspendido': 'background: #18181B; color: #FFFFFF', 'Pendiente verificación': 'border: 1px dashed #18181B', 'Verificada': 'background: #E4E4E7' };
+const rc = [['Activo', 'Gratis · [N] monedas'], ['Activo', 'PRO'], ['Suspendido', 'Gratis · [N] monedas'], ['Activo', 'Gratis · [N] monedas'], ['Activo', 'PRO']];
+const re = [['Verificada', '[N] vacantes'], ['Pendiente verificación', '[N] vacantes'], ['Suspendido', '[N] vacantes'], ['Verificada', '[N] vacantes']];
+const list = cand ? rc : re;
+const label = cand ? '[Candidato ' : '[Empresa ';
+const selRow = list[(s.sel || 1) - 1] || list[0];
+const dt = cand ? ['Actividad', 'Transacciones', 'Auditoría'] : ['Vacantes', 'Postulantes', 'Auditoría'];
+const items = cand
+? [[{ a: 'Postulación · [Puesto]', b: '[estado] · [fecha]' }, { a: 'Práctica · [Puesto]', b: 'Score [N]' }, { a: 'CV adaptado · [Puesto]', b: '[fecha]' }], [{ a: 'Pack [N] monedas', b: '[PRECIO] · [fecha]' }, { a: 'Consumo · Entrevista', b: '−[N] · [fecha]' }], [{ a: '[Admin] ajustó saldo +[N]', b: '[fecha hora]' }, { a: '[Admin] restableció contraseña', b: '[fecha hora]' }]]
+: [[{ a: '[Puesto] · Publicada', b: '[N] postulantes' }, { a: '[Puesto] · Cerrada', b: '[N] postulantes' }], [{ a: 'Total de postulantes', b: '[N]' }, { a: 'Aprobados para entrevista', b: '[N]' }], [{ a: '[Admin] verificó la empresa', b: '[fecha hora]' }]];
+return {
+tabs: ['Candidatos · [N]', 'Empresas · [N]'].map((n, i) => ({ n, on: i === s.t, s: i === s.t ? on : off, pick: () => this.setState({ t: i, sel: 1, d: 0 }) })),
+f2: cand ? 'Plan' : 'Verificación',
+cols: [cand ? 'Candidato' : 'Empresa', cand ? 'Plan / saldo' : 'Vacantes', 'Estado', 'Alta'],
+rows: list.map(([st, x], i) => ({ n: label + (i + 1) + ']', x, st, badge: bd + sty[st], bg: i + 1 === s.sel ? 'background: #F4F4F5' : '', pick: () => this.setState({ sel: i + 1, d: 0 }) })),
+drawer: s.sel > 0, close: () => this.setState({ sel: 0 }),
+name: label + (s.sel || 1) + ']', selSt: selRow[0], selBadge: bd + sty[selRow[0]],
+isCand: cand, isEmp: !cand,
+dtabs: dt.map((n, i) => ({ n, on: i === s.d, pick: () => this.setState({ d: i }), s: tb + (i === s.d ? 'border-bottom: 3px solid #18181B; font-weight: 800' : 'border-bottom: 3px solid transparent; font-weight: 600; color: #52525B') })),
+items: items[s.d]
+};
+}
+}
+</script>
+</body>
+</html>

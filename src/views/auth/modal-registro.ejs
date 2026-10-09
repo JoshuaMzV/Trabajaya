@@ -1,0 +1,91 @@
+<%
+  // disenos/landing/TY-Registro-Rol (paso 1) → TY-Registro-Datos (paso 2). El rol elegido viaja al paso 2.
+  // Parámetro: auth (ver authState en routes/public.js). Sin JS, el paso 1 es un GET a /registro?paso=2&rol=…
+  const abierto = auth.abrir === 'registro';
+  const paso = abierto ? auth.paso : 1;
+  const rol = abierto ? auth.rol : 'candidato';
+  const e = abierto ? auth.errores : {};
+  const v = abierto ? auth.valores : {};
+  const roles = {
+    candidato: { label: 'Busco empleo', icono: 'user', desc: 'Crea tu expediente, adapta tu CV y practica entrevistas con IA.' },
+    empresa: { label: 'Contrato talento', icono: 'briefcase', desc: 'Publica vacantes, configura el filtro IA y recibe postulantes evaluados.' },
+  };
+%>
+<dialog class="modal auth-modal modal-registro" id="modal-registro" data-paso="<%= paso %>" aria-labelledby="registro-t<%= paso %>"<% if (abierto) { %> data-modal-autoopen data-modal-return="/"<% } %>>
+
+  <!-- Paso 1: rol -->
+  <form class="modal__content" method="get" action="/registro" data-registro-paso="1"<% if (paso !== 1) { %> hidden<% } %>>
+    <input type="hidden" name="paso" value="2">
+    <div class="modal__header auth-modal__bar">
+      <div class="auth-steps">
+        <span class="auth-steps__bar auth-steps__bar--on"></span><span class="auth-steps__bar"></span>
+        <span class="auth-steps__label">Paso 1 de 2</span>
+      </div>
+      <a class="btn-icon" href="/" data-modal-close aria-label="Cerrar"><%- icon('x', { size: 18, strokeWidth: 2.4 }) %></a>
+    </div>
+    <div class="modal__heading auth-modal__heading">
+      <h2 class="modal__title" id="registro-t1">¿Cómo vas a usar TrabajaYa?</h2>
+      <span class="text-muted">Elige uno. Define qué verás al entrar.</span>
+    </div>
+
+    <fieldset class="role-cards">
+      <legend class="visually-hidden">Tipo de cuenta</legend>
+      <% Object.entries(roles).forEach(([valor, r]) => { %>
+        <label class="role-card">
+          <input class="visually-hidden" type="radio" name="rol" value="<%= valor %>"<% if (valor === rol) { %> checked<% } %>>
+          <span class="role-card__top">
+            <span class="role-card__icon role-card__icon--<%= valor %>"><%- icon(r.icono, { size: 26, strokeWidth: 1.8 }) %></span>
+            <span class="role-card__dot" aria-hidden="true"></span>
+          </span>
+          <span class="role-card__title"><%= r.label %></span>
+          <span class="role-card__desc"><%= r.desc %></span>
+        </label>
+      <% }) %>
+    </fieldset>
+
+    <button type="submit" class="btn btn--ink btn--block auth-modal__submit">Continuar</button>
+    <p class="auth-modal__foot">¿Ya tienes cuenta? <a class="link-strong" href="/entrar" data-modal-open="modal-entrar">Entrar</a></p>
+  </form>
+
+  <!-- Paso 2: datos -->
+  <form class="modal__content auth-modal__compact" method="post" action="/auth/registro" novalidate data-registro-paso="2"<% if (paso !== 2) { %> hidden<% } %>>
+    <input type="hidden" name="rol" value="<%= rol %>" data-registro-rol-input>
+    <div class="modal__header auth-modal__bar">
+      <a class="auth-back" href="/registro?rol=<%= rol %>" data-registro-volver><%- icon('chevron-left', { size: 18, strokeWidth: 2.2 }) %>Paso 2 de 2</a>
+      <a class="btn-icon" href="/" data-modal-close aria-label="Cerrar"><%- icon('x', { size: 18, strokeWidth: 2.4 }) %></a>
+    </div>
+    <div class="auth-modal__heading">
+      <h2 class="modal__title auth-modal__title-sm" id="registro-t2">Crea tu cuenta</h2>
+      <span class="role-chip"><span data-registro-rol-label><%= roles[rol].label %></span> <a href="/registro?rol=<%= rol %>" data-registro-volver>Cambiar</a></span>
+    </div>
+
+    <a class="btn btn--soft auth-modal__btn auth-modal__btn--sm" href="/auth/google"><%- include('../partials/google-logo') %>Registrarme con Google</a>
+    <div class="divider-text">o con tu correo</div>
+
+    <%- include('../partials/form-field', { id: 'registro-nombre', name: 'nombre', label: 'Nombre completo', value: v.nombre, error: e.nombre, autocomplete: 'name', required: true, compact: true }) %>
+    <%- include('../partials/form-field', {
+      id: 'registro-correo', name: 'correo', label: 'Correo', type: 'email', value: v.correo, autocomplete: 'email', required: true, compact: true,
+      error: e.correoExiste ? 'Este correo ya tiene una cuenta.' : e.correo,
+      errorLink: e.correoExiste ? { href: '/entrar', label: '¿Quieres entrar?', modal: 'modal-entrar' } : null,
+    }) %>
+
+    <div class="field">
+      <label class="field__label" for="registro-password">Contraseña</label>
+      <div class="input-group input--compact">
+        <input class="input-group__control" id="registro-password" name="password" type="password" autocomplete="new-password" required minlength="8" aria-describedby="<%= e.password ? 'registro-password-error ' : '' %>registro-password-ayuda" data-strength-input<% if (e.password) { %> aria-invalid="true"<% } %>>
+        <button type="button" class="input-group__btn" data-password-toggle aria-controls="registro-password" aria-pressed="false">Mostrar</button>
+      </div>
+      <div class="strength" data-strength-meter aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      <% if (e.password) { %><span class="field__error" id="registro-password-error"><%= e.password %></span><% } %>
+      <span class="field__help" id="registro-password-ayuda" aria-live="polite" data-strength-text>Usa al menos 8 caracteres.</span>
+    </div>
+
+    <div class="field">
+      <label class="check"><input type="checkbox" name="terminos" value="1" required<% if (e.terminos) { %> aria-invalid="true" aria-describedby="registro-terminos-error"<% } %>><span>Acepto los <a class="link-strong" href="/terminos">Términos</a> y la <a class="link-strong" href="/privacidad">Política de privacidad</a>.</span></label>
+      <% if (e.terminos) { %><span class="field__error" id="registro-terminos-error"><%= e.terminos %></span><% } %>
+    </div>
+
+    <button type="submit" class="btn btn--accent btn--block auth-modal__submit">Crear cuenta</button>
+    <p class="auth-modal__foot auth-modal__foot--sm">¿Ya tienes cuenta? <a class="link-strong" href="/entrar" data-modal-open="modal-entrar">Entrar</a></p>
+  </form>
+</dialog>

@@ -1,0 +1,4 @@
+<%
+  // Parámetros: label · variante = neutral | ink | outline | dashed | accent | light | success | danger
+  const variante = locals.variante && locals.variante !== 'neutral' ? ` badge--${locals.variante}` : '';
+%><span class="badge<%= variante %>"><%= label %></span>

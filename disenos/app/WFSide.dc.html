@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Menú lateral</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<aside style="width: 100%; min-height: 900px; box-sizing: border-box; padding: 20px 14px; display: flex; flex-direction: column; gap: 22px; font-family: Figtree, system-ui, sans-serif; font-size: 15px; color: #18181B; background: #FFFFFF">
+<a href="{{home}}" style="display: flex; align-items: center; gap: 10px; padding: 4px 8px; text-decoration: none; color: #18181B">
+<span style="width: 30px; height: 30px; border-radius: 8px; background: #18181B; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 800">t</span>
+<span style="font-weight: 800; font-size: 18px">TrabajaYa</span>
+<span style="font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; border: 1px solid #A1A1AA; color: #3F3F46">{{tag}}</span>
+</a>
+<nav aria-label="Menú principal" style="display: flex; flex-direction: column; gap: 2px">
+<sc-for list="{{items}}" as="i" hint-placeholder-count="5">
+<a href="{{i.href}}" style="{{i.style}}"><span style="width: 18px; height: 18px; border-radius: 5px; border: 2px solid currentColor; box-sizing: border-box; display: block; flex-shrink: 0"></span>{{i.label}}</a>
+</sc-for>
+</nav>
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 10px; position: relative">
+<sc-if value="{{help}}" hint-placeholder-val="{{true}}">
+<a href="WC-Soporte.dc.html" style="min-height: 40px; padding: 0 12px; border-radius: 8px; display: flex; align-items: center; gap: 10px; color: #3F3F46; text-decoration: none; font-weight: 600"><span style="width: 18px; height: 18px; border-radius: 50%; border: 2px solid currentColor; box-sizing: border-box; display: block"></span>Ayuda</a>
+</sc-if>
+<sc-if value="{{open}}" hint-placeholder-val="{{false}}">
+<div role="menu" aria-label="Menú de usuario" style="border: 1px solid #A1A1AA; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; background: #FFFFFF; box-shadow: 0 10px 30px rgba(0,0,0,0.12)">
+<sc-if value="{{wallet}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; flex-direction: column; gap: 6px; padding-bottom: 10px; border-bottom: 1px solid #E4E4E7">
+<div style="display: flex; justify-content: space-between; font-size: 13px; color: #52525B"><span>Plan Gratis</span><span>Saldo</span></div>
+<span style="font-weight: 800; font-size: 20px; text-align: right">[N] <span style="font-size: 13px; font-weight: 500; color: #52525B">monedas</span></span>
+<a href="WC-Packs.dc.html" role="menuitem" style="min-height: 40px; border-radius: 8px; background: #18181B; color: #FFFFFF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 700">Comprar monedas / PRO</a>
+<span style="font-size: 12px; color: #52525B">Últimos movimientos: −[N] Entrevista · +[N] Pack</span>
+</div>
+</sc-if>
+<a href="{{profile}}" role="menuitem" style="min-height: 36px; display: flex; align-items: center; color: #18181B; text-decoration: none; font-weight: 600">{{profileLabel}}</a>
+<a href="Main.dc.html" role="menuitem" style="min-height: 36px; display: flex; align-items: center; color: #18181B; text-decoration: none; font-weight: 600">Cerrar sesión</a>
+</div>
+</sc-if>
+<button type="button" onClick="{{toggle}}" aria-expanded="{{open}}" style="display: flex; align-items: center; gap: 10px; padding: 10px 8px; border: 0; border-top: 1px solid #E4E4E7; background: transparent; font: inherit; color: #18181B; text-align: left; cursor: pointer; min-height: 56px">
+<span style="width: 36px; height: 36px; border-radius: 50%; background: #E4E4E7; flex-shrink: 0; display: block"></span>
+<span style="flex: 1; display: flex; flex-direction: column; min-width: 0"><span style="font-weight: 700; font-size: 14px">{{user}}</span><span style="font-size: 12px; color: #52525B">{{sub}}</span></span>
+<span aria-hidden="true" style="font-weight: 800">⌃</span>
+</button>
+</div>
+</aside>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"role":{"editor":"enum","options":["cand","rec","admin"],"default":"cand"},"active":{"editor":"text","default":"muro"},"menu":{"editor":"boolean","default":false},"$preview":{"width":240,"height":900}}'>
+class Component extends DCLogic {
+renderVals() {
+const role = this.props.role ?? 'cand';
+const active = this.props.active ?? '';
+const initial = this.props.menu === true || this.props.menu === 'true';
+const open = this.state && this.state.open !== undefined ? this.state.open : initial;
+const navs = {
+cand: [
+['muro', 'Muro de empleos', 'WC-Muro.dc.html'],
+['expediente', 'Expediente Maestro', 'WC-Expediente.dc.html'],
+['adaptador', 'Adaptador ATS', 'WC-Adaptador.dc.html'],
+['sala', 'Sala de Entrevista IA', 'WC-Sala.dc.html'],
+['postulaciones', 'Mis Postulaciones', 'WC-Postulaciones.dc.html']
+],
+rec: [
+['vacantes', 'Mis Vacantes', 'WR-Vacantes.dc.html'],
+['postulantes', 'Postulantes', 'WR-Postulantes.dc.html'],
+['empresa', 'Perfil de empresa', 'WR-Empresa.dc.html']
+],
+admin: [
+['metricas', 'Métricas y facturación', 'WA-Metricas.dc.html'],
+['cuentas', 'Gestión de cuentas', 'WA-Cuentas.dc.html'],
+['ajustes', 'Ajustes e IA', 'WA-Ajustes.dc.html']
+]
+};
+const base = 'min-height: 42px; padding: 0 12px; border-radius: 8px; display: flex; align-items: center; gap: 10px; text-decoration: none; ';
+return {
+tag: role === 'cand' ? 'Candidato' : role === 'rec' ? 'Empresa' : 'Admin',
+home: navs[role][0][2],
+user: role === 'cand' ? '[Nombre candidato]' : role === 'rec' ? '[Empresa S.A.]' : '[Admin]',
+sub: role === 'cand' ? '[N] monedas · Gratis' : role === 'rec' ? '[correo]' : 'Administrador',
+wallet: role === 'cand',
+help: role !== 'admin',
+profile: role === 'rec' ? 'WR-Empresa.dc.html' : role === 'cand' ? 'WC-Expediente.dc.html' : 'WA-Ajustes.dc.html',
+profileLabel: role === 'rec' ? 'Perfil de empresa' : role === 'cand' ? 'Mi perfil y contraseña' : 'Mi cuenta',
+open,
+toggle: () => this.setState({ open: !open }),
+items: navs[role].map(([k, label, href]) => ({
+label, href,
+style: base + (k === active ? 'background: #18181B; color: #FFFFFF; font-weight: 700' : 'color: #3F3F46; font-weight: 600')
+}))
+};
+}
+}
+</script>
+</body>
+</html>

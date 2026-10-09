@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>TrabajaYa · Crear cuenta · Datos</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&amp;family=Figtree:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#B8321A}a:hover{color:#8E2412}
+</style>
+</helmet>
+<div style="min-height: 900px; position: relative; overflow: hidden; background: #FBFAFF; color: #23153C; font-family: Figtree, system-ui, sans-serif; font-size: 16px; line-height: 1.5">
+<div aria-hidden="true" style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding-top: 160px">
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 80px; line-height: 1; letter-spacing: -0.045em; text-align: center; max-width: 900px">Practica la entrevista hasta que salga natural.</span>
+</div>
+<div style="position: relative; min-height: 900px; background: rgba(35,21,60,0.62); display: flex; align-items: center; justify-content: center; padding: 28px; box-sizing: border-box">
+
+<div role="dialog" aria-modal="true" aria-labelledby="t" style="width: 100%; max-width: 520px; background: #FFFFFF; border-radius: 32px; padding: 30px 34px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 40px 80px -30px rgba(0,0,0,0.5)">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px">
+<a href="TY-Registro-Rol.dc.html" style="min-height: 44px; display: flex; align-items: center; gap: 6px; color: #4B3B6B; text-decoration: none; font-weight: 700; font-size: 15px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>Paso 2 de 2</a>
+<a href="TY-Landing.dc.html" aria-label="Cerrar" style="width: 44px; height: 44px; border-radius: 50%; background: #F3F0FC; color: #23153C; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></a>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h2 id="t" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 32px; letter-spacing: -0.03em; line-height: 1.05">Crea tu cuenta</h2>
+<span style="align-self: flex-start; display: flex; align-items: center; gap: 8px; padding: 4px 6px 4px 12px; border-radius: 999px; background: #EAE4FF; font-size: 14px; font-weight: 700">Busco empleo <a href="TY-Registro-Rol.dc.html" style="padding: 2px 10px; border-radius: 999px; background: #FFFFFF; color: #23153C; text-decoration: none; font-size: 13px">Cambiar</a></span>
+</div>
+
+<button type="button" style="min-height: 50px; border-radius: 999px; border: 1px solid #CFC4F0; background: #FFFFFF; font: inherit; font-weight: 700; color: #23153C; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer"><span style="width: 22px; height: 22px; border-radius: 50%; border: 2px solid #23153C; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800">G</span>Registrarme con Google</button>
+<div style="display: flex; align-items: center; gap: 12px; color: #5A4A7A; font-size: 14px"><span style="flex: 1; height: 1px; background: #E4DDF7; display: block"></span>o con tu correo<span style="flex: 1; height: 1px; background: #E4DDF7; display: block"></span></div>
+
+<label style="display: flex; flex-direction: column; gap: 5px; font-weight: 700; font-size: 15px">Nombre completo
+<input type="text" value="María José López" style="min-height: 48px; padding: 0 16px; border-radius: 14px; border: 1px solid #CFC4F0; font: inherit; font-weight: 400; color: #23153C">
+</label>
+<div style="display: flex; flex-direction: column; gap: 5px">
+<label for="em" style="font-weight: 700; font-size: 15px">Correo</label>
+<input id="em" type="email" value="maria.lopez@correo.com" aria-invalid="true" aria-describedby="em-err" style="min-height: 48px; padding: 0 16px; border-radius: 14px; border: 2px solid #C5341A; font: inherit; color: #23153C">
+<span id="em-err" style="font-size: 14px; color: #8A2310; font-weight: 600">Este correo ya tiene una cuenta. <a href="TY-Entrar.dc.html" style="color: #8A2310">¿Quieres entrar?</a></span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="pw" style="font-weight: 700; font-size: 15px">Contraseña</label>
+<div style="display: flex; align-items: center; min-height: 48px; padding: 0 6px 0 16px; border-radius: 14px; border: 1px solid #CFC4F0">
+<input id="pw" type="password" value="Trabaja2026" aria-describedby="pw-help" style="flex: 1; min-width: 0; border: 0; outline: none; font: inherit; color: #23153C; background: transparent">
+<button type="button" style="min-height: 38px; padding: 0 12px; border-radius: 10px; border: 0; background: transparent; font: inherit; font-size: 14px; font-weight: 700; color: #4B3B6B; cursor: pointer">Mostrar</button>
+</div>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px"><span style="height: 5px; border-radius: 3px; background: #23153C; display: block"></span><span style="height: 5px; border-radius: 3px; background: #23153C; display: block"></span><span style="height: 5px; border-radius: 3px; background: #23153C; display: block"></span><span style="height: 5px; border-radius: 3px; background: #E4DDF7; display: block"></span></div>
+<span id="pw-help" style="font-size: 14px; color: #4B3B6B">Buena. Agrega un símbolo para hacerla más segura.</span>
+</div>
+
+<label style="display: flex; align-items: flex-start; gap: 10px; font-size: 15px; color: #3D2D5C; cursor: pointer"><input type="checkbox" checked style="width: 20px; height: 20px; margin: 1px 0 0; accent-color: #D13A1C; flex-shrink: 0">Acepto los <a href="#" style="font-weight: 700">Términos</a> y la <a href="#" style="font-weight: 700">Política de privacidad</a>.</label>
+
+<button type="submit" style="min-height: 54px; border-radius: 999px; border: 0; background: #D13A1C; color: #FFFFFF; font: inherit; font-weight: 700; font-size: 17px; cursor: pointer">Crear cuenta</button>
+<span style="text-align: center; color: #4B3B6B; font-size: 15px">¿Ya tienes cuenta? <a href="TY-Entrar.dc.html" style="font-weight: 700">Entrar</a></span>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

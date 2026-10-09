@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Mesa de ayuda</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#18181B}a:hover{color:#52525B}
+</style>
+</helmet>
+<div style="min-height: 960px; background: #F4F4F5; color: #18181B; font-family: Figtree, system-ui, sans-serif; font-size: 15px; line-height: 1.5; display: flex; flex-wrap: wrap; align-items: stretch">
+<div style="flex: 1 1 240px; max-width: 100%; background: #FFFFFF; border-right: 1px solid #D4D4D8"><dc-import name="WFSide" role="cand" active="" hint-size="100%,900px"></dc-import></div>
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-wrap: wrap; align-items: stretch; background: rgba(24,24,27,0.35)">
+<div aria-hidden="true" style="flex: 999 1 300px; padding: 28px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px; opacity: 0.4"><span style="height: 28px; width: 40%; background: #FFFFFF; border-radius: 6px; display: block"></span><span style="height: 160px; background: #FFFFFF; border-radius: 12px; display: block"></span><span style="height: 220px; background: #FFFFFF; border-radius: 12px; display: block"></span></div>
+
+<aside role="dialog" aria-labelledby="t" style="flex: 1 1 420px; max-width: 100%; background: #FFFFFF; border-left: 1px solid #D4D4D8; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px">
+<h2 id="t" style="margin: 0; font-size: 20px; font-weight: 800">Mesa de ayuda</h2>
+<a href="WC-Muro.dc.html" aria-label="Cerrar" style="width: 40px; height: 40px; border-radius: 50%; background: #F4F4F5; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 800">×</a>
+</div>
+<div style="padding: 12px; border-radius: 10px; border: 2px solid #18181B; display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 800">{{sla}}</span><span style="font-size: 13px; color: #52525B">{{slaSub}}</span></div>
+<div role="tablist" aria-label="Sección" style="display: flex; gap: 4px; border-bottom: 1px solid #D4D4D8">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="2"><button type="button" role="tab" aria-selected="{{t.on}}" onClick="{{t.pick}}" style="{{t.s}}">{{t.n}}</button></sc-for>
+</div>
+
+<sc-if value="{{nuevo}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<label style="display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 14px">Busca en preguntas frecuentes<input type="search" placeholder="Ej. monedas, micrófono…" style="min-height: 44px; padding: 0 12px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 14px">Categoría<select style="min-height: 44px; padding: 0 10px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400; background: #FFFFFF"><option>Cuenta</option><option>Pagos y monedas</option><option>Entrevista IA</option><option>Expediente / CV</option><option>Otro</option></select></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 14px">Asunto<input type="text" style="min-height: 44px; padding: 0 12px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 14px">Mensaje<textarea rows="4" style="padding: 10px 12px; border: 1px solid #A1A1AA; border-radius: 8px; font: inherit; font-weight: 400; resize: vertical"></textarea></label>
+<button type="button" style="min-height: 44px; border-radius: 8px; border: 1px dashed #A1A1AA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer">Adjuntar captura</button>
+<button type="button" style="min-height: 48px; border-radius: 8px; border: 0; background: #18181B; color: #FFFFFF; font: inherit; font-weight: 800; cursor: pointer">Enviar ticket</button>
+</div>
+</sc-if>
+<sc-if value="{{mis}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{tickets}}" as="k" hint-placeholder-count="3"><div style="padding: 12px; border: 1px solid #E4E4E7; border-radius: 10px; display: flex; justify-content: space-between; gap: 10px; align-items: center"><div style="display: flex; flex-direction: column"><span style="font-weight: 700">#[ID] · [Asunto]</span><span style="font-size: 13px; color: #52525B">Actualizado [fecha]</span></div><span style="font-size: 13px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: #E4E4E7">{{k}}</span></div></sc-for>
+<span style="font-size: 13px; color: #52525B">Al abrir un ticket: conversación con el agente y campo de respuesta.</span>
+</div>
+</sc-if>
+<button type="button" onClick="{{togglePro}}" style="margin-top: auto; min-height: 36px; border: 0; background: transparent; font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer">Ver variante {{other}}</button>
+</aside>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":960}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { t: 0, pro: true }; }
+renderVals() {
+const t = this.state.t, pro = this.state.pro;
+const b = 'min-height: 44px; padding: 0 14px; border: 0; background: transparent; font: inherit; cursor: pointer; margin-bottom: -1px; ';
+return {
+sla: pro ? 'Soporte VIP · respuesta en menos de 2 horas' : 'Soporte estándar · respuesta en [N] horas',
+slaSub: pro ? 'Incluido en tu Plan PRO' : 'Con Plan PRO tendrías respuesta en menos de 2 horas',
+other: pro ? 'Gratis' : 'PRO',
+togglePro: () => this.setState({ pro: !pro }),
+nuevo: t === 0, mis: t === 1,
+tabs: ['Nuevo ticket', 'Mis tickets'].map((n, i) => ({ n, on: i === t, pick: () => this.setState({ t: i }), s: b + (i === t ? 'border-bottom: 3px solid #18181B; font-weight: 800' : 'border-bottom: 3px solid transparent; font-weight: 600; color: #52525B') })),
+tickets: ['Abierto', 'Respondido', 'Cerrado']
+};
+}
+}
+</script>
+</body>
+</html>

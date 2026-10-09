@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="es">
+<head>
+<%- include('../partials/head', { styles: ['/css/pages/public.css', '/css/pages/auth.css', ...styles] }) %>
+</head>
+<body>
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
+<%- include('../partials/header-public', { navActive: locals.navActive }) %>
+<main id="contenido" tabindex="-1">
+<%- body %>
+</main>
+<%- include('../partials/footer', { navActive: locals.navActive }) %>
+
+<%# Modales de auth: se abren desde el header sin recargar y desde /entrar, /registro y /recuperar. %>
+<%- include('../auth/modal-entrar', { auth }) %>
+<%- include('../auth/modal-registro', { auth }) %>
+<%- include('../auth/modal-recuperar', { auth }) %>
+
+<%- include('../partials/scripts', { scripts: ['/js/pages/auth.js', ...scripts] }) %>
+</body>
+</html>

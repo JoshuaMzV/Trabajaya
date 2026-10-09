@@ -1,0 +1,25 @@
+<%#
+  Confirmación genérica. Un botón submit con [data-confirm] dentro de un <form> la abre:
+    data-confirm-title · data-confirm-text · data-confirm-label (texto del botón) · data-confirm-variante (danger | ink)
+    data-confirm-match="texto" pide escribir ese texto (p. ej. el correo) antes de confirmar.
+  Al confirmar se envía el formulario original. Sin JS, el botón envía el formulario directamente.
+%>
+<dialog class="modal" id="modal-confirmar" aria-labelledby="confirmar-t" aria-describedby="confirmar-d" role="alertdialog">
+  <div class="modal__content">
+    <div class="modal__header">
+      <div class="modal__heading">
+        <h2 class="modal__title modal__title--sm" id="confirmar-t" data-confirm-slot="title">¿Confirmar?</h2>
+        <span class="text-muted" id="confirmar-d" data-confirm-slot="text"></span>
+      </div>
+      <button type="button" class="btn-icon" data-modal-close aria-label="Cerrar"><%- icon('x', { size: 18, strokeWidth: 2.4 }) %></button>
+    </div>
+    <div class="field" data-confirm-slot="match" hidden>
+      <label class="field__label" for="confirmar-match">Escribe <strong data-confirm-slot="match-text"></strong> para confirmar</label>
+      <input class="input input--compact" id="confirmar-match" type="text" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="modal__actions">
+      <button type="button" class="btn btn--soft" data-modal-close autofocus>Cancelar</button>
+      <button type="button" class="btn btn--ink" data-confirm-slot="ok">Confirmar</button>
+    </div>
+  </div>
+</dialog>

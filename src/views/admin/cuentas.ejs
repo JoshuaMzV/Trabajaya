@@ -1,0 +1,63 @@
+<%# disenos/app/WA-Cuentas.dc.html · tabla + drawer (?cuenta=:id) %>
+<%
+  const cand = tipo === 'candidatos';
+  const ini = (n) => n.split(/\s+/).slice(0, 2).map((p) => p[0]).join('').toUpperCase();
+  const conCuenta = (id) => `${baseUrl}&cuenta=${id}`;
+  const estadosTipo = Object.entries(estados).filter(([k]) => cand ? ['activo', 'suspendido'].includes(k) : ['verificada', 'pendiente', 'suspendido'].includes(k));
+%>
+<div class="split">
+  <div class="split__main page">
+    <div class="page__header">
+      <h1 class="title-app">Gestión de cuentas</h1>
+      <a class="btn btn--soft btn--sm" href="/admin/cuentas.csv" download><%- icon('download', { size: 18 }) %>Exportar CSV</a>
+    </div>
+
+    <div class="toolbar">
+      <nav class="segmented segmented--light segmented--sm" aria-label="Tipo de cuenta">
+        <a href="/admin/cuentas?tipo=candidatos"<% if (cand) { %> aria-current="page"<% } %>>Candidatos · <%= conteo.candidatos %></a>
+        <a href="/admin/cuentas?tipo=empresas"<% if (!cand) { %> aria-current="page"<% } %>>Empresas · <%= conteo.empresas %></a>
+      </nav>
+      <div class="toolbar__filters">
+        <label class="visually-hidden" for="cu-q">Buscar cuenta</label>
+        <input class="input input--compact toolbar__search" id="cu-q" type="search" placeholder="Nombre, correo o ID" data-filter-for="tabla-cuentas" data-filter-key="q">
+        <label class="visually-hidden" for="cu-estado">Estado</label>
+        <select class="select input--compact" id="cu-estado" data-filter-for="tabla-cuentas" data-filter-key="estado">
+          <option value="">Estado: todos</option>
+          <% estadosTipo.forEach(([k, e]) => { %><option value="<%= k %>"><%= e.label %></option><% }) %>
+        </select>
+        <% if (cand) { %>
+          <label class="visually-hidden" for="cu-plan">Plan</label>
+          <select class="select input--compact" id="cu-plan" data-filter-for="tabla-cuentas" data-filter-key="plan">
+            <option value="">Plan: todos</option><option value="Gratis">Gratis</option><option value="PRO">PRO</option>
+          </select>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <table class="data-table">
+        <thead><tr><th scope="col"><%= cand ? 'Candidato' : 'Empresa' %></th><th scope="col"><%= cand ? 'Plan / saldo' : 'Vacantes' %></th><th scope="col">Estado</th><th scope="col">Alta</th></tr></thead>
+        <tbody id="tabla-cuentas" data-filter-list>
+          <% cuentas.forEach((c) => { const href = conCuenta(c.id); %>
+            <tr data-filter-item data-estado="<%= c.estado %>" data-plan="<%= c.plan || '' %>"<% if (detalle && detalle.c.id === c.id) { %> aria-current="true"<% } %>>
+              <td>
+                <a class="person-link" href="<%= href %>" data-drawer-open="drawer-cuenta" data-drawer-src="/admin/cuentas/<%= c.id %>/detalle" data-drawer-url="<%= href %>" data-drawer-current>
+                  <span class="avatar avatar--square" aria-hidden="true"><%= ini(c.nombre) %></span>
+                  <span class="person-link__text"><strong><%= c.nombre %></strong><span class="text-muted text-small"><%= c.correo %> · ID <%= c.id %></span></span>
+                </a>
+              </td>
+              <td><%= cand ? `${c.plan}${c.plan === 'PRO' ? '' : ` · ${c.saldo} monedas`}` : `${c.vacantes} vacantes` %></td>
+              <td><%- include('../partials/badge', estados[c.estado]) %></td>
+              <td class="text-muted"><%= c.alta %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <div class="empty-state" data-filter-empty="tabla-cuentas"<% if (cuentas.length) { %> hidden<% } %>><h2 class="empty-state__title">No hay cuentas con estos filtros</h2></div>
+  </div>
+
+  <aside class="drawer" id="drawer-cuenta" aria-labelledby="drawer-cuenta-t" data-drawer-close-url="<%= baseUrl %>"<% if (!detalle) { %> hidden<% } %>>
+    <% if (detalle) { %><%- include('partials/cuenta-detalle', detalle) %><% } %>
+  </aside>
+</div>
