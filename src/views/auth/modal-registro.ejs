@@ -59,7 +59,7 @@
       <span class="role-chip"><span data-registro-rol-label><%= roles[rol].label %></span> <a href="/registro?rol=<%= rol %>" data-registro-volver>Cambiar</a></span>
     </div>
 
-    <a class="btn btn--soft auth-modal__btn auth-modal__btn--sm" href="/auth/google"><%- include('../partials/google-logo') %>Registrarme con Google</a>
+    <a class="btn btn--soft auth-modal__btn auth-modal__btn--sm" href="#" onclick="event.preventDefault(); iniciarConGoogle('register');"><%- include('../partials/google-logo') %>Registrarme con Google</a>
     <div class="divider-text">o con tu correo</div>
 
     <%- include('../partials/form-field', { id: 'registro-nombre', name: 'nombre', label: 'Nombre completo', value: v.nombre, error: e.nombre, autocomplete: 'name', required: true, compact: true }) %>

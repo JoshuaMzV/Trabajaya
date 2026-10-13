@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { requerirRol } from '../lib/auth.js';
 import * as db from '../mocks/admin.js';
 import { plataforma } from '../mocks/plataforma.js';
 import { packs, precios, costos } from '../mocks/precios.js';
@@ -8,6 +9,12 @@ import { soporte as sla } from '../mocks/candidato.js';
 // el estado en memoria. Lo que se guarda en Ajustes (packs, precios, costos, límites, catálogo) es el mismo
 // objeto que usan el candidato, la empresa y la landing.
 const router = Router();
+
+// =========================================================================
+// PROTECCIÓN ESTRICTA: Todas las rutas de admin requieren rol 'admin'
+// =========================================================================
+router.use(requerirRol('admin'));
+
 const hoyHora = () => new Date().toLocaleString('es-GT', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 const conParam = (url, k, v) => `${url}${url.includes('?') ? '&' : '?'}${k}=${encodeURIComponent(v)}`;
 const cuenta = (id) => db.cuentas.find((c) => c.id === Number(id)) || null;
@@ -31,10 +38,17 @@ const avisos = {
 };
 
 router.use((req, res, next) => {
+  const u = req.usuario;
   Object.assign(res.locals, {
     layout: 'app',
     role: 'admin',
-    usuario: db.usuario,
+    usuario: {
+      id: u?.id || db.usuario.id,
+      nombre: u?.nombre || db.usuario.nombre,
+      correo: u?.email || db.usuario.correo,
+      avatarUrl: u?.foto_url || null,
+      plan: 'Admin'
+    },
     aviso: avisos[req.query.aviso] || null,
     styles: ['/css/pages/admin.css'],
     scripts: [],

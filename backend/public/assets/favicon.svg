@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="18" fill="#D13A1C" transform="rotate(-6 32 32)" />
+  <text x="32" y="46" font-family="'Bricolage Grotesque', 'Figtree', 'Segoe UI', system-ui, sans-serif" font-weight="800" font-size="44" fill="#FFFFFF" text-anchor="middle">t</text>
+</svg>

@@ -1,5 +1,5 @@
 <section class="container not-found">
-  <h1 class="display-1">Esta página no existe.</h1>
-  <p class="lead">Puede que el enlace esté mal escrito o que la página se haya movido.</p>
+  <h1 class="display-1"><%= locals.encabezado || 'Esta página no existe.' %></h1>
+  <p class="lead"><%= locals.mensaje || 'Puede que el enlace esté mal escrito o que la página se haya movido.' %></p>
   <a class="btn btn--ink btn--lg" href="/">Volver al inicio</a>
 </section>

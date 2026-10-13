@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="es">
+<head>
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<meta charset="utf-8">
+<title>TrabajaYa · Planes</title>
+<script src="/vendor/react.js"></script>
+<script src="/vendor/react-dom.js"></script>
+<script src="/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&amp;family=Figtree:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#B8321A}a:hover{color:#8E2412}
+</style>
+</helmet>
+<div style="min-height: 1900px; background: #FBFAFF; color: #23153C; font-family: Figtree, system-ui, sans-serif; font-size: 17px; line-height: 1.5">
+
+<header style="max-width: 1240px; margin: 0 auto; padding: 20px 32px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px">
+<a href="/" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #23153C">
+<span style="width: 36px; height: 36px; border-radius: 12px; background: #D13A1C; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 20px; transform: rotate(-6deg)">t</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 24px; letter-spacing: -0.03em">Trabaja<span style="color: #D13A1C">Ya</span></span>
+</a>
+<nav aria-label="Principal" style="display: flex; flex-wrap: wrap; gap: 4px; font-weight: 600; font-size: 16px">
+<a href="/como-funciona" style="min-height: 40px; padding: 0 14px; display: flex; align-items: center; border-radius: 999px; color: #3D2D5C; text-decoration: none">Cómo funciona</a>
+<a href="/empresas" style="min-height: 40px; padding: 0 14px; display: flex; align-items: center; border-radius: 999px; color: #3D2D5C; text-decoration: none">Empresas</a>
+<a href="/planes" aria-current="page" style="min-height: 40px; padding: 0 14px; display: flex; align-items: center; border-radius: 999px; background: #EAE4FF; color: #23153C; text-decoration: none; font-weight: 700">Planes</a>
+<a href="/faq" style="min-height: 40px; padding: 0 14px; display: flex; align-items: center; border-radius: 999px; color: #3D2D5C; text-decoration: none">FAQ</a>
+<a href="/contacto" style="min-height: 40px; padding: 0 14px; display: flex; align-items: center; border-radius: 999px; color: #3D2D5C; text-decoration: none">Contacto</a>
+</nav>
+<div style="display: flex; gap: 8px">
+<a href="TY-Entrar.dc.html" style="min-height: 46px; padding: 0 18px; display: flex; align-items: center; border-radius: 999px; color: #23153C; text-decoration: none; font-weight: 600">Entrar</a>
+<a href="TY-Registro-Rol.dc.html" style="min-height: 46px; padding: 0 20px; display: flex; align-items: center; border-radius: 999px; background: #23153C; color: #FFFFFF; text-decoration: none; font-weight: 600">Crear cuenta</a>
+</div>
+</header>
+
+<section style="max-width: 1240px; margin: 0 auto; padding: 48px 32px 32px; display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center">
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 64px; line-height: 1; letter-spacing: -0.04em; text-wrap: balance">Paga lo que uses o <span style="color: #D13A1C">no pienses</span> en eso.</h1>
+<p style="margin: 0; font-size: 20px; color: #4B3B6B; max-width: 600px">Empieza gratis. Recarga TrabajaCoins cuando las necesites o activa PRO para usar todo sin límites.</p>
+<div role="tablist" aria-label="Planes para" style="display: flex; gap: 4px; padding: 6px; border-radius: 999px; background: #EAE4FF">
+<button type="button" role="tab" aria-selected="{{isCand}}" onClick="{{pickCand}}" style="{{tabCand}}">Busco empleo</button>
+<button type="button" role="tab" aria-selected="{{isEmp}}" onClick="{{pickEmp}}" style="{{tabEmp}}">Contrato talento</button>
+</div>
+</section>
+
+<section style="max-width: 1240px; margin: 0 auto; padding: 24px 32px 64px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); gap: 18px; align-items: stretch">
+<div style="background: #FFFFFF; border: 1px solid #E4DDF7; border-radius: 28px; padding: 32px; display: flex; flex-direction: column; gap: 18px">
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 26px">Gratis</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 44px; line-height: 1">$0</span>
+<span style="color: #4B3B6B">Crea tu cuenta y paga cada acción con TrabajaCoins.</span>
+<div style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #E4DDF7; padding-top: 18px">
+<sc-for list="{{free}}" as="f" hint-placeholder-count="4"><span style="display: flex; gap: 10px; font-size: 16px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#23153C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px"><path d="M5 12l5 5L20 7"></path></svg>{{f}}</span></sc-for>
+</div>
+<a href="TY-Registro-Rol.dc.html" style="margin-top: auto; min-height: 52px; display: flex; align-items: center; justify-content: center; border-radius: 999px; border: 2px solid #23153C; color: #23153C; text-decoration: none; font-weight: 700">Crear cuenta gratis</a>
+</div>
+
+<div style="background: #FFFFFF; border: 1px solid #E4DDF7; border-radius: 28px; padding: 32px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; align-items: center; gap: 10px"><span style="width: 26px; height: 26px; border-radius: 50%; background: #F2B33D; display: block"></span><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 26px">TrabajaCoins</span></div>
+<span style="color: #4B3B6B">Packs de monedas sin vencimiento mensual. Cada acción descuenta monedas de tu saldo.</span>
+<fieldset style="border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px">
+<legend style="position: absolute; left: -9999px">Elige un pack</legend>
+<sc-for list="{{packs}}" as="p" hint-placeholder-count="3">
+<label style="{{p.style}}"><input type="radio" name="pack" checked="{{p.on}}" style="width: 20px; height: 20px; accent-color: #D13A1C; margin: 0"><span style="flex: 1; display: flex; flex-direction: column"><span style="font-weight: 700">{{p.t}}</span><span style="font-size: 14px; color: #5A4A7A">{{p.d}}</span></span><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 20px">[PRECIO]</span></label>
+</sc-for>
+</fieldset>
+<a href="TY-Registro-Rol.dc.html" style="margin-top: auto; min-height: 52px; display: flex; align-items: center; justify-content: center; border-radius: 999px; background: #23153C; color: #FFFFFF; text-decoration: none; font-weight: 700">Comprar monedas</a>
+</div>
+
+<div style="background: #D13A1C; color: #FFFFFF; border-radius: 28px; padding: 32px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 24px 48px -24px rgba(209,58,28,0.6)">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 26px">Plan PRO</span><span style="font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 999px; background: #FFFFFF; color: #9A2A14">Recomendado</span></div>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 44px; line-height: 1">[PRECIO]<span style="font-size: 20px">/mes</span></span>
+<span style="color: #FFE9E3">{{proLead}}</span>
+<div style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 18px">
+<sc-for list="{{pro}}" as="f" hint-placeholder-count="4"><span style="display: flex; gap: 10px; font-size: 16px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px"><path d="M5 12l5 5L20 7"></path></svg>{{f}}</span></sc-for>
+</div>
+<a href="TY-Registro-Rol.dc.html" style="margin-top: auto; min-height: 52px; display: flex; align-items: center; justify-content: center; border-radius: 999px; background: #FFFFFF; color: #23153C; text-decoration: none; font-weight: 700">Activar PRO</a>
+</div>
+</section>
+
+<section style="max-width: 1240px; margin: 0 auto; padding: 0 32px 64px; display: flex; flex-direction: column; gap: 20px">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 36px; letter-spacing: -0.03em">¿Cuánto cuesta cada acción?</h2>
+<div style="background: #FFFFFF; border: 1px solid #E4DDF7; border-radius: 24px; overflow-x: auto">
+<table style="width: 100%; min-width: 600px; border-collapse: collapse; font-size: 16px">
+<thead><tr style="text-align: left; background: #F3F0FC"><th style="padding: 16px 24px; font-weight: 700">Acción</th><th style="padding: 16px 24px; font-weight: 700">Gratis</th><th style="padding: 16px 24px; font-weight: 700">PRO</th></tr></thead>
+<tbody>
+<sc-for list="{{costs}}" as="c" hint-placeholder-count="4">
+<tr><td style="padding: 16px 24px; border-top: 1px solid #E4DDF7; font-weight: 600">{{c.a}}</td><td style="padding: 16px 24px; border-top: 1px solid #E4DDF7; color: #4B3B6B">{{c.f}}</td><td style="padding: 16px 24px; border-top: 1px solid #E4DDF7; font-weight: 700; color: #9A2A14">{{c.p}}</td></tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+</section>
+
+<section style="max-width: 1240px; margin: 0 auto; padding: 0 32px 80px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: 16px">
+<div style="background: #F3F0FC; border-radius: 22px; padding: 24px; display: flex; flex-direction: column; gap: 6px"><span style="font-weight: 700">¿Qué pasa si me quedo sin monedas?</span><span style="color: #4B3B6B; font-size: 16px">Te avisamos antes de cada acción y puedes recargar en el momento, sin perder tu trabajo.</span></div>
+<div style="background: #F3F0FC; border-radius: 22px; padding: 24px; display: flex; flex-direction: column; gap: 6px"><span style="font-weight: 700">¿Puedo cancelar PRO?</span><span style="color: #4B3B6B; font-size: 16px">[POLÍTICA DE CANCELACIÓN]</span></div>
+<div style="background: #F3F0FC; border-radius: 22px; padding: 24px; display: flex; flex-direction: column; gap: 6px"><span style="font-weight: 700">¿Más dudas?</span><a href="/faq" style="font-weight: 700; font-size: 16px">Ver preguntas frecuentes →</a></div>
+</section>
+
+<footer style="border-top: 1px solid #E4DDF7; background: #FFFFFF">
+<div style="max-width: 1240px; margin: 0 auto; padding: 48px 32px 32px; display: flex; flex-direction: column; gap: 32px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 32px">
+<div style="display: flex; flex-direction: column; gap: 10px; max-width: 320px">
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 24px; letter-spacing: -0.03em">Trabaja<span style="color: #D13A1C">Ya</span></span>
+<span style="color: #4B3B6B; font-size: 15px">Empleo con entrevista IA, para quien busca y para quien contrata.</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 56px; font-size: 15px">
+<nav aria-label="Producto" style="display: flex; flex-direction: column; gap: 8px"><span style="font-weight: 700">Producto</span><a href="/como-funciona" style="color: #4B3B6B; text-decoration: none">Cómo funciona</a><a href="/empresas" style="color: #4B3B6B; text-decoration: none">Para empresas</a><a href="/planes" style="color: #4B3B6B; text-decoration: none">Planes</a></nav>
+<nav aria-label="Ayuda" style="display: flex; flex-direction: column; gap: 8px"><span style="font-weight: 700">Ayuda</span><a href="/faq" style="color: #4B3B6B; text-decoration: none">Preguntas frecuentes</a><a href="/contacto" style="color: #4B3B6B; text-decoration: none">Contacto</a></nav>
+<nav aria-label="TrabajaYa" style="display: flex; flex-direction: column; gap: 8px"><span style="font-weight: 700">TrabajaYa</span><a href="/acerca" style="color: #4B3B6B; text-decoration: none">Acerca de</a><a href="/app" style="color: #4B3B6B; text-decoration: none">Términos</a><a href="/app" style="color: #4B3B6B; text-decoration: none">Privacidad</a></nav>
+</div>
+</div>
+<div style="border-top: 1px solid #E4DDF7; padding-top: 20px; font-size: 14px; color: #5A4A7A">© [AÑO] TrabajaYa</div>
+</div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1900}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { role: 'cand' }; }
+renderVals() {
+const cand = this.state.role === 'cand';
+const on = 'min-height: 44px; padding: 0 22px; border-radius: 999px; border: 0; font: inherit; font-weight: 700; cursor: pointer; background: #23153C; color: #FFFFFF';
+const off = 'min-height: 44px; padding: 0 22px; border-radius: 999px; border: 0; font: inherit; font-weight: 600; cursor: pointer; background: transparent; color: #4B3B6B';
+const row = 'display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 16px; cursor: pointer; ';
+return {
+isCand: cand, isEmp: !cand,
+tabCand: cand ? on : off, tabEmp: cand ? off : on,
+pickCand: () => this.setState({ role: 'cand' }),
+pickEmp: () => this.setState({ role: 'emp' }),
+free: cand
+? ['Expediente Maestro con lectura OCR', 'Historial de postulaciones', 'Análisis, CV adaptado y entrevistas con TrabajaCoins', 'Mesa de ayuda']
+: ['Panel de reclutador', 'Gestión de vacantes y borradores', 'Filtro IA y bandeja con TrabajaCoins', 'Mesa de ayuda'],
+packs: [
+{ t: '[N] monedas', d: 'Para probar', on: false, style: row + 'border: 1px solid #E4DDF7' },
+{ t: '[N] monedas', d: 'Más popular', on: true, style: row + 'border: 2px solid #D13A1C; background: #FFF4F1' },
+{ t: '[N] monedas', d: 'Mejor precio por moneda', on: false, style: row + 'border: 1px solid #E4DDF7' }
+],
+proLead: cand ? 'Prepárate para todas las vacantes que quieras.' : 'Evalúa a todos los postulantes que lleguen.',
+pro: cand
+? ['Análisis de match ilimitados', 'CVs adaptados ilimitados', 'Entrevistas IA ilimitadas', 'Soporte VIP en menos de 2 horas']
+: ['Vacantes ilimitadas', 'Entrevistas IA ilimitadas por postulante', 'Exportación de ternas', 'Soporte VIP en menos de 2 horas'],
+costs: cand
+? [
+{ a: 'Análisis de match con una vacante', f: '[N] TrabajaCoins', p: 'Incluido' },
+{ a: 'CV adaptado (ATS o Formal Ejecutivo)', f: '[N] TrabajaCoins', p: 'Incluido' },
+{ a: 'Entrevista IA con feedback', f: '[N] TrabajaCoins', p: 'Incluido' },
+{ a: 'Soporte', f: 'Mesa de ayuda', p: 'VIP · menos de 2 h' }
+]
+: [
+{ a: 'Publicar una vacante', f: '[N] TrabajaCoins', p: 'Incluido' },
+{ a: 'Entrevista IA por postulante', f: '[N] TrabajaCoins', p: 'Incluido' },
+{ a: 'Exportar terna', f: '[N] TrabajaCoins', p: 'Incluido' },
+{ a: 'Soporte', f: 'Mesa de ayuda', p: 'VIP · menos de 2 h' }
+]
+};
+}
+}
+</script>
+</body>
+</html>

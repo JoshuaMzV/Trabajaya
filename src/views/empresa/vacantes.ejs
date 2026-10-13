@@ -69,12 +69,10 @@
                     <button type="submit" class="menu-item" role="menuitem" data-confirm data-confirm-title="¿Cerrar esta vacante?" data-confirm-text="Dejará de recibir postulaciones. Los postulantes actuales se conservan." data-confirm-label="Cerrar vacante"><%- icon('circle-x', { size: 18 }) %>Cerrar</button>
                   </form>
                 <% } %>
-                <% if (borrador) { %>
-                  <div class="menu-sep" role="separator"></div>
-                  <form method="post" action="/empresa/vacantes/<%= v.id %>/eliminar">
-                    <button type="submit" class="menu-item menu-item--danger" role="menuitem" data-confirm data-confirm-title="¿Eliminar este borrador?" data-confirm-text="Esta acción no se puede deshacer." data-confirm-label="Eliminar borrador" data-confirm-variante="danger"><%- icon('trash-2', { size: 18 }) %>Eliminar borrador</button>
-                  </form>
-                <% } %>
+                <div class="menu-sep" role="separator"></div>
+                <form method="post" action="/empresa/vacantes/<%= v.id %>/eliminar">
+                  <button type="submit" class="menu-item menu-item--danger" role="menuitem" data-confirm data-confirm-title="¿Eliminar esta vacante?" data-confirm-text="Esta acción eliminará la vacante permanentemente." data-confirm-label="Eliminar vacante" data-confirm-variante="danger"><%- icon('trash-2', { size: 18 }) %>Eliminar vacante</button>
+                </form>
               </div>
             </div>
           </div>

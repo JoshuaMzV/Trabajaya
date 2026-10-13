@@ -10,20 +10,33 @@
     <div class="page__header">
       <div class="page__title">
         <h1 class="title-app">Postulantes</h1>
-        <form class="inline-field" method="get" action="/empresa/postulantes" data-autosubmit>
-          <label class="field__label" for="post-vacante">Vacante</label>
-          <select class="select input--compact" id="post-vacante" name="vacante">
-            <% vacantes.forEach((x) => { %><option value="<%= x.id %>"<% if (x.id === vacante.id) { %> selected<% } %>><%= x.titulo %> · <%= x.total %> postulantes</option><% }) %>
-          </select>
-          <noscript><button type="submit" class="btn btn--soft btn--sm">Ver</button></noscript>
-        </form>
+        <% if (vacante && vacantes.length) { %>
+          <form class="inline-field" method="get" action="/empresa/postulantes" data-autosubmit>
+            <label class="field__label" for="post-vacante">Vacante</label>
+            <select class="select input--compact" id="post-vacante" name="vacante">
+              <% vacantes.forEach((x) => { %><option value="<%= x.id %>"<% if (x.id === vacante.id) { %> selected<% } %>><%= x.titulo %> · <%= x.total %> postulantes</option><% }) %>
+            </select>
+            <noscript><button type="submit" class="btn btn--soft btn--sm">Ver</button></noscript>
+          </form>
+        <% } %>
       </div>
-      <button type="button" class="btn btn--ink btn--sm" data-modal-open="modal-terna" data-terna-boton<% if (!terna.length) { %> disabled<% } %>>
-        <span>Exportar terna (<span data-terna-count><%= terna.length %></span>/3)</span>
-      </button>
+      <% if (vacante && vacantes.length) { %>
+        <button type="button" class="btn btn--ink btn--sm" data-modal-open="modal-terna" data-terna-boton<% if (!terna.length) { %> disabled<% } %>>
+          <span>Exportar terna (<span data-terna-count><%= terna.length %></span>/3)</span>
+        </button>
+      <% } else { %>
+        <a class="btn btn--accent btn--sm" href="/empresa/vacantes/nueva"><%- icon('plus', { size: 18 }) %>Crear vacante</a>
+      <% } %>
     </div>
 
-    <% if (estado === 'error') { %>
+    <% if (!vacantes.length) { %>
+      <div class="empty-state empty-state--lg">
+        <span class="empty-state__icon"><%- icon('briefcase-business') %></span>
+        <h2 class="empty-state__title">Primero publica una vacante</h2>
+        <p class="empty-state__text">Para ver y filtrar postulantes en esta bandeja, necesitas tener al menos una vacante creada en tu cuenta.</p>
+        <a class="btn btn--ink btn--sm" href="/empresa/vacantes/nueva">Crear vacante</a>
+      </div>
+    <% } else if (estado === 'error') { %>
       <div class="empty-state" role="alert">
         <span class="empty-state__icon empty-state__icon--danger"><%- icon('circle-alert') %></span>
         <h2 class="empty-state__title">No pudimos cargar los postulantes</h2>
@@ -33,9 +46,9 @@
     <% } else if (estado === 'vacio') { %>
       <div class="empty-state">
         <span class="empty-state__icon"><%- icon('users') %></span>
-        <h2 class="empty-state__title">Aún no hay postulantes</h2>
-        <p class="empty-state__text">Aparecerán cuando completen la entrevista IA.</p>
-        <a class="btn btn--soft btn--sm" href="/empresa/vacantes">Ver vacantes</a>
+        <h2 class="empty-state__title">Aún no hay postulantes para <%= vacante ? vacante.titulo : 'esta vacante' %></h2>
+        <p class="empty-state__text">Aparecerán automáticamente aquí en cuanto completen la entrevista IA.</p>
+        <a class="btn btn--soft btn--sm" href="/empresa/vacantes">Ver mis vacantes</a>
       </div>
     <% } else { %>
       <div class="toolbar">

@@ -4,7 +4,7 @@
   const subirForm = (id, etiqueta, clase) => `
     <form class="upload-inline" method="post" action="/candidato/expediente/cv" enctype="multipart/form-data" data-upload-form>
       <label class="btn ${clase}" for="${id}">${etiqueta}</label>
-      <input class="visually-hidden" id="${id}" type="file" name="cv" accept="application/pdf" required data-upload-input>
+      <input class="visually-hidden" id="${id}" type="file" name="cv" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required data-upload-input>
       <noscript><button type="submit" class="btn btn--soft btn--sm">Subir</button></noscript>
     </form>`;
 %>
@@ -21,9 +21,9 @@
       <label class="dropzone" for="cv-archivo" data-dropzone>
         <span class="dropzone__icon"><%- icon('file-up', { size: 28, strokeWidth: 1.8 }) %></span>
         <span class="dropzone__title">Arrastra tu CV aquí</span>
-        <span class="text-muted">PDF · máx. <%= maxMb %> MB · Leemos experiencia, estudios, habilidades e idiomas</span>
+        <span class="text-muted">PDF o DOCX · máx. <%= maxMb %> MB · Leemos experiencia, estudios, habilidades e idiomas</span>
         <span class="btn btn--accent btn--sm" aria-hidden="true">Seleccionar archivo</span>
-        <input class="visually-hidden" id="cv-archivo" type="file" name="cv" accept="application/pdf" required data-upload-input aria-describedby="cv-error">
+        <input class="visually-hidden" id="cv-archivo" type="file" name="cv" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required data-upload-input aria-describedby="cv-error">
       </label>
       <span class="field__error" id="cv-error" data-upload-error hidden></span>
       <noscript><button type="submit" class="btn btn--ink">Subir CV</button></noscript>

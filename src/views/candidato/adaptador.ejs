@@ -76,7 +76,7 @@
         <div class="preview__actions">
           <button type="button" class="btn btn--soft btn--sm" data-action="imprimir"<% if (!listo) { %> disabled<% } %>>Imprimir</button>
           <% if (listo) { %>
-            <a class="btn btn--ink btn--sm" href="/candidato/cvs/<%= cv.id %>" target="_blank" rel="noopener">Descargar PDF</a>
+            <a class="btn btn--ink btn--sm" href="/candidato/cvs/<%= cv.id %>/descargar" target="_blank" rel="noopener">Descargar PDF</a>
           <% } else { %>
             <button type="button" class="btn btn--ink btn--sm" disabled>Descargar PDF</button>
           <% } %>

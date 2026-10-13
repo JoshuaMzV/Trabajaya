@@ -12,13 +12,17 @@
       <button type="button" class="btn-icon" data-modal-close aria-label="Cerrar"><%- icon('x', { size: 18, strokeWidth: 2.4 }) %></button>
     </div>
 
+    <%
+      const slaVip = (s.sla && s.sla.vip) ? s.sla.vip : 'menos de 2 horas';
+      const slaEstandar = (s.sla && s.sla.estandar) ? s.sla.estandar : '24 horas';
+    %>
     <div class="sla-box<%= pro ? ' sla-box--pro' : '' %>">
-      <% if (plan === null) { %>
-        <strong>Soporte para empresas · respuesta en <%= s.sla.estandar %></strong>
+      <% if (plan === null || plan === 'Empresa') { %>
+        <strong>Soporte para empresas · respuesta en <%= slaEstandar %></strong>
         <span class="text-small">Sin costo para tu cuenta de empresa</span>
       <% } else { %>
-        <strong><%= pro ? `Soporte VIP · respuesta en ${s.sla.vip}` : `Soporte estándar · respuesta en ${s.sla.estandar}` %></strong>
-        <span class="text-small"><%= pro ? 'Incluido en tu Plan PRO' : `Con Plan PRO tendrías respuesta en ${s.sla.vip}` %></span>
+        <strong><%= pro ? `Soporte VIP · respuesta en ${slaVip}` : `Soporte estándar · respuesta en ${slaEstandar}` %></strong>
+        <span class="text-small"><%= pro ? 'Incluido en tu Plan PRO' : `Con Plan PRO tendrías respuesta en ${slaVip}` %></span>
       <% } %>
     </div>
 
@@ -38,7 +42,8 @@
 
       <form class="modal__content" method="post" action="<%= s.accion || '/candidato/soporte/tickets' %>" enctype="multipart/form-data">
         <input type="hidden" name="volver" value="<%= s.volver %>">
-        <%- include('form-field', { id: 'sop-categoria', name: 'categoria', label: 'Categoría', type: 'select', compact: true, opciones: s.categorias.map((c) => ({ value: c, label: c })) }) %>
+        <% const categoriasLista = Array.isArray(s.categorias) ? s.categorias : ['Cuenta', 'Pagos y monedas', 'Entrevista IA', 'Expediente / CV', 'Otro']; %>
+        <%- include('form-field', { id: 'sop-categoria', name: 'categoria', label: 'Categoría', type: 'select', compact: true, opciones: categoriasLista.map((c) => ({ value: c, label: c })) }) %>
         <%- include('form-field', { id: 'sop-asunto', name: 'asunto', label: 'Asunto', required: true, compact: true }) %>
         <%- include('form-field', { id: 'sop-mensaje', name: 'mensaje', label: 'Mensaje', type: 'textarea', required: true }) %>
         <label class="attach" for="sop-captura">

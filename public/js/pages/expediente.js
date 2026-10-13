@@ -23,7 +23,9 @@
 
     var enviar = function (file) {
       if (!file) return;
-      if (file.type !== 'application/pdf' && !/\.pdf$/i.test(file.name)) return mostrarError('El archivo debe ser un PDF.');
+      var esPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
+      var esDocx = file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.type === 'application/msword' || /\.(docx|doc)$/i.test(file.name);
+      if (!esPdf && !esDocx) return mostrarError('El archivo debe ser un PDF o DOCX.');
       if (file.size > maxMb * 1024 * 1024) return mostrarError('El archivo pesa más de ' + maxMb + ' MB.');
       mostrarError('');
       form.submit();
